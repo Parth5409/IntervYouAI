@@ -1,0 +1,38 @@
+fastapi
+uvicorn[standard]
+python-socketio
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==3.2.2
+python-dotenv
+pydantic
+pydantic-settings
+
+# LangChain ecosystem
+langchain
+langchain-google-genai
+langchain-ollama
+langchain-community
+
+# Vector stores and embeddings
+faiss-cpu
+chromadb
+
+# Document processing
+pypdf2
+pandas
+python-docx
+
+# Database and ORM
+sqlalchemy
+alembic
+psycopg2-binary
+
+# Utilities
+httpx
+aiofiles
+Pillow
+numpy
+scikit-learn
+cloudinary
