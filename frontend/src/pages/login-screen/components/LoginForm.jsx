@@ -201,7 +201,7 @@ const LoginForm = () => {
           New to IntervYou.AI?{' '}
           <button
             type="button"
-            onClick={() => navigate('/registration-screen')}
+            onClick={() => navigate('/register')}
             className="text-primary hover:text-primary/80 font-medium transition-colors"
             disabled={isLoading}
           >

@@ -4,10 +4,11 @@ import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Image from '../../../components/AppImage';
 import api from '../../../utils/api';
+import { uploadToCloudinary } from '../../../utils/cloudinary';
 
 const ProfileTab = ({ user, onProfileUpdate }) => {
-  // console.log('User in ProfileTab:', user);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     fullName: user?.full_name || '',
     email: user?.email || '',
@@ -17,6 +18,7 @@ const ProfileTab = ({ user, onProfileUpdate }) => {
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
+  const [resumeInfo, setResumeInfo] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -27,7 +29,17 @@ const ProfileTab = ({ user, onProfileUpdate }) => {
         phone: user.phone || ''
       });
       setProfileImageUrl(user.profile_image_url || '');
-      setResumeFile(user.resume_url || null);
+      if (user.resume_url) {
+        setResumeInfo({
+          name: user.resume_filename,
+          url: user.resume_url,
+          uploadDate: user.updated_at
+        });
+      } else {
+        setResumeInfo(null);
+      }
+      setProfileImageFile(null);
+      setResumeFile(null);
     }
   }, [user]);
 
@@ -50,31 +62,46 @@ const ProfileTab = ({ user, onProfileUpdate }) => {
     const file = e.target.files?.[0];
     if (file) {
       setResumeFile(file);
+      setResumeInfo({ name: file.name });
     }
   };
 
   const handleSave = async () => {
-    const submissionData = new FormData();
-        if (formData.fullName) {
-      submissionData.append('full_name', formData.fullName);
-    }
-    if (formData.careerGoal) {
-      submissionData.append('career_goal', formData.careerGoal);
-    }
-    if (formData.phone) {
-      submissionData.append('phone', formData.phone);
-    }
-
+    setIsSaving(true);
     try {
-      const { data } = await api.put('/user/profile', submissionData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      let imageUrl = profileImageUrl;
+      if (profileImageFile) {
+        const res = await uploadToCloudinary(profileImageFile);
+        imageUrl = res.secure_url;
+      }
+
+      let resumeUrl = resumeInfo?.url;
+      let resumeFilename = resumeInfo?.name;
+      if (resumeFile) {
+        const res = await uploadToCloudinary(resumeFile);
+        resumeUrl = res.secure_url;
+        resumeFilename = resumeFile.name;
+      }
+
+      const updatePayload = {
+        full_name: formData.fullName,
+        career_goal: formData.careerGoal,
+        phone: formData.phone,
+        profile_image_url: imageUrl,
+        resume_url: resumeUrl,
+        resume_filename: resumeFilename,
+      };
+
+      const { data } = await api.put('/user/profile', updatePayload);
+      
       if (onProfileUpdate) {
-        onProfileUpdate(data.data.user);
+        onProfileUpdate(data.data);
       }
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update profile:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -84,11 +111,20 @@ const ProfileTab = ({ user, onProfileUpdate }) => {
             fullName: user.full_name || '',
             email: user.email || '',
             careerGoal: user.career_goal || '',
-                        phone: user.phone || ''
+            phone: user.phone || ''
         });
         setProfileImageUrl(user.profile_image_url || '');
-        setResumeFile(user.resume_url || null);
+        if (user.resume_url) {
+          setResumeInfo({
+            name: user.resume_filename,
+            url: user.resume_url,
+            uploadDate: user.updated_at
+          });
+        } else {
+          setResumeInfo(null);
+        }
         setProfileImageFile(null);
+        setResumeFile(null);
     }
     setIsEditing(false);
   };
@@ -104,11 +140,11 @@ const ProfileTab = ({ user, onProfileUpdate }) => {
             </Button>
           ) : (
             <div className="flex space-x-2">
-              <Button variant="outline" onClick={handleCancel} iconName="X" iconSize={16}>
+              <Button variant="outline" onClick={handleCancel} iconName="X" iconSize={16} disabled={isSaving}>
                 Cancel
               </Button>
-              <Button variant="default" onClick={handleSave} iconName="Check" iconSize={16}>
-                Save
+              <Button variant="default" onClick={handleSave} iconName="Check" iconSize={16} loading={isSaving}>
+                {isSaving ? 'Saving...' : 'Save'}
               </Button>
             </div>
           )}
@@ -129,7 +165,7 @@ const ProfileTab = ({ user, onProfileUpdate }) => {
               {isEditing && (
                 <label htmlFor="profile-image-upload" className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-colors">
                   <Icon name="Camera" size={16} color="var(--color-primary-foreground)" />
-                  <input id="profile-image-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  <input id="profile-image-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={isSaving} />
                 </label>
               )}
             </div>
@@ -141,12 +177,12 @@ const ProfileTab = ({ user, onProfileUpdate }) => {
 
           <div className="flex-1 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Full Name" name="fullName" value={formData.fullName} onChange={handleInputChange} disabled={!isEditing} required />
+              <Input label="Full Name" name="fullName" value={formData.fullName} onChange={handleInputChange} disabled={!isEditing || isSaving} required />
               <Input label="Email Address" name="email" type="email" value={formData.email} disabled={true} required />
             </div>
-            <Input label="Career Goal" name="careerGoal" value={formData.careerGoal} onChange={handleInputChange} disabled={!isEditing} placeholder="e.g., Software Engineer" />
+            <Input label="Career Goal" name="careerGoal" value={formData.careerGoal} onChange={handleInputChange} disabled={!isEditing || isSaving} placeholder="e.g., Software Engineer" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Phone Number" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} disabled={!isEditing} placeholder="+1 (555) 123-4567" />
+              <Input label="Phone Number" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} disabled={!isEditing || isSaving} placeholder="+1 (555) 123-4567" />
             </div>
           </div>
         </div>
@@ -159,20 +195,20 @@ const ProfileTab = ({ user, onProfileUpdate }) => {
             <label htmlFor="resume-upload" className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 cursor-pointer">
               <Icon name="Upload" className="mr-2 h-4 w-4" />
               <span>Upload Resume</span>
-              <input id="resume-upload" type="file" accept=".pdf,.doc,.docx" onChange={handleResumeUpload} className="hidden" />
+              <input id="resume-upload" type="file" accept=".pdf,.doc,.docx" onChange={handleResumeUpload} className="hidden" disabled={isSaving} />
             </label>
           )}
         </div>
 
-        {resumeFile ? (
+        {resumeInfo ? (
           <div className="flex items-center space-x-3 p-4 bg-muted rounded-lg">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
               <Icon name="FileText" size={20} color="var(--color-primary)" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">{resumeFile.resume_filename || 'resume.pdf'}</p>
+              <p className="text-sm font-medium text-foreground">{resumeInfo.name || 'resume.pdf'}</p>
               <p className="text-xs text-muted-foreground">
-                {resumeFile.updated_at ? `Uploaded on ${new Date(resumeFile.updated_at).toLocaleDateString()}` : 'New file selected'}
+                {resumeInfo.uploadDate ? `Uploaded on ${new Date(resumeInfo.uploadDate).toLocaleDateString()}` : 'New file selected'}
               </p>
             </div>
           </div>

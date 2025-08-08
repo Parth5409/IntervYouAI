@@ -35,7 +35,6 @@ async def register_user(user_data: UserRegistration, response: Response, db: Ses
             "email": user_data.email,
             "full_name": user_data.full_name,
             "password_hash": hashed_password,
-            "phone": user_data.phone,
             "career_goal": user_data.career_goal
         }
         

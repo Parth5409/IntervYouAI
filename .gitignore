@@ -10,6 +10,10 @@ yarn-error.log*
 
 # IDE and editor directories
 .vscode/
+GEMINI.md
+required_files.txt
+IntervYou_Project_Summary.txt
+Suggested_Changes.txt
 
 # OS-generated files
 .DS_Store

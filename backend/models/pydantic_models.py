@@ -60,6 +60,9 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     phone: Optional[str] = None
     career_goal: Optional[str] = None
+    profile_image_url: Optional[str] = None
+    resume_url: Optional[str] = None
+    resume_filename: Optional[str] = None
 
 # Interview Session Models
 class SessionType(str, Enum):

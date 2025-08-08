@@ -1,16 +1,19 @@
 import os
 import logging
-import tempfile
+import io
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
+
 import pandas as pd
 import PyPDF2
+import httpx
 from docx import Document
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document as LangChainDocument
 from langchain_core.vectorstores import VectorStore
 from langchain_core.retrievers import BaseRetriever
+from langchain_community.vectorstores import FAISS, Chroma
 
 from llm.embeddings import get_embedding_manager
 
@@ -29,19 +32,19 @@ class DocumentProcessor:
         )
         self.embedding_manager = get_embedding_manager()
     
-    async def process_pdf_resume(self, file_path: str) -> Dict[str, Any]:
+    async def process_pdf_resume(self, resume_url: str) -> Dict[str, Any]:
         """
-        Process PDF resume and extract relevant information
+        Process PDF resume from a URL and extract relevant information
         
         Args:
-            file_path: Path to PDF file
+            resume_url: URL to the PDF file
             
         Returns:
             Processed resume data with chunks and metadata
         """
         try:
-            # Extract text from PDF
-            text_content = self._extract_pdf_text(file_path)
+            # Extract text from PDF URL
+            text_content = await self._extract_pdf_text_from_url(resume_url)
             
             if not text_content.strip():
                 raise ValueError("No text content found in PDF")
@@ -140,20 +143,26 @@ class DocumentProcessor:
             logger.error(f"Error processing company CSV: {e}")
             raise
     
-    def _extract_pdf_text(self, file_path: str) -> str:
-        """Extract text from PDF file"""
+    async def _extract_pdf_text_from_url(self, url: str) -> str:
+        """Extract text from PDF file from a URL."""
         try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url)
+                response.raise_for_status()
+            
             text_content = ""
-            with open(file_path, 'rb') as file:
+            with io.BytesIO(response.content) as file:
                 pdf_reader = PyPDF2.PdfReader(file)
-                
                 for page in pdf_reader.pages:
                     text_content += page.extract_text() + "\n"
             
             return text_content.strip()
             
+        except httpx.RequestError as e:
+            logger.error(f"Error downloading PDF from URL {url}: {e}")
+            raise
         except Exception as e:
-            logger.error(f"Error extracting PDF text: {e}")
+            logger.error(f"Error extracting PDF text from URL {url}: {e}")
             raise
     
     def _extract_resume_info(self, text: str) -> Dict[str, Any]:
@@ -274,7 +283,7 @@ class VectorStoreManager:
         self.embedding_manager = get_embedding_manager()
         self.vector_stores: Dict[str, VectorStore] = {}
         
-        logger.info(f"Initialized VectorStoreManager with {store_type}")
+        logger.info(f"Initialized VectorStoreManager with {self.store_type}")
     
     async def create_vector_store(
         self, 
@@ -365,7 +374,8 @@ class VectorStoreManager:
             if self.store_type == "faiss":
                 vector_store = FAISS.load_local(
                     str(store_path),
-                    embeddings.embeddings
+                    embeddings.embeddings,
+                    allow_dangerous_deserialization=True
                 )
             elif self.store_type == "chroma":
                 vector_store = Chroma(

@@ -20,17 +20,6 @@ const RegistrationForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const careerGoalOptions = [
-    { value: 'entry-level', label: 'Entry Level Position' },
-    { value: 'mid-level', label: 'Mid-Level Role' },
-    { value: 'senior-level', label: 'Senior Position' },
-    { value: 'management', label: 'Management Role' },
-    { value: 'executive', label: 'Executive Position' },
-    { value: 'career-change', label: 'Career Change' },
-    { value: 'freelance', label: 'Freelance/Contract Work' },
-    { value: 'startup', label: 'Startup Environment' }
-  ];
-
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex?.test(email);
@@ -206,12 +195,12 @@ const RegistrationForm = () => {
         )}
       </div>
       {/* Career Goal */}
-      <Select
+      <Input
         label="Career Goal"
-        placeholder="Select your career goal"
-        options={careerGoalOptions}
+        type="text"
+        placeholder="e.g., Software Engineer at a FAANG company"
         value={formData?.careerGoal}
-        onChange={(value) => handleInputChange('careerGoal', value)}
+        onChange={(e) => handleInputChange('careerGoal', e.target.value)}
         error={errors?.careerGoal}
         required
         disabled={isLoading}
