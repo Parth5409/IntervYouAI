@@ -11,12 +11,13 @@ from models.pydantic_models import (
 )
 from utils.database import get_db, create_interview_session, get_user_sessions
 from utils.auth import get_current_user
+from orchestrator.rag_utils import DocumentProcessor, get_vector_store_manager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post("/", response_model=APIResponse)
-def create_session(
+async def create_session(
     session_data: InterviewSessionCreate,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
@@ -26,7 +27,46 @@ def create_session(
         session_dict = session_data.dict()
         session_dict["user_id"] = current_user.id
         
-        if session_data.session_type == "GD":
+        if "context" not in session_dict or session_dict["context"] is None:
+            session_dict["context"] = {}
+
+        if current_user.resume_url:
+            try:
+                doc_processor = DocumentProcessor()
+                processed_resume = await doc_processor.process_pdf_resume(current_user.resume_url)
+                session_dict["context"]["resume_info"] = processed_resume["resume_info"]
+                logger.info(f"Successfully processed resume for user {current_user.id}.")
+            except Exception as e:
+                logger.warning(f"Could not process resume for user {current_user.id}: {e}")
+                session_dict["context"]["resume_info"] = {"error": "Resume processing failed."}
+
+        if session_data.session_type == "TECHNICAL":
+            company_name = session_data.company_name
+            if company_name:
+                try:
+                    doc_processor = DocumentProcessor()
+                    csv_path = f'backend/uploads/company_csv/{company_name}.csv'
+                    processed_csv = await doc_processor.process_company_csv(csv_path)
+                    
+                    session_dict["context"]["topics"] = processed_csv["topics"]
+                    
+                    session = create_interview_session(db, session_dict)
+                    
+                    vector_store_manager = get_vector_store_manager()
+                    store_name = f"company_{company_name}_{session.id}"
+                    await vector_store_manager.create_vector_store(
+                        documents=processed_csv["chunks"],
+                        store_name=store_name
+                    )
+                    session_dict["context"]["vector_store_name"] = store_name
+                    db.commit()
+
+                except FileNotFoundError:
+                    logger.warning(f"No CSV found for company: {company_name}")
+                except Exception as e:
+                    logger.error(f"Error processing company CSV for {company_name}: {e}")
+
+        elif session_data.session_type == "GD":
             gd_data = GDSessionData(**session_dict.pop('context', {}))
             session_dict["context"] = gd_data.dict()
 

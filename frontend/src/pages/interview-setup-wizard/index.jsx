@@ -158,23 +158,45 @@ const InterviewSetupWizard = () => {
   };
 
   const handleStartInterview = async () => {
+    if (!validateStep(currentStep)) return;
+
     setIsLoading(true);
     
-    // Simulate session creation
-    setTimeout(() => {
-      // Clear saved data
-      localStorage.removeItem('interviewSetupData');
-      
-      const roomPath = selectedType === 'group-discussion' ? '/gd-room' : '/interview-room';
+    try {
+      const sessionPayload = {
+        session_type: selectedType.toUpperCase(),
+        company_name: formData.company || null,
+        job_role: formData.jobRole || null,
+        experience_level: formData.experienceLevel || 'mid',
+        topics: formData.topics || [],
+        duration_minutes: parseInt(formData.duration, 10) || 30,
+        context: formData
+      };
 
-      // Navigate to the appropriate room
-      navigate(roomPath, {
-        state: {
-          interviewType: selectedType,
-          configuration: formData
-        }
-      });
-    }, 1500);
+      const { data } = await api.post('/session/', sessionPayload);
+
+      if (data.success) {
+        const sessionId = data.data.session_id;
+        localStorage.removeItem('interviewSetupData');
+        
+        const roomPath = selectedType === 'group-discussion' ? `/gd-room/${sessionId}` : `/interview-room/${sessionId}`;
+
+        navigate(roomPath, {
+          state: {
+            interviewType: selectedType,
+            configuration: formData,
+            sessionId: sessionId
+          }
+        });
+      } else {
+        setErrors({ api: data.message || "Failed to create session." });
+      }
+    } catch (error) {
+      console.error("Failed to start interview session:", error);
+      setErrors({ api: error.response?.data?.detail || "An unexpected error occurred." });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const renderStepContent = () => {

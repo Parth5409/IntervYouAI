@@ -3,25 +3,16 @@ Data routes for companies, topics, etc.
 """
 
 import logging
+import os
+from pathlib import Path
 from fastapi import APIRouter, HTTPException, status
 from models.pydantic_models import APIResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# Predefined data (in production, these would come from database)
-COMPANIES = [
-    {"value": "google", "label": "Google"},
-    {"value": "microsoft", "label": "Microsoft"},
-    {"value": "amazon", "label": "Amazon"},
-    {"value": "apple", "label": "Apple"},
-    {"value": "meta", "label": "Meta"},
-    {"value": "netflix", "label": "Netflix"},
-    {"value": "uber", "label": "Uber"},
-    {"value": "airbnb", "label": "Airbnb"},
-    {"value": "spotify", "label": "Spotify"},
-    {"value": "tesla", "label": "Tesla"}
-]
+# Define the path to the company CSVs directory
+COMPANY_CSV_PATH = Path(__file__).parent.parent / "uploads" / "company_csv"
 
 GD_TOPICS = [
     {"value": "ai-job-displacement", "label": "AI and Job Displacement"},
@@ -29,20 +20,29 @@ GD_TOPICS = [
     {"value": "climate-change-tech", "label": "Technology's Role in Climate Change"},
     {"value": "social-media-impact", "label": "Social Media's Impact on Society"},
     {"value": "data-privacy-rights", "label": "Data Privacy and Digital Rights"},
-    {"value": "automation-economy", "label": "Automation and the Economy"},
-    {"value": "education-technology", "label": "Technology in Education"},
-    {"value": "healthcare-digitization", "label": "Healthcare Digitization"},
-    {"value": "sustainable-development", "label": "Sustainable Development Goals"},
-    {"value": "cryptocurrency-future", "label": "Cryptocurrency and Financial Future"}
 ]
 
 @router.get("/setup/companies")
 async def get_companies():
-    """Get list of companies for interview setup"""
+    """Get list of available companies from the CSV directory"""
+    if not COMPANY_CSV_PATH.exists() or not COMPANY_CSV_PATH.is_dir():
+        logger.warning(f"Company CSV directory not found at: {COMPANY_CSV_PATH}")
+        return APIResponse(
+            success=True,
+            message="No companies available",
+            data=[]
+        )
+    
+    companies = []
+    for f in COMPANY_CSV_PATH.iterdir():
+        if f.is_file() and f.suffix.lower() == '.csv':
+            company_name = f.stem.replace('_', ' ').title()
+            companies.append({"value": f.stem, "label": company_name})
+            
     return APIResponse(
         success=True,
         message="Companies retrieved successfully",
-        data=COMPANIES
+        data=companies
     )
 
 @router.get("/setup/topics")
@@ -54,24 +54,3 @@ async def get_gd_topics():
         data=GD_TOPICS
     )
 
-@router.post("/interview/start")
-async def start_interview_session(session_config: dict):
-    """Start a new interview session"""
-    try:
-        # This will be handled by the InterviewOrchestrator
-        # For now, return a mock session ID
-        import uuid
-        session_id = str(uuid.uuid4())
-        
-        return APIResponse(
-            success=True,
-            message="Session created successfully",
-            data={"sessionId": session_id}
-        )
-        
-    except Exception as e:
-        logger.error(f"Error starting interview session: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to start interview session"
-        )

@@ -1,29 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Select from '../../../components/ui/Select';
-
+import api from '../../../utils/api';
 
 const TechnicalSetupForm = ({ formData, onChange, errors }) => {
   const [companies, setCompanies] = useState([]);
   const [loadingCompanies, setLoadingCompanies] = useState(false);
-
-  // Mock companies data
-  const mockCompanies = [
-    { value: "google", label: "Google", description: "Search & Cloud Technology" },
-    { value: "microsoft", label: "Microsoft", description: "Software & Cloud Services" },
-    { value: "amazon", label: "Amazon", description: "E-commerce & AWS" },
-    { value: "apple", label: "Apple", description: "Consumer Electronics" },
-    { value: "meta", label: "Meta", description: "Social Media & VR" },
-    { value: "netflix", label: "Netflix", description: "Streaming & Entertainment" },
-    { value: "tesla", label: "Tesla", description: "Electric Vehicles & Energy" },
-    { value: "uber", label: "Uber", description: "Transportation & Delivery" },
-    { value: "airbnb", label: "Airbnb", description: "Travel & Hospitality" },
-    { value: "spotify", label: "Spotify", description: "Music Streaming" },
-    { value: "salesforce", label: "Salesforce", description: "CRM & Cloud Solutions" },
-    { value: "adobe", label: "Adobe", description: "Creative Software" },
-    { value: "nvidia", label: "NVIDIA", description: "Graphics & AI Computing" },
-    { value: "intel", label: "Intel", description: "Semiconductors & Processors" },
-    { value: "ibm", label: "IBM", description: "Enterprise Technology" }
-  ];
 
   const jobRoles = [
     { value: "frontend-developer", label: "Frontend Developer" },
@@ -44,12 +25,19 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
   ];
 
   useEffect(() => {
-    // Simulate API call to fetch companies
-    setLoadingCompanies(true);
-    setTimeout(() => {
-      setCompanies(mockCompanies);
+    const fetchCompanies = async () => {
+      setLoadingCompanies(true);
+      try {
+        const response = await api.get('/setup/companies');
+        setCompanies(response.data.data || []);
+      } catch (error) {
+        console.error("Failed to fetch companies:", error);
+        setCompanies([]);
+      }
       setLoadingCompanies(false);
-    }, 800);
+    };
+
+    fetchCompanies();
   }, []);
 
   const handleJobRoleChange = (value) => {
