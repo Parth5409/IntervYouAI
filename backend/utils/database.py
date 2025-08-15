@@ -123,6 +123,10 @@ def get_user_sessions(db: Session, user_id: str, limit: int = 10) -> list:
         .all()
     )
 
+def get_session_by_id(db: Session, session_id: str) -> Optional[InterviewSession]:
+    """Get session by ID"""
+    return db.query(InterviewSession).filter(InterviewSession.id == session_id).first()
+
 def update_session(db: Session, session_id: str, update_data: dict) -> Optional[InterviewSession]:
     """Update interview session"""
     session = db.query(InterviewSession).filter(InterviewSession.id == session_id).first()

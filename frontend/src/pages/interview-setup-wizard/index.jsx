@@ -8,6 +8,7 @@ import HRSetupForm from './components/HRSetupForm';
 import GroupDiscussionSetupForm from './components/GroupDiscussionSetupForm';
 import SalaryNegotiationSetupForm from './components/SalaryNegotiationSetupForm';
 import SessionSummary from './components/SessionSummary';
+import api from '../../utils/api';
 
 const InterviewSetupWizard = () => {
   const navigate = useNavigate();
@@ -176,7 +177,7 @@ const InterviewSetupWizard = () => {
       const { data } = await api.post('/session/', sessionPayload);
 
       if (data.success) {
-        const sessionId = data.data.session_id;
+        const sessionId = data.data.id;
         localStorage.removeItem('interviewSetupData');
         
         const roomPath = selectedType === 'group-discussion' ? `/gd-room/${sessionId}` : `/interview-room/${sessionId}`;

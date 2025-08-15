@@ -313,14 +313,14 @@ class VectorStoreManager:
             logger.info(f"Creating vector store '{store_name}' with {len(documents)} documents")
             
             # Get embeddings
-            embeddings = self.embedding_manager.get_embeddings("primary")
+            embeddings = self.embedding_manager.embeddings
             
             if self.store_type == "faiss":
                 # Create FAISS vector store
                 vector_store = await FAISS.afrom_documents(
-                    documents=documents,
-                    embedding=embeddings.embeddings
-                )
+                documents=documents,
+                embedding=self.embedding_manager.embeddings
+            )
                 
                 # Save to disk
                 vector_store.save_local(str(store_path))
@@ -369,7 +369,7 @@ class VectorStoreManager:
             if not store_path.exists():
                 raise FileNotFoundError(f"Vector store '{store_name}' not found")
             
-            embeddings = self.embedding_manager.get_embeddings("primary")
+            embeddings = self.embedding_manager.embeddings
             
             if self.store_type == "faiss":
                 vector_store = FAISS.load_local(

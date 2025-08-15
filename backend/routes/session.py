@@ -9,7 +9,7 @@ from models.pydantic_models import (
     GDSessionData, 
     APIResponse
 )
-from utils.database import get_db, create_interview_session, get_user_sessions
+from utils.database import get_db, create_interview_session, get_user_sessions, get_session_by_id
 from utils.auth import get_current_user
 from orchestrator.rag_utils import DocumentProcessor, get_vector_store_manager
 
@@ -24,53 +24,56 @@ async def create_session(
 ):
     """Create a new interview or GD session"""
     try:
-        session_dict = session_data.dict()
-        session_dict["user_id"] = current_user.id
-        
-        if "context" not in session_dict or session_dict["context"] is None:
-            session_dict["context"] = {}
+        context = {
+            "company_name": session_data.company_name,
+            "job_role": session_data.job_role,
+            "experience_level": session_data.experience_level,
+            "topics": session_data.topics or [],
+            "duration_minutes": session_data.duration_minutes
+        }
 
         if current_user.resume_url:
             try:
                 doc_processor = DocumentProcessor()
                 processed_resume = await doc_processor.process_pdf_resume(current_user.resume_url)
-                session_dict["context"]["resume_info"] = processed_resume["resume_info"]
+                context["resume_info"] = processed_resume["resume_info"]
                 logger.info(f"Successfully processed resume for user {current_user.id}.")
             except Exception as e:
                 logger.warning(f"Could not process resume for user {current_user.id}: {e}")
-                session_dict["context"]["resume_info"] = {"error": "Resume processing failed."}
+                context["resume_info"] = {"error": "Resume processing failed."}
 
-        if session_data.session_type == "TECHNICAL":
-            company_name = session_data.company_name
-            if company_name:
-                try:
-                    doc_processor = DocumentProcessor()
-                    csv_path = f'backend/uploads/company_csv/{company_name}.csv'
-                    processed_csv = await doc_processor.process_company_csv(csv_path)
-                    
-                    session_dict["context"]["topics"] = processed_csv["topics"]
-                    
-                    session = create_interview_session(db, session_dict)
-                    
-                    vector_store_manager = get_vector_store_manager()
-                    store_name = f"company_{company_name}_{session.id}"
-                    await vector_store_manager.create_vector_store(
-                        documents=processed_csv["chunks"],
-                        store_name=store_name
-                    )
-                    session_dict["context"]["vector_store_name"] = store_name
-                    db.commit()
+        db_session_data = {
+            "user_id": current_user.id,
+            "session_type": session_data.session_type.value,
+            "context": context
+        }
 
-                except FileNotFoundError:
-                    logger.warning(f"No CSV found for company: {company_name}")
-                except Exception as e:
-                    logger.error(f"Error processing company CSV for {company_name}: {e}")
+        session = create_interview_session(db, db_session_data)
 
-        elif session_data.session_type == "GD":
-            gd_data = GDSessionData(**session_dict.pop('context', {}))
-            session_dict["context"] = gd_data.dict()
+        if session.session_type == "TECHNICAL" and session.context.get("company_name"):
+            company_name = session.context["company_name"]
+            try:
+                doc_processor = DocumentProcessor()
+                csv_path = f'uploads/company_csv/{company_name}.csv'
+                processed_csv = await doc_processor.process_company_csv(csv_path)
+                
+                session.context["topics"] = processed_csv["topics"]
+                
+                vector_store_manager = get_vector_store_manager()
+                store_name = f"company_{company_name}_{session.id}"
+                await vector_store_manager.create_vector_store(
+                    documents=processed_csv["chunks"],
+                    store_name=store_name
+                )
+                session.context["vector_store_name"] = store_name
+                db.commit()
+                db.refresh(session)
 
-        session = create_interview_session(db, session_dict)
+            except FileNotFoundError:
+                logger.warning(f"No CSV found for company: {company_name}")
+            except Exception as e:
+                logger.error(f"Error processing company CSV for {company_name}: {e}")
+
         return APIResponse(
             success=True,
             message="Session created successfully",
@@ -81,6 +84,30 @@ async def create_session(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Session creation failed"
+        )
+
+@router.get("/{session_id}", response_model=APIResponse)
+def get_session_details(
+    session_id: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """Get details for a specific session"""
+    try:
+        session = get_session_by_id(db, session_id)
+        if not session or session.user_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        
+        return APIResponse(
+            success=True,
+            message="Session details retrieved",
+            data=InterviewSessionResponse.from_orm(session)
+        )
+    except Exception as e:
+        logger.error(f"Error getting session details: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve session details"
         )
 
 @router.get("/history", response_model=APIResponse)

@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import socketio
 
-from routes import auth, user, data
+from routes import auth, user, data, session
 from socket_app.session import create_socket_app
 from utils.database import init_db
 from llm.embeddings import initialize_embeddings
@@ -74,6 +74,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(user.router, prefix="/api/user", tags=["User"])  
 app.include_router(data.router, prefix="/api", tags=["Data"])
+app.include_router(session.router, prefix="/api/session", tags=["Session"])
 
 # Static files
 os.makedirs("uploads", exist_ok=True)

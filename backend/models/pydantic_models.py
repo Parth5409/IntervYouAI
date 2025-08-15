@@ -80,11 +80,14 @@ class InterviewSessionCreate(BaseModel):
     duration_minutes: int = Field(default=30, ge=10, le=120)
 
 class InterviewSessionResponse(BaseModel):
-    session_id: str
+    id: str  # Change from session_id to id
     session_type: SessionType
     status: Literal["created", "active", "completed", "failed"]
     created_at: datetime
     duration_minutes: int
+
+    class Config:
+        from_attributes = True
 
 # Message Models
 class ChatMessage(BaseModel):
