@@ -1,126 +1,125 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import 'regenerator-runtime/runtime';
+
 import SessionControls from '../../components/ui/SessionControls';
 import ParticipantsGrid from './components/ParticipantsGrid';
 import DiscussionTopic from './components/DiscussionTopic';
 import GDTranscript from './components/GDTranscript';
 import Icon from '../../components/AppIcon';
 import VoiceControls from '../interview-room/components/VoiceControls';
+import api from '../../utils/api';
 
 const GDRoom = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { sessionId } = useParams();
 
-  const sessionConfig = location.state?.configuration || {
-    topic: "The Future of Remote Work",
-    duration: 20,
-    num_bots: 4
-  };
-
+  // State
+  const [sessionDetails, setSessionDetails] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [messages, setMessages] = useState([]);
-  const [activeSpeakerId, setActiveSpeakerId] = useState('moderator');
+  const [activeSpeakerId, setActiveSpeakerId] = useState(null);
   const [sessionTime, setSessionTime] = useState(0);
   const [isSessionActive, setIsSessionActive] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [microphoneLevel, setMicrophoneLevel] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [turnIndex, setTurnIndex] = useState(0);
+  const [isAISpeaking, setIsAISpeaking] = useState(false);
+  const [isSending, setIsSending] = useState(false); // Lock
 
-  const botPersonalities = {
-    supportive: { name: 'Alex' },
-    assertive: { name: 'Sam' },
-    factual: { name: 'Jordan' },
-    analytical: { name: 'Casey' },
-    creative: { name: 'Morgan' }
-  };
+  // Speech Recognition
+  const { transcript: sttTranscript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
-  const initializeSession = useCallback(() => {
-    const botKeys = Object.keys(botPersonalities).sort(() => 0.5 - Math.random()).slice(0, sessionConfig.num_bots || 4);
-    const bots = botKeys.map(key => ({ id: `bot_${key}`, name: botPersonalities[key].name, personality: key, is_human: false }));
-    const allParticipants = [{ id: 'human_user', name: 'You', personality: 'human', is_human: true }, ...bots];
-    setParticipants(allParticipants);
+  // Effects
+  useEffect(() => {
+    const startGDSession = async () => {
+      try {
+        const detailsRes = await api.get(`/session/${sessionId}`);
+        setSessionDetails(detailsRes.data.data);
 
-    const openingMessage = {
-      speaker_id: 'moderator',
-      message: `Welcome everyone to today's group discussion on: "${sessionConfig.topic}". We have ${bots.map(b => b.name).join(', ')} and yourself participating today. Let's begin with opening thoughts. Who would like to start?`,
+        const startRes = await api.post(`/gd/${sessionId}/start`);
+        const { participants, opening_message } = startRes.data.data;
+        
+        setParticipants(participants || []);
+        setMessages([{ speaker_id: 'moderator', message: opening_message, timestamp: new Date() }]);
+        setIsSessionActive(true);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Failed to start GD session:", error);
+        navigate('/dashboard');
+      }
     };
-
-    setMessages([openingMessage]);
-    setIsLoading(false);
-    setIsSessionActive(true);
-    setTimeout(() => setActiveSpeakerId('human_user'), 3000);
-  }, [sessionConfig.topic, sessionConfig.num_bots]);
+    startGDSession();
+  }, [sessionId, navigate]);
 
   useEffect(() => {
-    initializeSession();
-  }, [initializeSession]);
+    if (!listening && sttTranscript) {
+      handleSendMessage(sttTranscript);
+    }
+  }, [listening]);
 
   useEffect(() => {
     let interval;
     if (isSessionActive) {
-      interval = setInterval(() => {
-        setSessionTime(prev => prev + 1);
-      }, 1000);
+      interval = setInterval(() => setSessionTime(prev => prev + 1), 1000);
     }
     return () => clearInterval(interval);
   }, [isSessionActive]);
 
-  useEffect(() => {
-    let interval;
-    if (isListening && !isMuted) {
-      interval = setInterval(() => {
-        setMicrophoneLevel(Math.random() * 100);
-      }, 100);
-    } else {
-      setMicrophoneLevel(0);
-    }
-    return () => clearInterval(interval);
-  }, [isListening, isMuted]);
+  // Handlers
+  const handleSendMessage = async (messageText) => {
+    if (!messageText.trim() || isSending) return;
 
-  const handleUserMessage = (messageText) => {
-    const userMessage = { speaker_id: 'human_user', message: messageText };
+    setIsSending(true);
+    const userMessage = { speaker_id: 'human_user', message: messageText, timestamp: new Date() };
     setMessages(prev => [...prev, userMessage]);
-    setIsListening(false);
-    setActiveSpeakerId(null);
-    
-    const bots = participants.filter(p => !p.is_human);
-    if (bots.length > 0) {
-        const nextBot = bots[turnIndex % bots.length];
-        setTurnIndex(prev => prev + 1);
-        setActiveSpeakerId(nextBot.id);
+    resetTranscript();
+    setIsAISpeaking(true);
 
-        setTimeout(() => {
-            const botMessage = {
-                speaker_id: nextBot.id,
-                message: `That's an interesting point. I also think we should consider the impact on company culture.`
-            };
-            setMessages(prev => [...prev, botMessage]);
-            setActiveSpeakerId('human_user');
-        }, 2000);
+    try {
+      const { data } = await api.post(`/gd/${sessionId}/message`, { message: messageText });
+      const botResponses = data.data.bot_responses || [];
+      
+      for (const res of botResponses) {
+        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+        setActiveSpeakerId(res.speaker_id);
+        const botMessage = { speaker_id: res.speaker_id, speaker_name: res.speaker_name, message: res.message, timestamp: new Date() };
+        setMessages(prev => [...prev, botMessage]);
+      }
+
+    } catch (error) {
+      console.error("Failed to send GD message:", error);
+    } finally {
+      setActiveSpeakerId(null);
+      setIsAISpeaking(false);
+      setIsSending(false);
     }
   };
 
   const handleToggleListening = () => {
-    if (!isMuted) {
-      if (isListening) {
-        handleUserMessage("This is a sample user response, demonstrating the flow of conversation.");
-      } else {
-        setIsListening(true);
-      }
+    if (isMuted || isAISpeaking) return;
+    if (listening) {
+      SpeechRecognition.stopListening();
+    } else {
+      resetTranscript();
+      SpeechRecognition.startListening({ continuous: true });
     }
   };
 
-  const handleToggleMute = () => {
-    setIsMuted(!isMuted);
-    if (!isMuted) setIsListening(false);
+  const handleEndSession = async () => {
+    setIsSessionActive(false);
+    try {
+      const { data } = await api.post(`/gd/${sessionId}/end`);
+      navigate('/interview-feedback', { state: { sessionData: data.data } });
+    } catch (error) {
+      console.error("Failed to end GD session:", error);
+      navigate('/dashboard');
+    }
   };
 
-  const handleEndSession = () => {
-    setIsSessionActive(false);
-    navigate('/dashboard');
-  };
+  if (!browserSupportsSpeechRecognition) {
+    return <span>Browser doesn't support speech recognition. Please use Google Chrome.</span>;
+  }
 
   if (isLoading) {
     return (
@@ -148,33 +147,30 @@ const GDRoom = () => {
       </header>
 
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Main Content Panel */}
         <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-6">
-            <DiscussionTopic topic={sessionConfig.topic} />
+            <DiscussionTopic topic={sessionDetails?.context?.topic || 'Loading...'} />
             <ParticipantsGrid participants={participants} activeSpeakerId={activeSpeakerId} />
             <VoiceControls 
-                isListening={isListening}
+                isListening={listening}
                 isMuted={isMuted}
-                microphoneLevel={microphoneLevel}
                 onToggleListening={handleToggleListening}
-                onToggleMute={handleToggleMute}
+                onToggleMute={() => setIsMuted(!isMuted)}
+                disabled={isAISpeaking}
             />
         </div>
 
-        {/* Transcript Panel */}
         <div className="w-full lg:w-2/5 border-l border-border flex flex-col">
-            <GDTranscript messages={messages} isLoading={activeSpeakerId && activeSpeakerId !== 'human_user'} participants={participants} />
+            <GDTranscript messages={messages} isLoading={isAISpeaking} participants={participants} />
         </div>
       </div>
 
       <SessionControls
-        isRecording={isListening}
+        isRecording={listening}
         isMuted={isMuted}
         sessionTime={sessionTime}
         onToggleRecording={handleToggleListening}
-        onToggleMute={handleToggleMute}
+        onToggleMute={() => setIsMuted(!isMuted)}
         onEndSession={handleEndSession}
-        microphoneLevel={microphoneLevel}
         showTimer={false}
       />
     </div>

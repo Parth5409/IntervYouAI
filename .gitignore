@@ -58,3 +58,14 @@ Suggested_Changes.txt
 
 # Test reports
 /frontend/coverage/
+
+# Ignore everything inside vector_stores
+/backend/vector_stores/*
+
+#Referencing files
+/working_model_from_other_project
+
+# Some redundant and unnecessary files
+errorfile.txt
+refactored_GDRoom.txt
+refactored_InterviewRoom.txt

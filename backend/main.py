@@ -14,10 +14,8 @@ load_dotenv()
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import socketio
 
-from routes import auth, user, data, session
-from socket_app.session import create_socket_app
+from routes import auth, user, data, session, interview, gd
 from utils.database import init_db
 from llm.embeddings import initialize_embeddings
 
@@ -64,7 +62,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(","),
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:4028").split(","),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -75,14 +73,14 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(user.router, prefix="/api/user", tags=["User"])  
 app.include_router(data.router, prefix="/api", tags=["Data"])
 app.include_router(session.router, prefix="/api/session", tags=["Session"])
+app.include_router(interview.router, prefix="/api/interview", tags=["Interview"])
+app.include_router(gd.router, prefix="/api/gd", tags=["Group Discussion"])
 
 # Static files
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# Socket.IO integration
-sio = create_socket_app()
-socket_app = socketio.ASGIApp(sio, app)
+
 
 @app.get("/")
 async def root():
@@ -118,7 +116,7 @@ if __name__ == "__main__":
     
     # Development server
     uvicorn.run(
-        "main:socket_app",
+        "main:app",
         host="0.0.0.0",
         port=int(os.getenv("PORT", 8000)),
         reload=True if os.getenv("ENVIRONMENT") == "development" else False,

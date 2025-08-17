@@ -1,6 +1,7 @@
-fastapi
-uvicorn[standard]
-python-socketio
+fastapi==0.110.0
+uvicorn[standard]==0.27.1
+python-socketio==5.11.0
+python-engineio==4.9.0
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
@@ -17,7 +18,7 @@ langchain-community
 
 # Vector stores and embeddings
 faiss-cpu
-chromadb
+
 
 # Document processing
 pypdf2
