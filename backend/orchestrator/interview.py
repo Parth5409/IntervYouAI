@@ -177,6 +177,15 @@ class InterviewOrchestrator:
     async def _process_regular_message(self, session: InterviewSession, user_message: str, transcript: list) -> Dict[str, Any]:
         """Process message for regular interview types (Technical, HR, Salary)"""
         try:
+            question_count = sum(1 for msg in transcript if msg.get('role') == 'assistant')
+
+            # If this is the first question, handle the user's response to "Are you ready?"
+            if question_count == 1 and ( "yes" in user_message.lower() or "ready" in user_message.lower() or "start" in user_message.lower() ):
+                response = "Great! To start, can you please tell me a little bit about yourself and your background?"
+                message_type = "question"
+                should_end = False
+                return {"message": response, "message_type": message_type, "should_end": should_end}
+
             previous_qa = []
             for i in range(len(transcript) - 2, -1, -2):
                 if i >= 0 and i + 1 < len(transcript):
@@ -188,7 +197,6 @@ class InterviewOrchestrator:
                     if len(previous_qa) >= 3:
                         break
 
-            question_count = sum(1 for msg in transcript if msg.get('role') == 'assistant')
             should_end = (
                 question_count >= 8 
                 or "thank you" in user_message.lower()
@@ -228,6 +236,7 @@ class InterviewOrchestrator:
             feedback_data = self.gemini_llm.generate_feedback(
                 session.session_type, session.transcript, session.context
             )
+            feedback_data['session_id'] = session.id  # Add session_id to the feedback data
             return InterviewFeedback(**feedback_data).dict()
         except Exception as e:
             logger.error(f"Error generating regular feedback: {e}")
