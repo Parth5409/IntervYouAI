@@ -21,7 +21,6 @@ const InterviewSetupWizard = () => {
   const stepLabels = ['Type', 'Setup', 'Summary'];
   const totalSteps = 3;
 
-  // Interview type options
   const interviewTypes = [
     {
       type: 'technical',
@@ -69,7 +68,6 @@ const InterviewSetupWizard = () => {
     }
   ];
 
-  // Load saved data from localStorage on component mount
   useEffect(() => {
     const savedData = localStorage.getItem('interviewSetupData');
     if (savedData) {
@@ -84,7 +82,6 @@ const InterviewSetupWizard = () => {
     }
   }, []);
 
-  // Save data to localStorage whenever state changes
   useEffect(() => {
     const dataToSave = {
       type: selectedType,
@@ -108,6 +105,7 @@ const InterviewSetupWizard = () => {
         if (selectedType === 'technical') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
           if (!formData?.company) newErrors.company = 'Company selection is required';
+          if (!formData?.difficulty) newErrors.difficulty = 'Difficulty level is required';
         } else if (selectedType === 'hr') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
           if (!formData?.experienceLevel) newErrors.experienceLevel = 'Experience level is required';
@@ -149,7 +147,7 @@ const InterviewSetupWizard = () => {
 
   const handleTypeSelection = (type) => {
     setSelectedType(type);
-    setFormData({ type });
+    setFormData({ type, difficulty: 'Medium' }); // Default difficulty
     setErrors({});
   };
 
@@ -171,6 +169,7 @@ const InterviewSetupWizard = () => {
         experience_level: formData.experienceLevel || 'mid',
         topics: formData.topics || [],
         duration_minutes: parseInt(formData.duration, 10) || 30,
+        difficulty: formData.difficulty || 'Easy',
         context: formData
       };
 

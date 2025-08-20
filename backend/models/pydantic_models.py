@@ -71,6 +71,11 @@ class SessionType(str, Enum):
     GD = "GD"
     SALARY = "SALARY"
 
+class DifficultyLevel(str, Enum):
+    EASY = "Easy"
+    MEDIUM = "Medium"
+    HARD = "Hard"
+
 class InterviewSessionCreate(BaseModel):
     session_type: SessionType
     company_name: Optional[str] = None
@@ -78,13 +83,15 @@ class InterviewSessionCreate(BaseModel):
     experience_level: Literal["junior", "mid", "senior"] = "mid"
     topics: Optional[List[str]] = None
     duration_minutes: int = Field(default=30, ge=10, le=120)
+    difficulty: DifficultyLevel = DifficultyLevel.MEDIUM
 
 class InterviewSessionResponse(BaseModel):
-    id: str  # Change from session_id to id
+    id: str
     session_type: SessionType
     status: Literal["created", "active", "completed", "failed"]
     created_at: datetime
     duration_minutes: int
+    difficulty: DifficultyLevel
 
     class Config:
         from_attributes = True

@@ -9,6 +9,7 @@ bcrypt==3.2.2
 python-dotenv
 pydantic
 pydantic-settings
+asyncpg
 
 # LangChain ecosystem
 langchain

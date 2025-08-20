@@ -1,56 +1,48 @@
 """
-Authentication routes
+Authentication routes (Async Version)
 """
 
 import logging
-from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Response
-from fastapi.security import HTTPBearer
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.pydantic_models import UserRegistration, UserLogin, Token, APIResponse
-from utils.database import get_db, get_user_by_email, create_user
+from models.pydantic_models import UserRegistration, UserLogin, APIResponse
+from utils.database import get_db, get_user_by_email, User
 from utils.auth import hash_password, verify_password, create_access_token
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-security = HTTPBearer()
 
 @router.post("/register", response_model=APIResponse)
-async def register_user(user_data: UserRegistration, response: Response, db: Session = Depends(get_db)):
+async def register_user(user_data: UserRegistration, response: Response, db: AsyncSession = Depends(get_db)):
     """Register new user"""
     try:
-        # Check if user already exists
-        if get_user_by_email(db, user_data.email):
+        existing_user = await get_user_by_email(db, user_data.email)
+        if existing_user:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="Email already registered"
             )
         
-        # Hash password
-        hashed_password = hash_password(user_data.password)
+        new_user = User(
+            email=user_data.email,
+            full_name=user_data.full_name,
+            password_hash=hash_password(user_data.password),
+            career_goal=user_data.career_goal
+        )
+        db.add(new_user)
+        await db.commit()
+        await db.refresh(new_user)
         
-        # Create user
-        user_dict = {
-            "email": user_data.email,
-            "full_name": user_data.full_name,
-            "password_hash": hashed_password,
-            "career_goal": user_data.career_goal
-        }
-        
-        user = create_user(db, user_dict)
-        
-        # Create token
-        token_data = {"user_id": user.id, "email": user.email}
+        token_data = {"user_id": new_user.id, "email": new_user.email}
         access_token = create_access_token(token_data)
 
-        # Set HttpOnly cookie
         response.set_cookie(
             key="access_token",
             value=access_token,
             httponly=True,
             samesite="lax",
-            secure=True # Set to True in production
+            secure=True
         )
         
         return APIResponse(
@@ -58,45 +50,42 @@ async def register_user(user_data: UserRegistration, response: Response, db: Ses
             message="User registered successfully",
             data={
                 "user": {
-                    "id": user.id,
-                    "fullName": user.full_name,
-                    "email": user.email
+                    "id": new_user.id,
+                    "fullName": new_user.full_name,
+                    "email": new_user.email
                 }
             }
         )
-        
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"Registration error: {e}")
+        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Registration failed"
         )
 
 @router.post("/login", response_model=APIResponse)
-async def login_user(user_data: UserLogin, response: Response, db: Session = Depends(get_db)):
+async def login_user(user_data: UserLogin, response: Response, db: AsyncSession = Depends(get_db)):
     """Login user"""
     try:
-        # Get user
-        user = get_user_by_email(db, user_data.email)
+        user = await get_user_by_email(db, user_data.email)
         if not user or not verify_password(user_data.password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password"
             )
         
-        # Create token
         token_data = {"user_id": user.id, "email": user.email}
         access_token = create_access_token(token_data)
 
-        # Set HttpOnly cookie
         response.set_cookie(
             key="access_token",
             value=access_token,
             httponly=True,
             samesite="lax",
-            secure=True # Set to True in production
+            secure=True
         )
         
         return APIResponse(
@@ -109,7 +98,6 @@ async def login_user(user_data: UserLogin, response: Response, db: Session = Dep
                 }
             }
         )
-        
     except HTTPException:
         raise
     except Exception as e:

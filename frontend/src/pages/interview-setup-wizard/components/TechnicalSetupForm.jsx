@@ -24,6 +24,12 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
     { value: "system-administrator", label: "System Administrator" }
   ];
 
+  const difficultyLevels = [
+    { value: "Easy", label: "Easy" },
+    { value: "Medium", label: "Medium" },
+    { value: "Hard", label: "Hard" }
+  ];
+
   useEffect(() => {
     const fetchCompanies = async () => {
       setLoadingCompanies(true);
@@ -51,6 +57,13 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
     onChange({
       ...formData,
       company: value
+    });
+  };
+
+  const handleDifficultyChange = (value) => {
+    onChange({
+      ...formData,
+      difficulty: value
     });
   };
 
@@ -88,6 +101,16 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
           loading={loadingCompanies}
           required
           searchable
+        />
+        <Select
+          label="Difficulty Level"
+          description="Select the difficulty of the interview questions"
+          placeholder="Choose a difficulty level"
+          options={difficultyLevels}
+          value={formData?.difficulty}
+          onChange={handleDifficultyChange}
+          error={errors?.difficulty}
+          required
         />
       </div>
       <div className="bg-muted/50 rounded-lg p-4">

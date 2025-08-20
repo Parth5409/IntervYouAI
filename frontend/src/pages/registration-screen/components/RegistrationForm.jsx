@@ -111,7 +111,7 @@ const RegistrationForm = () => {
       });
 
       // Redirect to login screen
-      navigate('/login-screen');
+      navigate('/login');
     } catch (error) {
       if (error.response && error.response.data && error.response.data.detail) {
         setErrors({ submit: error.response.data.detail });
