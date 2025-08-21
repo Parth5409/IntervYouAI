@@ -30,12 +30,12 @@ async def start_interview(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Session has already started.")
 
     try:
-        first_message, updated_transcript, updated_context = await orchestrator.start_session(session)
+        # Corrected: start_session now returns 2 values
+        first_message, updated_transcript = await orchestrator.start_session(session)
         
         session.status = "active"
         session.started_at = datetime.now()
         session.transcript = updated_transcript
-        session.context = updated_context
         
         db.add(session)
         await db.commit()
@@ -61,10 +61,10 @@ async def post_message(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Session is not active.")
 
     try:
-        ai_response, updated_transcript, updated_context = await orchestrator.process_user_message(session, user_message.message)
+        # Corrected: process_user_message now returns 2 values
+        ai_response, updated_transcript = await orchestrator.process_user_message(session, user_message.message)
         
         session.transcript = updated_transcript
-        session.context = updated_context
 
         db.add(session)
         await db.commit()

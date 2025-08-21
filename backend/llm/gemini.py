@@ -37,19 +37,16 @@ class GeminiLLM:
         )
         logger.info(f"Initialized Gemini LLM with model: {model_name}")
 
-    async def generate_initial_greeting(
-        self, 
-        session_type: str,
-        session_context: Dict[str, Any],
-        rag_context: Dict[str, Any]
-    ) -> str:
-        """Generates a personalized initial greeting using RAG context."""
+    async def generate_initial_greeting(self, session_type: str, session_context: Dict[str, Any], rag_context: Dict[str, Any]) -> str:
+        """Generates a personalized initial greeting that also asks the user to introduce themselves."""
         try:
             system_msg = self._get_system_message(session_type, "greeting", session_context)
             
             prompt_template = f"""Based on the following context, generate a warm and professional opening message for the interview. 
-            Acknowledge the candidate's background from their resume, but do not go into detail. Keep it brief.
-            End by asking if they are ready to begin.
+            Acknowledge the candidate's background from their resume, but keep it brief.
+            End the message by asking the candidate to introduce themselves.
+
+            **Example:** "Hi [Candidate Name], thanks for joining. I see you have experience with [General Skill]. To start, can you please tell me a little bit about yourself?"
 
             **Interview Context:**
             - Company: {session_context.get('company_name', 'the company')}
@@ -66,16 +63,9 @@ class GeminiLLM:
 
         except Exception as e:
             logger.error(f"Error generating initial greeting: {e}")
-            return f"Hello! Welcome to your {session_type.lower()} interview for {session_context.get('job_role', 'the position')} at {session_context.get('company_name', 'this company')}. Are you ready to begin?"
+            return f"Hello! Welcome to your {session_type.lower()} interview. To start, can you please tell me a little bit about yourself?"
 
-    async def generate_interview_question(
-        self, 
-        session_type: str,
-        session_context: Dict[str, Any],
-        chat_history: List[BaseMessage],
-        rag_context: Dict[str, Any],
-        last_user_message: str
-    ) -> str:
+    async def generate_interview_question(self, session_type: str, session_context: Dict[str, Any], chat_history: List[BaseMessage], rag_context: Dict[str, Any], last_user_message: str) -> str:
         """Generates the next interview question based on history and RAG context."""
         try:
             system_msg = self._get_system_message(session_type, "questioning", session_context)
@@ -86,7 +76,9 @@ class GeminiLLM:
             if rag_context.get('company_context'):
                 rag_str += "\n\n--- Relevant Company & Role Knowledge ---" + "\n".join(rag_context['company_context'])
 
-            prompt = f"""Here is the context for the interview. Use it to formulate your next question.
+            prompt = f"""The user's previous answer was: '{last_user_message}'.
+
+            Here is the context for the interview. Use it and the user's introduction to formulate your next question.
             {rag_str}
 
             Your task is to act as the interviewer and ask the *next* single question. 
@@ -99,22 +91,14 @@ class GeminiLLM:
 
         except Exception as e:
             logger.error(f"Error generating interview question: {e}")
-            return "Can you tell me more about your background and experience?"
+            return "Thank you. Can you tell me more about your background and experience?"
 
-    async def generate_feedback(
-        self, 
-        session_type: str,
-        chat_history: List[BaseMessage],
-        session_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    async def generate_feedback(self, session_type: str, chat_history: List[BaseMessage], session_context: Dict[str, Any]) -> Dict[str, Any]:
         """Generates comprehensive interview feedback from the chat history."""
         try:
             system_msg = self._get_system_message(session_type, "feedback", session_context)
 
-            transcript_text = "\n".join([
-                f"Interviewer: {msg.content}" if isinstance(msg, AIMessage) else f"Candidate: {msg.content}"
-                for msg in chat_history
-            ])
+            transcript_text = "\n".join([f"Interviewer: {msg.content}" if isinstance(msg, AIMessage) else f"Candidate: {msg.content}" for msg in chat_history])
 
             prompt = f"""
             **Interview Context:**
