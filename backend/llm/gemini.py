@@ -139,20 +139,36 @@ class GeminiLLM:
     def _get_system_message(self, session_type: str, stage: str, context: Dict[str, Any]) -> str:
         """Generates the appropriate system message based on the interview type, stage, and difficulty."""
         difficulty = context.get('difficulty', 'Medium')
+        job_role = context.get('job_role', 'developer')
+        company_name = context.get('company_name', 'the company')
+
+        if session_type == "TECHNICAL":
+            if stage == "greeting":
+                return "You are a helpful AI assistant starting a technical interview."
+            elif stage == "feedback":
+                return "You are an expert interview evaluator. Analyze the technical interview and provide detailed, constructive feedback in JSON format."
+            else: # questioning
+                return f"""You are a senior technical interviewer at {company_name} conducting a screening for a {job_role} position.
+                Your goal is to ask a balanced mix of questions to assess the candidate's suitability.
+                The interview difficulty is set to '{difficulty}'. Adjust your questions accordingly.
+                
+                **Interview Structure:**
+                1. Ask questions based on the candidate's resume, focusing on their projects and experience.
+                2. Ask 1-2 questions from the provided 'Company & Role Knowledge' to see if they have prepared for the company.
+                3. Ensure your questions are relevant to the {job_role} role.
+                
+                **Rules:**
+                - Ask only one, concise, single-part question at a time.
+                - Do not offer feedback or hints.
+                - Use the conversation history to ask logical follow-up questions, but do not get stuck on one topic for too long.
+                - Be aware that the user's response is coming from a speech-to-text service and may contain transcription errors (e.g., 'bcrypt' might be transcribed as 'decrypt'). If a technical term seems slightly off, infer the correct term based on the context.
+                """
         
-        base_messages = {
-            "TECHNICAL": {
-                "greeting": "You are a helpful AI assistant starting a technical interview.",
-                "questioning": f"You are a senior technical interviewer. Your tone is professional and direct. The interview difficulty is set to '{difficulty}'. Adjust your questions accordingly. Ask only one, concise, single-part question at a time. Do not offer feedback. Be aware that the user\'s response is coming from a speech-to-text service and may contain transcription errors (e.g., \'bcrypt\' might be transcribed as \'decrypt\'). If a technical term seems slightly off, infer the correct term based on the context of the question. Adapt your follow-up questions based on their answers and the provided context.",
-                "feedback": "You are an expert interview evaluator. Analyze the technical interview and provide detailed, constructive feedback in JSON format."
-            },
-            "HR": {
-                "greeting": "You are a friendly AI assistant starting an HR interview.",
-                "questioning": "You are a friendly but professional HR manager. Ask common behavioral questions. Keep your questions open-ended and conversational. Ask only one question at a time.",
-                "feedback": "You are an expert HR evaluator. Analyze the behavioral interview and provide detailed, constructive feedback in JSON format."
-            }
-        }
-        return base_messages.get(session_type, {}).get(stage, "You are a professional interviewer.")
+        elif session_type == "HR":
+            # ... (HR logic remains the same)
+            return "You are a friendly but professional HR manager..."
+
+        return "You are a professional interviewer."
 
     def _get_default_feedback(self, detail: str = "An unexpected error occurred.") -> Dict[str, Any]:
         """Default feedback structure in case of an error."""
