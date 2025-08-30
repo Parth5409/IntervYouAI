@@ -13,21 +13,20 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
     { value: "mobile-developer", label: "Mobile Developer" },
     { value: "devops-engineer", label: "DevOps Engineer" },
     { value: "data-scientist", label: "Data Scientist" },
-    { value: "machine-learning-engineer", label: "ML Engineer" },
-    { value: "software-architect", label: "Software Architect" },
-    { value: "qa-engineer", label: "QA Engineer" },
-    { value: "product-manager", label: "Product Manager" },
-    { value: "ui-ux-designer", label: "UI/UX Designer" },
-    { value: "cloud-engineer", label: "Cloud Engineer" },
-    { value: "security-engineer", label: "Security Engineer" },
-    { value: "database-administrator", label: "Database Administrator" },
-    { value: "system-administrator", label: "System Administrator" }
+    { value: "machine-learning-engineer", label: "ML Engineer" }
   ];
 
   const difficultyLevels = [
     { value: "Easy", label: "Easy" },
     { value: "Medium", label: "Medium" },
     { value: "Hard", label: "Hard" }
+  ];
+
+  const questionCounts = [
+    { value: 5, label: "5 Questions (Quick)" },
+    { value: 8, label: "8 Questions (Standard)" },
+    { value: 10, label: "10 Questions (In-depth)" },
+    { value: 15, label: "15 Questions (Marathon)" }
   ];
 
   useEffect(() => {
@@ -46,25 +45,8 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
     fetchCompanies();
   }, []);
 
-  const handleJobRoleChange = (value) => {
-    onChange({
-      ...formData,
-      jobRole: value
-    });
-  };
-
-  const handleCompanyChange = (value) => {
-    onChange({
-      ...formData,
-      company: value
-    });
-  };
-
-  const handleDifficultyChange = (value) => {
-    onChange({
-      ...formData,
-      difficulty: value
-    });
+  const handleFieldChange = (field) => (value) => {
+    onChange({ ...formData, [field]: value });
   };
 
   return (
@@ -84,32 +66,43 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
           placeholder="Choose a job role"
           options={jobRoles}
           value={formData?.jobRole}
-          onChange={handleJobRoleChange}
+          onChange={handleFieldChange('jobRole')}
           error={errors?.jobRole}
           required
           searchable
         />
-
         <Select
           label="Target Company"
           description="Select company for interview simulation"
           placeholder="Choose a company"
           options={companies}
           value={formData?.company}
-          onChange={handleCompanyChange}
+          onChange={handleFieldChange('company')}
           error={errors?.company}
           loading={loadingCompanies}
           required
           searchable
         />
+      </div>
+      <div className="grid gap-6 md:grid-cols-2">
         <Select
           label="Difficulty Level"
           description="Select the difficulty of the interview questions"
           placeholder="Choose a difficulty level"
           options={difficultyLevels}
           value={formData?.difficulty}
-          onChange={handleDifficultyChange}
+          onChange={handleFieldChange('difficulty')}
           error={errors?.difficulty}
+          required
+        />
+        <Select
+          label="Number of Questions"
+          description="Select the length of the interview"
+          placeholder="Choose number of questions"
+          options={questionCounts}
+          value={formData?.max_questions}
+          onChange={handleFieldChange('max_questions')}
+          error={errors?.max_questions}
           required
         />
       </div>

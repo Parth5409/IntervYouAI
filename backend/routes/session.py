@@ -28,7 +28,8 @@ async def create_session(
             "experience_level": session_data.experience_level,
             "topics": session_data.topics or [],
             "duration_minutes": session_data.duration_minutes,
-            "difficulty": session_data.difficulty.value
+            "difficulty": session_data.difficulty.value,
+            "max_questions": session_data.max_questions
         }
 
         if current_user.resume_url and current_user.resume_vs_id:

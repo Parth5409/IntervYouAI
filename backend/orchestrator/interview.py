@@ -74,9 +74,9 @@ class InterviewOrchestrator:
         
         return context
 
-    async def start_session(self, session: InterviewSession) -> tuple[str, list]:
+    async def start_session(self, session: InterviewSession) -> tuple[str, list, dict]:
         """
-        Starts an interview session, generates the initial message.
+        Starts an interview session, generates the initial message, and initializes context.
         """
         try:
             initial_message = await self._generate_initial_message(session)
@@ -89,16 +89,19 @@ class InterviewOrchestrator:
                 "message_type": "greeting",
             })
 
+            # Initialize question count in the session context
+            session.context['question_count'] = 1 # The greeting is the first question
+
             logger.info(f"Started session {session.id} via API.")
-            return initial_message, transcript
+            return initial_message, transcript, session.context
 
         except Exception as e:
             logger.error(f"Error starting session {session.id}: {e}")
             raise
 
-    async def process_user_message(self, session: InterviewSession, user_message: str) -> tuple[str, list]:
+    async def process_user_message(self, session: InterviewSession, user_message: str) -> tuple[str, list, dict]:
         """ 
-        Process user message, generate AI response, and return updated transcript.
+        Process user message, generate AI response, and return updated transcript and context.
         """
         try:
             transcript = session.transcript or []
@@ -110,6 +113,7 @@ class InterviewOrchestrator:
 
             response_data = await self._process_regular_message(session, user_message, transcript)
             ai_response_content = response_data["message"]
+            updated_context = response_data["context"]
 
             transcript.append({
                 "role": "assistant",
@@ -119,7 +123,7 @@ class InterviewOrchestrator:
             })
             
             logger.info(f"Processed message for session {session.id}")
-            return ai_response_content, transcript
+            return ai_response_content, transcript, updated_context
 
         except Exception as e:
             logger.error(f"Error processing message for session {session.id}: {e}")
@@ -156,15 +160,15 @@ class InterviewOrchestrator:
     async def _process_regular_message(self, session: InterviewSession, user_message: str, transcript: list) -> Dict[str, Any]:
         """Process message for regular interview types using RAG and chat history."""
         try:
-            question_count = sum(1 for msg in transcript if msg.get('role') == 'assistant')
+            current_context = session.context
+            question_count = current_context.get('question_count', 0)
             
-            # Improved logic for ending the interview
             user_message_lower = user_message.lower()
             is_short_message = len(user_message.split()) < 6
             wants_to_end = "thank you" in user_message_lower or "that's all" in user_message_lower
 
             should_end = (
-                question_count >= session.context.get("max_questions", 8)
+                question_count >= current_context.get("max_questions", 8)
                 or (is_short_message and wants_to_end)
             )
 
@@ -177,18 +181,19 @@ class InterviewOrchestrator:
                 
                 response = await self.gemini_llm.generate_interview_question(
                     session_type=session.session_type,
-                    session_context=session.context,
+                    session_context=current_context,
                     chat_history=chat_history,
                     rag_context=rag_context,
                     last_user_message=user_message
                 )
                 message_type = "question"
+                current_context['question_count'] = question_count + 1
 
-            return {"message": response, "message_type": message_type, "should_end": should_end}
+            return {"message": response, "message_type": message_type, "should_end": should_end, "context": current_context}
 
         except Exception as e:
             logger.error(f"Error processing regular message for session {session.id}: {e}")
-            return {"message": "Thank you for your response. Let me think of the next question...", "message_type": "response", "should_end": False}
+            return {"message": "Thank you for your response. Let me think of the next question...", "message_type": "response", "should_end": False, "context": session.context}
 
     def _generate_closing_message(self, session: InterviewSession) -> str:
         """Generate appropriate closing message"""

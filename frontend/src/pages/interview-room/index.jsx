@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import 'regenerator-runtime/runtime'; // Polyfill for speech recognition
+import 'regenerator-runtime/runtime';
 
 import InterviewProgressNav from '../../components/ui/InterviewProgressNav';
 import SessionControls from '../../components/ui/SessionControls';
@@ -16,26 +16,16 @@ const InterviewRoom = () => {
   const navigate = useNavigate();
   const { sessionId } = useParams();
 
-  // --- STATE MANAGEMENT ---
   const [sessionDetails, setSessionDetails] = useState(null);
   const [conversationHistory, setConversationHistory] = useState([]);
   const [isMuted, setIsMuted] = useState(false);
   const [isAISpeaking, setIsAISpeaking] = useState(true);
   const [sessionTime, setSessionTime] = useState(0);
   const [isSessionActive, setIsSessionActive] = useState(false);
-  const [isSending, setIsSending] = useState(false); // Lock to prevent multiple sends
+  const [isSending, setIsSending] = useState(false);
 
-  // --- SPEECH-TO-TEXT HOOK ---
-  const {
-    transcript: sttTranscript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
-  } = useSpeechRecognition();
+  const { transcript: sttTranscript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
-  // --- EFFECTS ---
-
-  // Effect to start the interview on component mount
   useEffect(() => {
     const startInterview = async () => {
       try {
@@ -62,14 +52,12 @@ const InterviewRoom = () => {
     startInterview();
   }, [sessionId, navigate]);
 
-  // Effect to automatically send the transcribed message when the user stops talking
   useEffect(() => {
     if (!listening && sttTranscript) {
       sendMessage(sttTranscript);
     }
-  }, [listening]); // Depend only on `listening` to fire when it changes
+  }, [listening]);
 
-  // Effect for the session timer
   useEffect(() => {
     let interval;
     if (isSessionActive) {
@@ -78,12 +66,9 @@ const InterviewRoom = () => {
     return () => clearInterval(interval);
   }, [isSessionActive]);
 
-  // --- API HANDLERS ---
-
   const sendMessage = async (messageText) => {
-    if (!messageText.trim() || isSending) return; // Check lock
-
-    setIsSending(true); // Set lock
+    if (!messageText.trim() || isSending) return;
+    setIsSending(true);
 
     const userMessage = {
       id: Date.now(),
@@ -118,17 +103,7 @@ const InterviewRoom = () => {
       setConversationHistory(prev => [...prev, errMessage]);
     } finally {
       setIsAISpeaking(false);
-      setIsSending(false); // Release lock
-    }
-  };
-
-  const handleToggleListening = () => {
-    if (isMuted || isAISpeaking) return;
-    if (listening) {
-      SpeechRecognition.stopListening();
-    } else {
-      resetTranscript();
-      SpeechRecognition.startListening({ continuous: true });
+      setIsSending(false);
     }
   };
 
@@ -143,7 +118,13 @@ const InterviewRoom = () => {
     }
   };
 
-  // --- RENDER LOGIC ---
+  const questionsAnswered = useMemo(() => {
+    return conversationHistory.filter(msg => msg.type === 'user').length;
+  }, [conversationHistory]);
+
+  const totalQuestions = useMemo(() => {
+    return sessionDetails?.context?.max_questions || 8;
+  }, [sessionDetails]);
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition. Please use Google Chrome.</span>;
@@ -158,14 +139,18 @@ const InterviewRoom = () => {
           <VoiceControls
             isListening={listening}
             isMuted={isMuted}
-            onToggleListening={handleToggleListening}
+            onToggleListening={() => listening ? SpeechRecognition.stopListening() : SpeechRecognition.startListening({ continuous: true })}
             onToggleMute={() => setIsMuted(!isMuted)}
             disabled={isAISpeaking}
           />
         </div>
         <div className="hidden lg:flex lg:w-2/5 flex-col border-l border-border">
           <div className="flex-shrink-0 p-4 border-b border-border">
-            <SessionProgress sessionTime={sessionTime} />
+            <SessionProgress 
+              sessionTime={sessionTime} 
+              questionsAnswered={questionsAnswered}
+              totalQuestions={totalQuestions}
+            />
           </div>
           <div className="flex-1">
             <ConversationTranscript transcript={conversationHistory} isLoading={isAISpeaking} />
@@ -176,7 +161,7 @@ const InterviewRoom = () => {
         isRecording={listening}
         isMuted={isMuted}
         sessionTime={sessionTime}
-        onToggleRecording={handleToggleListening}
+        onToggleRecording={() => listening ? SpeechRecognition.stopListening() : SpeechRecognition.startListening({ continuous: true })}
         onToggleMute={() => setIsMuted(!isMuted)}
         onEndSession={handleEndSession}
       />

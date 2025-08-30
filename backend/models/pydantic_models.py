@@ -84,6 +84,7 @@ class InterviewSessionCreate(BaseModel):
     topics: Optional[List[str]] = None
     duration_minutes: int = Field(default=30, ge=10, le=120)
     difficulty: DifficultyLevel = DifficultyLevel.MEDIUM
+    max_questions: int = Field(default=8, ge=3, le=15)
 
 class InterviewSessionResponse(BaseModel):
     id: str
@@ -92,6 +93,7 @@ class InterviewSessionResponse(BaseModel):
     created_at: datetime
     duration_minutes: int
     difficulty: DifficultyLevel
+    context: Dict[str, Any]
 
     class Config:
         from_attributes = True

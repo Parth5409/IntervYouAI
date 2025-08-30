@@ -106,6 +106,7 @@ const InterviewSetupWizard = () => {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
           if (!formData?.company) newErrors.company = 'Company selection is required';
           if (!formData?.difficulty) newErrors.difficulty = 'Difficulty level is required';
+          if (!formData?.max_questions) newErrors.max_questions = 'Number of questions is required';
         } else if (selectedType === 'hr') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
           if (!formData?.experienceLevel) newErrors.experienceLevel = 'Experience level is required';
@@ -147,7 +148,11 @@ const InterviewSetupWizard = () => {
 
   const handleTypeSelection = (type) => {
     setSelectedType(type);
-    setFormData({ type, difficulty: 'Medium' }); // Default difficulty
+    setFormData({ 
+      type, 
+      difficulty: 'Medium', 
+      max_questions: 8 
+    });
     setErrors({});
   };
 
@@ -169,8 +174,8 @@ const InterviewSetupWizard = () => {
         experience_level: formData.experienceLevel || 'mid',
         topics: formData.topics || [],
         duration_minutes: parseInt(formData.duration, 10) || 30,
-        difficulty: formData.difficulty || 'Easy',
-        context: formData
+        difficulty: formData.difficulty || 'Medium',
+        max_questions: formData.max_questions || 8
       };
 
       const { data } = await api.post('/session/', sessionPayload);
