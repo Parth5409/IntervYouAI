@@ -5,6 +5,11 @@ Production-ready backend with LangChain integration
 
 import os
 import logging
+
+# IMPORTANT: Set this environment variable BEFORE any other imports
+# This is a workaround for a common issue with multiple OpenMP libraries clashing
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 
@@ -15,7 +20,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routes import auth, user, data, session, interview, gd
+from routes import auth, user, data, session, interview, gd, stt
 from utils.database import init_db
 from llm.embeddings import initialize_embeddings
 
@@ -75,12 +80,11 @@ app.include_router(data.router, prefix="/api", tags=["Data"])
 app.include_router(session.router, prefix="/api/session", tags=["Session"])
 app.include_router(interview.router, prefix="/api/interview", tags=["Interview"])
 app.include_router(gd.router, prefix="/api/gd", tags=["Group Discussion"])
+app.include_router(stt.router, prefix="/api/stt", tags=["Speech-to-Text"])
 
 # Static files
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-
 
 @app.get("/")
 async def root():
@@ -95,7 +99,6 @@ async def root():
 async def health_check():
     """Detailed health check"""
     try:
-        # Check environment variables
         google_api_key = bool(os.getenv("GOOGLE_API_KEY"))
         ollama_url = bool(os.getenv("OLLAMA_BASE_URL"))
         
@@ -104,7 +107,7 @@ async def health_check():
             "services": {
                 "google_genai": google_api_key,
                 "ollama": ollama_url,
-                "database": True  # TODO: Add actual DB health check
+                "database": True
             }
         }
     except Exception as e:
@@ -114,7 +117,6 @@ async def health_check():
 if __name__ == "__main__":
     import uvicorn
     
-    # Development server
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
