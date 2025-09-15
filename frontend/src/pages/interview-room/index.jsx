@@ -110,6 +110,24 @@ const InterviewRoom = () => {
     setConversationHistory(prev => [...prev, userMessage]);
     setIsAISpeaking(true);
 
+    // Check if this is the last question
+    if (questionsAnswered + 1 >= totalQuestions) {
+      const closingMessage = {
+        id: Date.now() + 1,
+        speaker: 'AI',
+        text: "Thank you for the technical discussion! This concludes the interview. We'll now move to the feedback phase.",
+        type: 'ai',
+        timestamp: new Date(),
+      };
+      setConversationHistory(prev => [...prev, closingMessage]);
+      setIsAISpeaking(false);
+      // Automatically end the session after a short delay
+      setTimeout(() => {
+        handleEndSession();
+      }, 10000); // 10-second delay
+      return;
+    }
+
     try {
       const { data } = await api.post(`/interview/${sessionId}/message`, { message: messageText });
       const aiMessage = {
