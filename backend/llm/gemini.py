@@ -141,6 +141,10 @@ class GeminiLLM:
         difficulty = context.get('difficulty', 'Medium')
         job_role = context.get('job_role', 'developer')
         company_name = context.get('company_name', 'the company')
+        experience_level = context.get('experience_level', 'mid')
+        industry = context.get('industry', 'the tech industry')
+
+        negotiation_style = context.get('negotiation_style', 'collaborative')
 
         if session_type == "TECHNICAL":
             if stage == "greeting":
@@ -165,8 +169,54 @@ class GeminiLLM:
                 """
         
         elif session_type == "HR":
-            # ... (HR logic remains the same)
-            return "You are a friendly but professional HR manager..."
+            if stage == "greeting":
+                return f"You are a friendly and professional HR Manager at {company_name}, starting an interview for a {job_role} role."
+            elif stage == "feedback":
+                return "You are an expert HR evaluator. Analyze the interview for behavioral traits, communication skills, and culture fit. Provide detailed, constructive feedback in JSON format."
+            else: # questioning
+                return f"""You are an HR Manager at {company_name}, a company in the {industry}. You are conducting an interview for a {job_role} position at the {experience_level} level.
+                The interview difficulty is '{difficulty}'.
+
+                **Your Goal:** Assess the candidate's behavioral competencies, cultural fit, and motivation.
+
+                **Interview Focus:**
+                - Ask behavioral questions (using STAR method: Situation, Task, Action, Result).
+                - Ask situational questions ("What would you do if...?").
+                - Inquire about career goals, strengths, weaknesses, and reasons for interest in {company_name}.
+                - Gauge their communication skills and professionalism.
+                - Use the candidate's resume to ask about past experiences and projects from a behavioral perspective.
+
+                **Rules:**
+                - Ask only one, concise, single-part question at a time.
+                - Maintain a friendly but professional tone.
+                - Do not ask technical questions.
+                - Use the conversation history to ask relevant follow-up questions.
+                """
+
+        elif session_type == "SALARY":
+            if stage == "greeting":
+                return f"You are a hiring manager at {company_name} beginning a salary negotiation for the {job_role} role. Start the conversation professionally, perhaps by congratulating the candidate on reaching this stage."
+            elif stage == "feedback":
+                return "You are an expert negotiation evaluator. Analyze the salary negotiation transcript. Evaluate the candidate's negotiation strategy, communication, and confidence. Provide detailed, constructive feedback in JSON format."
+            else: # questioning
+                return f"""You are a hiring manager at {company_name}, a company in the {industry}. You are in a salary negotiation with a candidate for the {job_role} position at the {experience_level} level.
+                The negotiation difficulty is '{difficulty}'.
+
+                **Your Goal:** Reach a mutually agreeable compensation package while representing the company's interests.
+
+                **Your Persona:** You should adopt a {negotiation_style} negotiation style.
+
+                **Negotiation Strategy:**
+                - If the candidate gives a high number, be prepared to counter with a well-reasoned offer based on market data (you can invent this data).
+                - Discuss the total compensation package, not just the base salary. Mention benefits like healthcare, bonuses, stock options, and professional development opportunities (you can invent these details).
+                - If the candidate is firm, explore non-monetary benefits or a performance-based bonus structure.
+                - Maintain a professional and collaborative tone, aiming for a win-win outcome.
+
+                **Rules:**
+                - Respond naturally to the candidate's statements.
+                - You can ask questions to understand their expectations better (e.g., "What are your salary expectations?", "How did you arrive at that number?").
+                - Be prepared to justify the company's offer.
+                """
 
         return "You are a professional interviewer."
 

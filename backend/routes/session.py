@@ -26,10 +26,12 @@ async def create_session(
             "company_name": session_data.company_name,
             "job_role": session_data.job_role,
             "experience_level": session_data.experience_level,
+            "industry": session_data.industry,
             "topics": session_data.topics or [],
             "duration_minutes": session_data.duration_minutes,
             "difficulty": session_data.difficulty.value,
-            "max_questions": session_data.max_questions
+            "max_questions": session_data.max_questions,
+            "negotiation_style": session_data.negotiation_style
         }
 
         if current_user.resume_url and current_user.resume_vs_id:

@@ -169,7 +169,7 @@ const InterviewRoom = () => {
   }, [conversationHistory]);
 
   const totalQuestions = useMemo(() => {
-    return sessionDetails?.context?.max_questions || 8;
+    return sessionDetails?.context?.max_questions || 5;
   }, [sessionDetails]);
 
   return (

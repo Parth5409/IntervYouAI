@@ -80,11 +80,13 @@ class InterviewSessionCreate(BaseModel):
     session_type: SessionType
     company_name: Optional[str] = None
     job_role: Optional[str] = None
-    experience_level: Literal["junior", "mid", "senior"] = "mid"
+    experience_level: Literal["entry", "mid", "expert"] = "mid"
+    industry: Optional[str] = None
     topics: Optional[List[str]] = None
     duration_minutes: int = Field(default=30, ge=10, le=120)
     difficulty: DifficultyLevel = DifficultyLevel.MEDIUM
-    max_questions: int = Field(default=8, ge=3, le=15)
+    max_questions: int = Field(default=5, ge=3, le=15)
+    negotiation_style: Optional[str] = None
 
 class InterviewSessionResponse(BaseModel):
     id: str

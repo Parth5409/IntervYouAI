@@ -104,18 +104,20 @@ class InterviewOrchestrator:
         Process user message, generate AI response, and return updated transcript and context.
         """
         try:
-            transcript = session.transcript or []
-            transcript.append({
+            if session.transcript is None:
+                session.transcript = []
+
+            session.transcript.append({
                 "role": "user", 
                 "content": user_message, 
                 "timestamp": datetime.now().isoformat()
             })
 
-            response_data = await self._process_regular_message(session, user_message, transcript)
+            response_data = await self._process_regular_message(session, user_message, session.transcript)
             ai_response_content = response_data["message"]
             updated_context = response_data["context"]
 
-            transcript.append({
+            session.transcript.append({
                 "role": "assistant",
                 "content": ai_response_content,
                 "timestamp": datetime.now().isoformat(),
@@ -123,7 +125,7 @@ class InterviewOrchestrator:
             })
             
             logger.info(f"Processed message for session {session.id}")
-            return ai_response_content, transcript, updated_context
+            return ai_response_content, session.transcript, updated_context
 
         except Exception as e:
             logger.error(f"Error processing message for session {session.id}: {e}")
@@ -202,6 +204,8 @@ class InterviewOrchestrator:
             return "Thank you for the technical discussion! This concludes the interview. We'll now move to the feedback phase."
         elif session_type == SessionType.HR.value:
             return "Thank you for sharing your experiences! This concludes our HR interview session."
+        elif session_type == SessionType.SALARY.value:
+            return "Thank you for the discussion regarding the compensation package. This concludes our negotiation. We'll now prepare the final feedback."
         else:
             return "Thank you for the interview! I'll now prepare your feedback."
 

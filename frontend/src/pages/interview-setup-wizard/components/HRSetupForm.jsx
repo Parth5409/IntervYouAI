@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
+import api from '../../../utils/api';
 
 const HRSetupForm = ({ formData, onChange, errors }) => {
+  const [companies, setCompanies] = useState([]);
+  const [loadingCompanies, setLoadingCompanies] = useState(false);
+
   const experienceLevels = [
     { value: "entry", label: "Entry Level (0-2 years)" },
     { value: "mid", label: "Mid Level (3-5 years)" },
-    { value: "senior", label: "Senior Level (6-10 years)" },
-    { value: "lead", label: "Lead/Principal (10+ years)" }
+    { value: "expert", label: "Expert (5+ years)" }
   ];
 
   const industries = [
@@ -23,25 +26,24 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
     { value: "real-estate", label: "Real Estate" }
   ];
 
-  const handleJobRoleChange = (e) => {
-    onChange({
-      ...formData,
-      jobRole: e?.target?.value
-    });
-  };
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      setLoadingCompanies(true);
+      try {
+        const response = await api.get('/setup/companies');
+        setCompanies(response.data.data || []);
+      } catch (error) {
+        console.error("Failed to fetch companies:", error);
+        setCompanies([]);
+      }
+      setLoadingCompanies(false);
+    };
 
-  const handleExperienceChange = (value) => {
-    onChange({
-      ...formData,
-      experienceLevel: value
-    });
-  };
+    fetchCompanies();
+  }, []);
 
-  const handleIndustryChange = (value) => {
-    onChange({
-      ...formData,
-      industry: value
-    });
+  const handleFieldChange = (field) => (value) => {
+    onChange({ ...formData, [field]: value });
   };
 
   return (
@@ -61,9 +63,21 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
           placeholder="e.g., Marketing Manager, Sales Executive"
           description="Enter the position you're applying for"
           value={formData?.jobRole || ''}
-          onChange={handleJobRoleChange}
+          onChange={(e) => handleFieldChange('jobRole')(e.target.value)}
           error={errors?.jobRole}
           required
+        />
+
+        <Select
+          label="Target Company"
+          description="Select the company you are interviewing with"
+          placeholder="Choose a company"
+          options={companies}
+          value={formData?.company}
+          onChange={handleFieldChange('company')}
+          error={errors?.company}
+          loading={loadingCompanies}
+          searchable
         />
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -73,7 +87,7 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
             placeholder="Select experience level"
             options={experienceLevels}
             value={formData?.experienceLevel}
-            onChange={handleExperienceChange}
+            onChange={handleFieldChange('experienceLevel')}
             error={errors?.experienceLevel}
             required
           />
@@ -84,7 +98,7 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
             placeholder="Choose industry"
             options={industries}
             value={formData?.industry}
-            onChange={handleIndustryChange}
+            onChange={handleFieldChange('industry')}
             error={errors?.industry}
             required
             searchable

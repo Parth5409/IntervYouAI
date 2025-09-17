@@ -47,6 +47,7 @@ const SessionSummary = ({ interviewType, formData }) => {
           details: [
             { label: 'Job Role', value: formData?.jobRole },
             { label: 'Experience Level', value: formData?.experienceLevel },
+            { label: 'Industry', value: formData?.industry },
             { label: 'Salary Range', value: formData?.salaryRange },
             { label: 'Style', value: formData?.negotiationStyle },
             { label: 'Focus', value: 'Compensation Discussion' }

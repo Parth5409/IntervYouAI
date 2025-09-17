@@ -109,6 +109,7 @@ const InterviewSetupWizard = () => {
           if (!formData?.max_questions) newErrors.max_questions = 'Number of questions is required';
         } else if (selectedType === 'hr') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
+          if (!formData?.company) newErrors.company = 'Company is required';
           if (!formData?.experienceLevel) newErrors.experienceLevel = 'Experience level is required';
           if (!formData?.industry) newErrors.industry = 'Industry selection is required';
         } else if (selectedType === 'group-discussion') {
@@ -117,7 +118,9 @@ const InterviewSetupWizard = () => {
           if (!formData?.duration) newErrors.duration = 'Duration is required';
         } else if (selectedType === 'salary-negotiation') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
+          if (!formData?.company) newErrors.company = 'Company is required';
           if (!formData?.experienceLevel) newErrors.experienceLevel = 'Experience level is required';
+          if (!formData?.industry) newErrors.industry = 'Industry is required';
           if (!formData?.salaryRange) newErrors.salaryRange = 'Salary range is required';
           if (!formData?.negotiationStyle) newErrors.negotiationStyle = 'Negotiation style is required';
         }
@@ -151,7 +154,7 @@ const InterviewSetupWizard = () => {
     setFormData({ 
       type, 
       difficulty: 'Medium', 
-      max_questions: 8 
+      max_questions: 5
     });
     setErrors({});
   };
@@ -172,10 +175,12 @@ const InterviewSetupWizard = () => {
         company_name: formData.company || null,
         job_role: formData.jobRole || null,
         experience_level: formData.experienceLevel || 'mid',
+        industry: formData.industry || null,
         topics: formData.topics || [],
         duration_minutes: parseInt(formData.duration, 10) || 30,
         difficulty: formData.difficulty || 'Medium',
-        max_questions: formData.max_questions || 8
+        max_questions: formData.max_questions || 5,
+        negotiation_style: formData.negotiationStyle || 'collaborative'
       };
 
       const { data } = await api.post('/session/', sessionPayload);

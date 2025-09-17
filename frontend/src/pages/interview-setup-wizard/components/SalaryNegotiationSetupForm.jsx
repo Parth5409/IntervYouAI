@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
+import api from '../../../utils/api';
 
 const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
+  const [companies, setCompanies] = useState([]);
+  const [loadingCompanies, setLoadingCompanies] = useState(false);
+
   const experienceLevels = [
     { value: "entry", label: "Entry Level (0-2 years)" },
     { value: "mid", label: "Mid Level (3-5 years)" },
-    { value: "senior", label: "Senior Level (6-10 years)" },
-    { value: "lead", label: "Lead/Executive (10+ years)" }
+    { value: "expert", label: "Expert (5+ years)" }
+  ];
+
+  const industries = [
+    { value: "technology", label: "Technology" },
+    { value: "finance", label: "Finance & Banking" },
+    { value: "healthcare", label: "Healthcare" },
+    { value: "retail", label: "Retail & E-commerce" },
+    { value: "consulting", label: "Consulting" },
+    { value: "manufacturing", label: "Manufacturing" },
+    { value: "education", label: "Education" },
+    { value: "media", label: "Media & Entertainment" },
+    { value: "automotive", label: "Automotive" },
+    { value: "real-estate", label: "Real Estate" }
   ];
 
   const salaryRanges = [
@@ -25,32 +41,24 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
     { value: "analytical", label: "Analytical", description: "Data-driven approach" }
   ];
 
-  const handleJobRoleChange = (e) => {
-    onChange({
-      ...formData,
-      jobRole: e?.target?.value
-    });
-  };
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      setLoadingCompanies(true);
+      try {
+        const response = await api.get('/setup/companies');
+        setCompanies(response.data.data || []);
+      } catch (error) {
+        console.error("Failed to fetch companies:", error);
+        setCompanies([]);
+      }
+      setLoadingCompanies(false);
+    };
 
-  const handleExperienceChange = (value) => {
-    onChange({
-      ...formData,
-      experienceLevel: value
-    });
-  };
+    fetchCompanies();
+  }, []);
 
-  const handleSalaryRangeChange = (value) => {
-    onChange({
-      ...formData,
-      salaryRange: value
-    });
-  };
-
-  const handleNegotiationStyleChange = (value) => {
-    onChange({
-      ...formData,
-      negotiationStyle: value
-    });
+  const handleFieldChange = (field) => (value) => {
+    onChange({ ...formData, [field]: value });
   };
 
   return (
@@ -70,9 +78,21 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
           placeholder="e.g., Software Engineer, Product Manager"
           description="Position you're negotiating for"
           value={formData?.jobRole || ''}
-          onChange={handleJobRoleChange}
+          onChange={(e) => handleFieldChange('jobRole')(e.target.value)}
           error={errors?.jobRole}
           required
+        />
+
+        <Select
+          label="Target Company"
+          description="Select the company you are negotiating with"
+          placeholder="Choose a company"
+          options={companies}
+          value={formData?.company}
+          onChange={handleFieldChange('company')}
+          error={errors?.company}
+          loading={loadingCompanies}
+          searchable
         />
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -82,33 +102,47 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
             placeholder="Select experience level"
             options={experienceLevels}
             value={formData?.experienceLevel}
-            onChange={handleExperienceChange}
+            onChange={handleFieldChange('experienceLevel')}
             error={errors?.experienceLevel}
             required
           />
 
+          <Select
+            label="Industry"
+            description="Target industry for this role"
+            placeholder="Choose industry"
+            options={industries}
+            value={formData?.industry}
+            onChange={handleFieldChange('industry')}
+            error={errors?.industry}
+            required
+            searchable
+          />
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
           <Select
             label="Target Salary Range"
             description="Expected compensation range"
             placeholder="Choose salary range"
             options={salaryRanges}
             value={formData?.salaryRange}
-            onChange={handleSalaryRangeChange}
+            onChange={handleFieldChange('salaryRange')}
             error={errors?.salaryRange}
             required
           />
+          
+          <Select
+            label="Negotiation Style"
+            description="Your preferred negotiation approach"
+            placeholder="Select negotiation style"
+            options={negotiationStyles}
+            value={formData?.negotiationStyle}
+            onChange={handleFieldChange('negotiationStyle')}
+            error={errors?.negotiationStyle}
+            required
+          />
         </div>
-
-        <Select
-          label="Negotiation Style"
-          description="Your preferred negotiation approach"
-          placeholder="Select negotiation style"
-          options={negotiationStyles}
-          value={formData?.negotiationStyle}
-          onChange={handleNegotiationStyleChange}
-          error={errors?.negotiationStyle}
-          required
-        />
       </div>
       <div className="bg-muted/50 rounded-lg p-4">
         <h4 className="text-sm font-medium text-foreground mb-2">
