@@ -8,6 +8,7 @@ import random
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 from enum import Enum
+import socketio
 
 from models.pydantic_models import GDParticipant, GDMessage, GDFeedback
 from llm.gemini import GeminiLLM
@@ -33,6 +34,7 @@ class GDOrchestrator:
     def __init__(self):
         """Initialize GD orchestrator"""
         self.gemini_llm = GeminiLLM()
+        self.active_sessions = {}
         self.personality_prompts = {
             GDPersonality.SUPPORTIVE: {
                 "name": "Alex",
@@ -55,7 +57,48 @@ class GDOrchestrator:
                 "prompt": "You are Morgan, a creative thinker..."
             },
         }
-        logger.info("GDOrchestrator initialized for stateless operation")
+        logger.info("GDOrchestrator initialized for stateful operation")
+
+    def create_new_gd_session(self, session_id: str, session_context: Dict[str, Any]) -> Dict[str, Any]:
+        """Creates and stores a new GD session."""
+        num_bots = session_context.get("num_bots", 4)
+        available_personalities = list(GDPersonality)
+        selected_personalities = random.sample(available_personalities, min(num_bots, len(available_personalities)))
+
+        bots = [
+            GDParticipant(
+                id=f"bot_{p.value}",
+                name=self.personality_prompts[p]["name"],
+                personality=p.value,
+                is_human=False,
+            ) for p in selected_personalities
+        ]
+        human_participant = GDParticipant(id="human_user", name="You", personality="human", is_human=True)
+        all_participants = bots + [human_participant]
+        random.shuffle(bots)
+
+        new_session_state = {
+            "session_id": session_id,
+            "topic": session_context.get("topic", "a default topic"),
+            "participants": [p.dict() for p in all_participants],
+            "bots": [p.dict() for p in bots],
+            "transcript": [],
+            "turn_order": [bot.id for bot in bots],
+            "current_turn_index": 0,
+            "state": GDState.INITIALIZED
+        }
+        self.active_sessions[session_id] = new_session_state
+        return new_session_state
+
+    def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves an active session."""
+        return self.active_sessions.get(session_id)
+
+    def remove_session(self, session_id: str):
+        """Removes a session from the active pool."""
+        if session_id in self.active_sessions:
+            del self.active_sessions[session_id]
+            logger.info(f"Removed GD session {session_id} from active pool.")
 
     def initialize_session_context(self, session_context: Dict[str, Any]) -> Dict[str, Any]:
         """Initializes the context for a new GD session."""
@@ -97,36 +140,43 @@ class GDOrchestrator:
         transcript.append(message)
         return opening_message, transcript
 
-    async def process_user_input(self, session: InterviewSession, user_message: str) -> Tuple[list, list]:
-        """Processes user input, generates bot responses, and returns the updated transcript."""
-        transcript = session.context.get("messages", [])
-        bots = session.context.get("bots", [])
-        current_turn_index = session.context.get("current_turn_index", 0)
+    async def process_user_input(self, session_id: str, user_message: str, sio: socketio.AsyncServer):
+        """Processes user input, generates bot responses, and manages turn-taking."""
+        session_state = self.get_session(session_id)
+        if not session_state:
+            return
 
+        # Add user message to transcript
         user_msg = GDMessage(
             speaker_id="human_user",
             speaker_name="You",
             message=user_message,
             timestamp=datetime.now(),
-            turn_number=len(transcript) + 1,
+            turn_number=len(session_state['transcript']) + 1,
         ).dict()
-        transcript.append(user_msg)
+        session_state['transcript'].append(user_msg)
+        await sio.emit('new_message', user_msg, room=session_id)
 
-        # Let one bot respond for simplicity in a RESTful context
-        bot_response_data = await self._generate_bot_response(session.context, user_message)
-        bot_msg = GDMessage(
-            speaker_id=bot_response_data["speaker_id"],
-            speaker_name=bot_response_data["speaker_name"],
-            message=bot_response_data["message"],
-            timestamp=datetime.now(),
-            turn_number=len(transcript) + 1,
-        ).dict()
-        transcript.append(bot_msg)
-        
-        # Update turn index for the next interaction
-        session.context["current_turn_index"] = (current_turn_index + 1) % len(bots)
+        # Trigger next bot's turn
+        await self.progress_turn(session_id, sio)
 
-        return [bot_response_data], transcript
+    async def progress_turn(self, session_id: str, sio: socketio.AsyncServer):
+        """Progresses the turn to the next bot or opens the window for the user."""
+        session_state = self.get_session(session_id)
+        if not session_state or session_state['state'] != GDState.ACTIVE:
+            return
+
+        # Simple round-robin for now
+        session_state['current_turn_index'] = (session_state['current_turn_index'] + 1) % len(session_state['bots'])
+        next_speaker_id = session_state['turn_order'][session_state['current_turn_index']]
+
+        if next_speaker_id == 'human_user':
+            await sio.emit('start_turn_window', room=session_id)
+        else:
+            bot_response = await self._generate_bot_response(session_state, "")
+            await sio.emit('new_message', bot_response, room=session_id)
+            # After bot speaks, open window for user
+            await sio.emit('start_turn_window', room=session_id)
 
     async def end_session(self, session: InterviewSession) -> Dict[str, Any]:
         """Ends the GD session and generates feedback."""

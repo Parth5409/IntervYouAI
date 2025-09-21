@@ -24,6 +24,7 @@ const InterviewRoom = () => {
   const [sessionTime, setSessionTime] = useState(0);
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isInterrupting, setIsInterrupting] = useState(false);
 
   // Custom hook for audio recording
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();

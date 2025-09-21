@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import 'regenerator-runtime/runtime';
+import io from 'socket.io-client';
+import { useAudioRecorder } from '../../hooks/useAudioRecorder';
+import useAuth from '../../hooks/useAuth';
 
 import SessionControls from '../../components/ui/SessionControls';
 import ParticipantsGrid from './components/ParticipantsGrid';
@@ -9,11 +12,19 @@ import DiscussionTopic from './components/DiscussionTopic';
 import GDTranscript from './components/GDTranscript';
 import Icon from '../../components/AppIcon';
 import VoiceControls from '../interview-room/components/VoiceControls';
-import api from '../../utils/api';
+
+const TimerDisplay = ({ time }) => (
+  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-black/50 p-4 rounded-lg">
+    <p className="text-white text-6xl font-bold">{time}</p>
+    <p className="text-white/80 text-lg">Seconds to speak</p>
+  </div>
+);
 
 const GDRoom = () => {
   const navigate = useNavigate();
   const { sessionId } = useParams();
+  const { user } = useAuth();
+  const socketRef = useRef(null);
 
   // State
   const [sessionDetails, setSessionDetails] = useState(null);
@@ -25,31 +36,54 @@ const GDRoom = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isAISpeaking, setIsAISpeaking] = useState(false);
-  const [isSending, setIsSending] = useState(false); // Lock
+  const [isInterrupting, setIsInterrupting] = useState(false);
+  const [turnTimer, setTurnTimer] = useState(0);
 
   // Speech Recognition
   const { transcript: sttTranscript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
   // Effects
   useEffect(() => {
-    const startGDSession = async () => {
-      try {
-        const detailsRes = await api.get(`/session/${sessionId}`);
-        setSessionDetails(detailsRes.data.data);
+    socketRef.current = io('http://localhost:8000', { path: '/socket.io' });
 
-        const startRes = await api.post(`/gd/${sessionId}/start`);
-        const { participants, opening_message } = startRes.data.data;
-        
-        setParticipants(participants || []);
-        setMessages([{ speaker_id: 'moderator', message: opening_message, timestamp: new Date() }]);
-        setIsSessionActive(true);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Failed to start GD session:", error);
-        navigate('/dashboard');
+    socketRef.current.on('connect', () => {
+      console.log('Socket connected');
+      if (user?.id) {
+        socketRef.current.emit('start_discussion', { session_id: sessionId, user_id: user.id });
       }
+    });
+
+    socketRef.current.on('session_started', ({ topic, participants }) => {
+      setSessionDetails({ context: { topic } });
+      setParticipants(participants);
+      setIsLoading(false);
+      setIsSessionActive(true);
+    });
+
+    socketRef.current.on('new_message', (message) => {
+      setMessages(prev => [...prev, { ...message, timestamp: new Date() }]);
+    });
+
+    socketRef.current.on('speaker_change', ({ speaker_id }) => {
+      setActiveSpeakerId(speaker_id);
+      setIsAISpeaking(speaker_id !== 'human_user');
+    });
+
+    socketRef.current.on('start_turn_window', () => {
+      setTurnTimer(5); // 5-second window
+    });
+
+    socketRef.current.on('discussion_ended', ({ feedback }) => {
+      navigate('/interview-feedback', { state: { sessionData: { feedback } } });
+    });
+
+    socketRef.current.on('error', (error) => {
+      console.error('Socket Error:', error.message);
+    });
+
+    return () => {
+      socketRef.current.disconnect();
     };
-    startGDSession();
   }, [sessionId, navigate]);
 
   useEffect(() => {
@@ -66,55 +100,47 @@ const GDRoom = () => {
     return () => clearInterval(interval);
   }, [isSessionActive]);
 
-  // Handlers
-  const handleSendMessage = async (messageText) => {
-    if (!messageText.trim() || isSending) return;
-
-    setIsSending(true);
-    const userMessage = { speaker_id: 'human_user', message: messageText, timestamp: new Date() };
-    setMessages(prev => [...prev, userMessage]);
-    resetTranscript();
-    setIsAISpeaking(true);
-
-    try {
-      const { data } = await api.post(`/gd/${sessionId}/message`, { message: messageText });
-      const botResponses = data.data.bot_responses || [];
-      
-      for (const res of botResponses) {
-        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-        setActiveSpeakerId(res.speaker_id);
-        const botMessage = { speaker_id: res.speaker_id, speaker_name: res.speaker_name, message: res.message, timestamp: new Date() };
-        setMessages(prev => [...prev, botMessage]);
-      }
-
-    } catch (error) {
-      console.error("Failed to send GD message:", error);
-    } finally {
-      setActiveSpeakerId(null);
-      setIsAISpeaking(false);
-      setIsSending(false);
+  useEffect(() => {
+    if (turnTimer > 0) {
+      const timer = setTimeout(() => setTurnTimer(t => t - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (turnTimer === 0 && isSessionActive && !listening) {
+      socketRef.current.emit('pass_turn', { session_id: sessionId });
     }
+  }, [turnTimer, isSessionActive, listening, sessionId]);
+
+  // Handlers
+  const handleSendMessage = (messageText) => {
+    if (!messageText.trim()) return;
+    socketRef.current.emit('user_message', { session_id: sessionId, message: messageText });
+    resetTranscript();
   };
 
   const handleToggleListening = () => {
-    if (isMuted || isAISpeaking) return;
-    if (listening) {
-      SpeechRecognition.stopListening();
+    if (isMuted) return;
+
+    if (isAISpeaking) {
+      // Interrupt logic
+      setIsInterrupting(true);
+      if (listening) {
+        SpeechRecognition.stopListening();
+      } else {
+        resetTranscript();
+        SpeechRecognition.startListening({ continuous: true });
+      }
     } else {
-      resetTranscript();
-      SpeechRecognition.startListening({ continuous: true });
+      // Normal recording logic
+      if (listening) {
+        SpeechRecognition.stopListening();
+      } else {
+        resetTranscript();
+        SpeechRecognition.startListening({ continuous: true });
+      }
     }
   };
 
-  const handleEndSession = async () => {
-    setIsSessionActive(false);
-    try {
-      const { data } = await api.post(`/gd/${sessionId}/end`);
-      navigate('/interview-feedback', { state: { sessionData: data.data } });
-    } catch (error) {
-      console.error("Failed to end GD session:", error);
-      navigate('/dashboard');
-    }
+  const handleEndSession = () => {
+    socketRef.current.emit('end_discussion', { session_id: sessionId });
   };
 
   if (!browserSupportsSpeechRecognition) {
@@ -150,6 +176,7 @@ const GDRoom = () => {
         <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-6">
             <DiscussionTopic topic={sessionDetails?.context?.topic || 'Loading...'} />
             <ParticipantsGrid participants={participants} activeSpeakerId={activeSpeakerId} />
+            {turnTimer > 0 && <TimerDisplay time={turnTimer} />}
             <VoiceControls 
                 isListening={listening}
                 isMuted={isMuted}

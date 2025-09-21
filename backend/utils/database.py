@@ -4,9 +4,13 @@ Database utilities and connection management (Async Version)
 
 import os
 import logging
+from contextlib import asynccontextmanager
 from typing import Optional, AsyncGenerator
-from sqlalchemy import Column, String, DateTime, Text, Boolean, Integer, JSON, ForeignKey, select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+
+
+from sqlalchemy import Column, String, DateTime, Text, Boolean, Integer, JSON, ForeignKey, select
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship, joinedload
 from datetime import datetime
 import uuid
@@ -60,6 +64,11 @@ class InterviewSession(Base):
     user = relationship("User", back_populates="sessions")
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncSessionLocal() as session:
+        yield session
+
+@asynccontextmanager
+async def db_session_context() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session
 

@@ -193,6 +193,7 @@ const InterviewSetupWizard = () => {
         sessionPayload.negotiation_style = formData.negotiationStyle || 'collaborative';
         sessionPayload.salary_range = formData.salaryRange || null;
       } else if (selectedType === 'group-discussion') {
+        sessionPayload.session_type = 'GD';
         sessionPayload.topic = formData.topic;
         sessionPayload.group_size = formData.groupSize;
         sessionPayload.duration_minutes = parseInt(formData.duration, 10) || 20;

@@ -1,7 +1,11 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
+import GDSummary from './GDSummary';
 
 const SessionSummary = ({ interviewType, formData }) => {
+  if (interviewType === 'group-discussion') {
+    return <GDSummary formData={formData} />;
+  }
   const getInterviewTypeDetails = () => {
     switch (interviewType) {
       case 'technical':

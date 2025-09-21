@@ -137,7 +137,7 @@ class AIResponse(BaseModel):
 class GDParticipant(BaseModel):
     id: str
     name: str
-    personality: Literal["supportive", "assertive", "factual", "analytical", "creative"]
+    personality: Literal["supportive", "assertive", "factual", "analytical", "creative", "human"]
     is_human: bool = False
 
 class GDSession(BaseModel):

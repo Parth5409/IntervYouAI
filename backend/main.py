@@ -19,8 +19,10 @@ load_dotenv()
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from socket_app.session import sio
+import socketio
 
-from routes import auth, user, data, session, interview, gd, stt
+from routes import auth, user, data, session, interview, stt
 from utils.database import init_db
 from llm.embeddings import initialize_embeddings
 
@@ -79,8 +81,10 @@ app.include_router(user.router, prefix="/api/user", tags=["User"])
 app.include_router(data.router, prefix="/api", tags=["Data"])
 app.include_router(session.router, prefix="/api/session", tags=["Session"])
 app.include_router(interview.router, prefix="/api/interview", tags=["Interview"])
-app.include_router(gd.router, prefix="/api/gd", tags=["Group Discussion"])
 app.include_router(stt.router, prefix="/api/stt", tags=["Speech-to-Text"])
+
+# Create the combined ASGI app
+application = socketio.ASGIApp(sio, other_asgi_app=app)
 
 # Static files
 os.makedirs("uploads", exist_ok=True)
@@ -118,7 +122,7 @@ if __name__ == "__main__":
     import uvicorn
     
     uvicorn.run(
-        "main:app",
+        "main:application",
         host="0.0.0.0",
         port=int(os.getenv("PORT", 8000)),
         reload=True if os.getenv("ENVIRONMENT") == "development" else False,
