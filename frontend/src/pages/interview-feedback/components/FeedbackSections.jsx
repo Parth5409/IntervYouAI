@@ -9,40 +9,17 @@ const FeedbackSections = ({
   bookmarkedInsights 
 }) => {
   const sections = [
-    {
-      key: 'communication',
-      title: 'Communication Skills',
-      icon: '💬',
-      description: 'Verbal and non-verbal communication effectiveness'
-    },
-    {
-      key: 'technical',
-      title: 'Technical Knowledge',
-      icon: '💻',
-      description: 'Domain expertise and problem-solving abilities'
-    },
-    {
-      key: 'confidence',
-      title: 'Confidence Level',
-      icon: '💪',
-      description: 'Self-assurance and professional presence'
-    }
-  ];
-
-  const isInsightBookmarked = (insightId) => {
-    return bookmarkedInsights?.some(item => item?.id === insightId);
-  };
-
-  const getScoreColor = (score) => {
-    if (score >= 90) return 'text-success';
-    if (score >= 80) return 'text-accent';
-    if (score >= 70) return 'text-warning';
-    return 'text-error';
-  };
+    { key: 'technical_score', title: 'Technical Skills', icon: '💻', description: 'Domain expertise and problem-solving abilities' },
+    { key: 'communication_score', title: 'Communication Skills', icon: '💬', description: 'Verbal and non-verbal communication effectiveness' },
+    { key: 'confidence_score', title: 'Confidence Level', icon: '💪', description: 'Self-assurance and professional presence' }
+  ].filter(section => feedback?.[section.key] !== null && feedback?.[section.key] !== undefined);
 
   const renderFeedbackSection = (section) => {
-    const sectionData = feedback?.[section?.key];
-    const isExpanded = expandedSections?.[section?.key];
+    const score = feedback?.[section.key] || 0;
+    const strengths = feedback?.strengths || [];
+    const improvements = feedback?.improvement_areas || [];
+
+    const isExpanded = expandedSections?.[section.key];
 
     return (
       <div key={section?.key} className="bg-card rounded-lg border border-border overflow-hidden">
@@ -60,8 +37,8 @@ const FeedbackSections = ({
           </div>
           
           <div className="flex items-center gap-3">
-            <span className={`text-2xl font-bold ${getScoreColor(sectionData?.score)}`}>
-              {sectionData?.score}%
+            <span className={`text-2xl font-bold ${getScoreColor(score)}`}>
+              {score}%
             </span>
             <div className={`transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
               <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +57,7 @@ const FeedbackSections = ({
                 Strengths
               </h4>
               <ul className="space-y-2">
-                {sectionData?.strengths?.map((strength, index) => (
+                {strengths.map((strength, index) => (
                   <li key={index} className="flex items-start gap-3 text-sm text-foreground">
                     <span className="text-success mt-1">•</span>
                     <span>{strength}</span>
@@ -90,60 +67,20 @@ const FeedbackSections = ({
             </div>
 
             {/* Areas for Improvement */}
-            {sectionData?.improvements && sectionData?.improvements?.length > 0 && (
+            {improvements && improvements.length > 0 && (
               <div>
                 <h4 className="text-sm font-medium text-warning mb-3 flex items-center gap-2">
                   <span>📈</span>
                   Areas for Improvement
                 </h4>
                 <ul className="space-y-2">
-                  {sectionData?.improvements?.map((improvement, index) => (
+                  {improvements.map((improvement, index) => (
                     <li key={index} className="flex items-start gap-3 text-sm text-foreground">
                       <span className="text-warning mt-1">•</span>
                       <span>{improvement}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
-
-            {/* Examples from Transcript */}
-            {sectionData?.examples && sectionData?.examples?.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-                  <span>📝</span>
-                  Key Moments
-                </h4>
-                <div className="space-y-3">
-                  {sectionData?.examples?.map((example, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-3 rounded-lg border ${
-                        example?.type === 'positive' ?'bg-success/5 border-success/20' :'bg-warning/5 border-warning/20'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-medium text-muted-foreground">
-                          {example?.timestamp}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          iconName={isInsightBookmarked(`${section?.key}-${index}`) ? "BookmarkCheck" : "Bookmark"}
-                          onClick={() => onBookmarkInsight({
-                            id: `${section?.key}-${index}`,
-                            section: section?.title,
-                            content: example?.text,
-                            timestamp: example?.timestamp,
-                            type: example?.type
-                          })}
-                          className="text-muted-foreground hover:text-accent"
-                        />
-                      </div>
-                      <p className="text-sm text-foreground">{example?.text}</p>
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
           </div>

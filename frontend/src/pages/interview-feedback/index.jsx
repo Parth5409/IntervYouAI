@@ -12,8 +12,8 @@ import SocialSharing from './components/SocialSharing';
 const InterviewFeedback = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [sessionData, setSessionData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [sessionData, setSessionData] = useState(location.state?.sessionData || null);
+  const [isLoading, setIsLoading] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
     communication: true,
     technical: false,
@@ -36,155 +36,18 @@ const InterviewFeedback = () => {
     setActiveTab(tab);
   };
 
-  // Mock session data
-  const mockSessionData = {
-    id: location?.state?.sessionId || 'session-001',
-    type: 'Technical Interview',
-    duration: '45 minutes',
-    date: '2025-01-12',
-    overallScore: 85,
-    rating: 4.2,
-    company: 'TechCorp',
-    position: 'Senior Frontend Developer',
-    interviewer: 'AI Assistant',
-    feedback: {
-      communication: {
-        score: 88,
-        strengths: [
-          'Clear articulation of complex technical concepts',
-          'Good eye contact and professional demeanor',
-          'Effective use of examples to support answers'
-        ],
-        improvements: [
-          'Could pause more between thoughts',
-          'Consider using more structured responses (STAR method)'
-        ],
-        examples: [
-          {
-            timestamp: '5:23',
-            text: 'Excellent explanation of React component lifecycle',
-            type: 'positive'
-          },
-          {
-            timestamp: '12:45',
-            text: 'Could have been more concise in API design explanation',
-            type: 'improvement'
-          }
-        ]
-      },
-      technical: {
-        score: 82,
-        strengths: [
-          'Strong understanding of React hooks and state management',
-          'Good knowledge of performance optimization techniques',
-          'Solid grasp of modern JavaScript concepts'
-        ],
-        improvements: [
-          'Could demonstrate more experience with testing frameworks',
-          'Consider discussing error handling strategies in more detail'
-        ],
-        examples: [
-          {
-            timestamp: '18:30',
-            text: 'Impressive solution to the algorithm challenge',
-            type: 'positive'
-          },
-          {
-            timestamp: '25:10',
-            text: 'Missed opportunity to discuss edge cases',
-            type: 'improvement'
-          }
-        ]
-      },
-      confidence: {
-        score: 85,
-        strengths: [
-          'Maintained composure during challenging questions',
-          'Showed enthusiasm for the role and company',
-          'Demonstrated willingness to admit knowledge gaps'
-        ],
-        improvements: [
-          'Could show more confidence when discussing achievements',
-          'Consider asking more clarifying questions'
-        ],
-        examples: [
-          {
-            timestamp: '32:15',
-            text: 'Great recovery after initial confusion',
-            type: 'positive'
-          }
-        ]
-      },
-      improvements: {
-        score: 78,
-        areas: [
-          {
-            category: 'Technical Skills',
-            priority: 'High',
-            recommendation: 'Practice system design problems with real-world constraints',
-            resources: ['System Design Interview book', 'LeetCode system design']
-          },
-          {
-            category: 'Communication',
-            priority: 'Medium',
-            recommendation: 'Practice the STAR method for behavioral questions',
-            resources: ['Behavioral interview prep course', 'Mock interview sessions']
-          },
-          {
-            category: 'Problem Solving',
-            priority: 'Medium',
-            recommendation: 'Work on thinking out loud during coding challenges',
-            resources: ['Codewars', 'HackerRank interview preparation']
-          }
-        ]
-      }
-    },
-    transcript: [
-      {
-        id: 1,
-        timestamp: '00:30',
-        speaker: 'interviewer',
-        text: 'Can you tell me about your experience with React?',
-        aiCommentary: null
-      },
-      {
-        id: 2,
-        timestamp: '00:35',
-        speaker: 'candidate',
-        text: 'I have been working with React for over 3 years, primarily building enterprise applications...',
-        aiCommentary: 'Good opening - specific timeframe and context provided'
-      },
-      {
-        id: 3,
-        timestamp: '05:23',
-        speaker: 'candidate',
-        text: 'The component lifecycle in React allows us to hook into different phases...',
-        aiCommentary: 'Excellent technical explanation with clear structure'
-      }
-    ],
-    progressHistory: [
-      { session: 1, date: '2024-12-15', score: 72, type: 'Technical' },
-      { session: 2, date: '2025-01-02', score: 78, type: 'Behavioral' },
-      { session: 3, date: '2025-01-12', score: 85, type: 'Technical' }
-    ]
-  };
-
   useEffect(() => {
-    const loadSessionData = async () => {
-      try {
-        setIsLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setSessionData(mockSessionData);
-      } catch (error) {
-        console.error('Failed to load session data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadSessionData();
-  }, [location?.state?.sessionId]);
+    if (location.state?.sessionData) {
+      setSessionData(location.state.sessionData);
+      setIsLoading(false);
+    } else {
+      // Handle case where sessionData is not passed in state
+      // Maybe fetch it from an API using a session ID from params
+      // For now, we'll just log an error and show a not found state
+      console.error("No session data provided to feedback page");
+      setIsLoading(false);
+    }
+  }, [location.state]);
 
   const toggleSection = (section) => {
     setExpandedSections(prev => ({

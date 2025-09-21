@@ -156,7 +156,9 @@ const InterviewRoom = () => {
   const handleEndSession = async () => {
     setIsSessionActive(false);
     try {
-      const { data } = await api.post(`/interview/${sessionId}/end`);
+      const { data } = await api.post(`/interview/${sessionId}/end`, {
+        transcript: conversationHistory
+      });
       navigate('/interview-feedback', { state: { sessionData: data.data } });
     } catch (error) {
       console.error("Failed to end session:", error);

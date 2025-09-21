@@ -3,11 +3,17 @@ Interview Session routes (Async Version)
 """
 
 import logging
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from models.pydantic_models import InterviewSessionCreate, InterviewSessionResponse, APIResponse
+from models.pydantic_models import (InterviewSessionCreate, 
+                                  TechnicalInterviewCreate, 
+                                  HRInterviewCreate, 
+                                  SalaryNegotiationCreate, 
+                                  GroupDiscussionCreate,
+                                  InterviewSessionResponse, 
+                                  APIResponse, SessionType)
 from utils.database import get_db, InterviewSession, User, get_session_by_id
 from utils.auth import get_current_user
 from orchestrator.rag_utils import DocumentProcessor, get_vector_store_manager
@@ -17,22 +23,31 @@ router = APIRouter()
 
 @router.post("/", response_model=APIResponse)
 async def create_session(
-    session_data: InterviewSessionCreate,
+    request: Request,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    raw_data = await request.json()
+    session_type = raw_data.get('session_type')
+
+    model_map = {
+        SessionType.TECHNICAL: TechnicalInterviewCreate,
+        SessionType.HR: HRInterviewCreate,
+        SessionType.SALARY: SalaryNegotiationCreate,
+        SessionType.GD: GroupDiscussionCreate,
+    }
+
+    model = model_map.get(session_type)
+    if not model:
+        raise HTTPException(status_code=400, detail=f"Invalid session type: {session_type}")
+
     try:
-        context = {
-            "company_name": session_data.company_name,
-            "job_role": session_data.job_role,
-            "experience_level": session_data.experience_level,
-            "industry": session_data.industry,
-            "topics": session_data.topics or [],
-            "duration_minutes": session_data.duration_minutes,
-            "difficulty": session_data.difficulty.value,
-            "max_questions": session_data.max_questions,
-            "negotiation_style": session_data.negotiation_style
-        }
+        session_data = model(**raw_data)
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    try:
+        context = session_data.dict()
 
         if current_user.resume_url and current_user.resume_vs_id:
             context["resume_info"] = {"status": "processed", "vector_store_id": current_user.resume_vs_id}

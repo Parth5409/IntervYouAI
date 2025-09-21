@@ -4,6 +4,11 @@ import Button from '../../../components/ui/Button';
 const SessionHeader = ({ sessionData }) => {
   const feedback = sessionData?.feedback;
   const overallScore = feedback?.overall_score || 0;
+  const sessionType = sessionData?.session_type || 'Interview';
+  const companyName = sessionData?.context?.company_name || 'a company';
+  const jobRole = sessionData?.context?.job_role || 'a role';
+  const sessionDate = sessionData?.created_at || new Date().toISOString();
+  const duration = sessionData?.duration_minutes || 0;
 
   const getScoreColor = (score) => {
     if (score >= 90) return 'text-success';
@@ -62,20 +67,20 @@ const SessionHeader = ({ sessionData }) => {
           {/* Session Details */}
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-semibold text-foreground">{sessionData?.type}</h1>
+              <h1 className="text-2xl font-semibold text-foreground">{sessionType.replace('_', ' ')}</h1>
               <div className="flex">
                 {renderStars(overallScore)}
               </div>
             </div>
             
             <p className="text-lg text-muted-foreground">
-              {sessionData?.company} • {sessionData?.position}
+              {companyName} • {jobRole}
             </p>
             
             <div className="flex flex-col md:flex-row md:items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
               <span className="flex items-center gap-2">
                 <span>📅</span>
-                {new Date(sessionData.date)?.toLocaleDateString('en-US', {
+                {new Date(sessionDate)?.toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',
                   month: 'long',
@@ -84,11 +89,11 @@ const SessionHeader = ({ sessionData }) => {
               </span>
               <span className="flex items-center gap-2">
                 <span>⏱️</span>
-                Duration: {sessionData?.duration}
+                Duration: {duration} minutes
               </span>
               <span className="flex items-center gap-2">
                 <span>🤖</span>
-                Interviewer: {sessionData?.interviewer}
+                Interviewer: AI Assistant
               </span>
             </div>
           </div>

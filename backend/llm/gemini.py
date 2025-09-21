@@ -146,6 +146,8 @@ class GeminiLLM:
 
         negotiation_style = context.get('negotiation_style', 'collaborative')
 
+        salary_range = context.get('salary_range', 'not specified')
+
         if session_type == "TECHNICAL":
             if stage == "greeting":
                 return "You are a helpful AI assistant starting a technical interview."
@@ -201,6 +203,7 @@ class GeminiLLM:
             else: # questioning
                 return f"""You are a hiring manager at {company_name}, a company in the {industry}. You are in a salary negotiation with a candidate for the {job_role} position at the {experience_level} level.
                 The negotiation difficulty is '{difficulty}'.
+                The candidate has indicated a target salary range of {salary_range}.
 
                 **Your Goal:** Reach a mutually agreeable compensation package while representing the company's interests.
 

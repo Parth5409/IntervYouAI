@@ -9,17 +9,16 @@ const TranscriptPlayer = ({ transcript, sessionDuration }) => {
   const [showAICommentary, setShowAICommentary] = useState(true);
   const scrollContainerRef = useRef(null);
 
-  // Convert timestamp string to seconds
   const timeToSeconds = (timeString) => {
-    const parts = timeString?.split(':');
-    return parseInt(parts?.[0]) * 60 + parseInt(parts?.[1]);
+    if (!timeString) return 0;
+    const parts = timeString.split(':');
+    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
   };
 
-  // Convert seconds to timestamp string
   const secondsToTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins?.toString()?.padStart(2, '0')}:${secs?.toString()?.padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   // Mock playback simulation

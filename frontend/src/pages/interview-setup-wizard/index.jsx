@@ -170,18 +170,33 @@ const InterviewSetupWizard = () => {
     setIsLoading(true);
     
     try {
-      const sessionPayload = {
+      let sessionPayload = {
         session_type: selectedType.toUpperCase(),
-        company_name: formData.company || null,
-        job_role: formData.jobRole || null,
-        experience_level: formData.experienceLevel || 'mid',
-        industry: formData.industry || null,
-        topics: formData.topics || [],
-        duration_minutes: parseInt(formData.duration, 10) || 30,
         difficulty: formData.difficulty || 'Medium',
         max_questions: formData.max_questions || 5,
-        negotiation_style: formData.negotiationStyle || 'collaborative'
       };
+
+      if (selectedType === 'technical') {
+        sessionPayload.company_name = formData.company;
+        sessionPayload.job_role = formData.jobRole;
+        sessionPayload.topics = formData.topics || [];
+      } else if (selectedType === 'hr') {
+        sessionPayload.company_name = formData.company || null;
+        sessionPayload.job_role = formData.jobRole;
+        sessionPayload.experience_level = formData.experienceLevel || 'mid';
+        sessionPayload.industry = formData.industry || null;
+      } else if (selectedType === 'salary-negotiation') {
+        sessionPayload.company_name = formData.company || null;
+        sessionPayload.job_role = formData.jobRole;
+        sessionPayload.experience_level = formData.experienceLevel || 'mid';
+        sessionPayload.industry = formData.industry || null;
+        sessionPayload.negotiation_style = formData.negotiationStyle || 'collaborative';
+        sessionPayload.salary_range = formData.salaryRange || null;
+      } else if (selectedType === 'group-discussion') {
+        sessionPayload.topic = formData.topic;
+        sessionPayload.group_size = formData.groupSize;
+        sessionPayload.duration_minutes = parseInt(formData.duration, 10) || 20;
+      }
 
       const { data } = await api.post('/session/', sessionPayload);
 

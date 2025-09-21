@@ -5,9 +5,10 @@ Interview flow routes (Async Version)
 import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.attributes import flag_modified
 from datetime import datetime
 
-from models.pydantic_models import UserMessage, APIResponse
+from models.pydantic_models import UserMessage, APIResponse, EndSessionPayload
 from utils.database import get_db, get_session_by_id, User
 from utils.auth import get_current_user
 from orchestrator.interview import InterviewOrchestrator
@@ -66,6 +67,10 @@ async def post_message(
         session.transcript = updated_transcript
         session.context = updated_context
 
+        # Flag the JSON fields as modified to ensure they are saved
+        flag_modified(session, "transcript")
+        flag_modified(session, "context")
+
         db.add(session)
         await db.commit()
 
@@ -78,6 +83,7 @@ async def post_message(
 @router.post("/{session_id}/end", response_model=APIResponse)
 async def end_interview(
     session_id: str,
+    payload: EndSessionPayload,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -86,11 +92,18 @@ async def end_interview(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
 
     try:
+        # Overwrite the transcript with the final version from the frontend
+        session.transcript = payload.transcript
+
         feedback = await orchestrator.end_session(session)
         
         session.status = "completed"
         session.ended_at = datetime.now()
         session.feedback = feedback
+
+        # Flag the transcript as modified to ensure it saves
+        flag_modified(session, "transcript")
+        flag_modified(session, "feedback")
 
         db.add(session)
         await db.commit()

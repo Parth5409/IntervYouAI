@@ -78,15 +78,32 @@ class DifficultyLevel(str, Enum):
 
 class InterviewSessionCreate(BaseModel):
     session_type: SessionType
-    company_name: Optional[str] = None
-    job_role: Optional[str] = None
-    experience_level: Literal["entry", "mid", "expert"] = "mid"
-    industry: Optional[str] = None
-    topics: Optional[List[str]] = None
-    duration_minutes: int = Field(default=30, ge=10, le=120)
     difficulty: DifficultyLevel = DifficultyLevel.MEDIUM
     max_questions: int = Field(default=5, ge=3, le=15)
+
+class TechnicalInterviewCreate(InterviewSessionCreate):
+    company_name: str
+    job_role: str
+    topics: Optional[List[str]] = None
+
+class HRInterviewCreate(InterviewSessionCreate):
+    company_name: Optional[str] = None
+    job_role: str
+    experience_level: Literal["entry", "mid", "expert"] = "mid"
+    industry: Optional[str] = None
+
+class SalaryNegotiationCreate(InterviewSessionCreate):
+    company_name: Optional[str] = None
+    job_role: str
+    experience_level: Literal["entry", "mid", "expert"] = "mid"
+    industry: Optional[str] = None
     negotiation_style: Optional[str] = None
+    salary_range: Optional[str] = None
+
+class GroupDiscussionCreate(InterviewSessionCreate):
+    topic: str
+    group_size: str
+    duration_minutes: int
 
 class InterviewSessionResponse(BaseModel):
     id: str
@@ -148,6 +165,9 @@ class InterviewFeedback(BaseModel):
     improvement_areas: List[str]
     detailed_feedback: str
     recommendations: List[str]
+
+class EndSessionPayload(BaseModel):
+    transcript: List[Dict[str, Any]]
 
 class GDSessionData(BaseModel):
     topic: str
