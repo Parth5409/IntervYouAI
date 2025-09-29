@@ -113,6 +113,8 @@ class InterviewSessionResponse(BaseModel):
     duration_minutes: int
     difficulty: DifficultyLevel
     context: Dict[str, Any]
+    feedback: Optional[Dict[str, Any]] = None
+    transcript: Optional[List[Dict[str, Any]]] = None
 
     class Config:
         from_attributes = True

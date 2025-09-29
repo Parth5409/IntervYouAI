@@ -8,7 +8,6 @@ const SessionHeader = ({ sessionData }) => {
   const companyName = sessionData?.context?.company_name || 'a company';
   const jobRole = sessionData?.context?.job_role || 'a role';
   const sessionDate = sessionData?.created_at || new Date().toISOString();
-  const duration = sessionData?.duration_minutes || 0;
 
   const getScoreColor = (score) => {
     if (score >= 90) return 'text-success';
@@ -86,10 +85,6 @@ const SessionHeader = ({ sessionData }) => {
                   month: 'long',
                   day: 'numeric'
                 })}
-              </span>
-              <span className="flex items-center gap-2">
-                <span>⏱️</span>
-                Duration: {duration} minutes
               </span>
               <span className="flex items-center gap-2">
                 <span>🤖</span>

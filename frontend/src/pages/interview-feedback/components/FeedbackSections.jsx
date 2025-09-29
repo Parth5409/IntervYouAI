@@ -8,6 +8,13 @@ const FeedbackSections = ({
   onBookmarkInsight,
   bookmarkedInsights 
 }) => {
+  const getScoreColor = (score) => {
+    if (score >= 90) return 'text-success';
+    if (score >= 80) return 'text-accent';
+    if (score >= 70) return 'text-warning';
+    return 'text-error';
+  };
+
   const sections = [
     { key: 'technical_score', title: 'Technical Skills', icon: '💻', description: 'Domain expertise and problem-solving abilities' },
     { key: 'communication_score', title: 'Communication Skills', icon: '💬', description: 'Verbal and non-verbal communication effectiveness' },

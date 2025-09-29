@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.attributes import flag_modified
 from datetime import datetime
 
-from models.pydantic_models import UserMessage, APIResponse, EndSessionPayload
+from models.pydantic_models import UserMessage, APIResponse, EndSessionPayload, InterviewSessionResponse
 from utils.database import get_db, get_session_by_id, User
 from utils.auth import get_current_user
 from orchestrator.interview import InterviewOrchestrator
@@ -107,8 +107,9 @@ async def end_interview(
 
         db.add(session)
         await db.commit()
+        await db.refresh(session)
 
-        return APIResponse(success=True, message="Interview ended. Feedback generated.", data={"feedback": feedback})
+        return APIResponse(success=True, message="Interview ended. Feedback generated.", data=InterviewSessionResponse.from_orm(session))
     except Exception as e:
         logger.error(f"Error ending interview {session_id}: {e}")
         await db.rollback()

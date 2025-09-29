@@ -4,16 +4,16 @@ import DashboardNavigation from '../../components/ui/DashboardNavigation';
 import Button from '../../components/ui/Button';
 import SessionHeader from './components/SessionHeader';
 import FeedbackSections from './components/FeedbackSections';
-import TranscriptPlayer from './components/TranscriptPlayer';
 import ProgressComparison from './components/ProgressComparison';
 import ActionItems from './components/ActionItems';
 import SocialSharing from './components/SocialSharing';
+import useAuth from '../../hooks/useAuth';
 
 const InterviewFeedback = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sessionData, setSessionData] = useState(location.state?.sessionData || null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(!location.state?.sessionData);
   const [expandedSections, setExpandedSections] = useState({
     communication: true,
     technical: false,
@@ -22,13 +22,7 @@ const InterviewFeedback = () => {
   });
   const [bookmarkedInsights, setBookmarkedInsights] = useState([]);
 
-  // Mock current user data
-  const mockCurrentUser = {
-    id: 'user-001',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    avatar: null
-  };
+  const { user } = useAuth();
 
   const [activeTab, setActiveTab] = useState('feedback');
 
@@ -38,6 +32,7 @@ const InterviewFeedback = () => {
 
   useEffect(() => {
     if (location.state?.sessionData) {
+      console.log("Session data received on feedback page:", location.state.sessionData);
       setSessionData(location.state.sessionData);
       setIsLoading(false);
     } else {
@@ -78,7 +73,7 @@ const InterviewFeedback = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <DashboardNavigation currentUser={mockCurrentUser} onTabChange={handleTabChange} />
+        <DashboardNavigation currentUser={user} onTabChange={handleTabChange} />
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
           <div className="text-center space-y-4">
             <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -95,7 +90,7 @@ const InterviewFeedback = () => {
   if (!sessionData) {
     return (
       <div className="min-h-screen bg-background">
-        <DashboardNavigation currentUser={mockCurrentUser} onTabChange={handleTabChange} />
+        <DashboardNavigation currentUser={user} onTabChange={handleTabChange} />
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
@@ -116,8 +111,8 @@ const InterviewFeedback = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNavigation currentUser={mockCurrentUser} onTabChange={handleTabChange} />
-      <main className="container mx-auto px-4 py-6 pb-20 md:pb-6 max-w-6xl">
+      <DashboardNavigation currentUser={user} onTabChange={handleTabChange} />
+      <main className="container mx-auto px-4 py-6 pb-20 md:pb-6 max-w-4xl">
         {/* Back Navigation */}
         <div className="mb-6">
           <Button
@@ -133,11 +128,8 @@ const InterviewFeedback = () => {
         {/* Session Header */}
         <SessionHeader sessionData={sessionData} />
 
-        {/* Desktop Two-Column Layout / Mobile Single Column */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-8">
-          {/* Main Content */}
-          <div className="xl:col-span-2 space-y-8">
-            {/* Feedback Sections */}
+        {/* Main Content */}
+        <div className="mt-8">
             <FeedbackSections
               feedback={sessionData?.feedback}
               expandedSections={expandedSections}
@@ -145,36 +137,6 @@ const InterviewFeedback = () => {
               onBookmarkInsight={handleBookmarkInsight}
               bookmarkedInsights={bookmarkedInsights}
             />
-
-            {/* Progress Comparison */}
-            <ProgressComparison
-              currentScore={sessionData?.overallScore}
-              progressHistory={sessionData?.progressHistory}
-            />
-
-            {/* Action Items */}
-            <ActionItems
-              improvements={sessionData?.feedback?.improvements}
-              onBookmarkInsight={handleBookmarkInsight}
-              bookmarkedInsights={bookmarkedInsights}
-            />
-
-            {/* Social Sharing */}
-            <SocialSharing
-              sessionData={sessionData}
-              achievements={sessionData?.overallScore >= 80}
-            />
-          </div>
-
-          {/* Sidebar - Transcript Player */}
-          <div className="xl:col-span-1">
-            <div className="sticky top-6">
-              <TranscriptPlayer
-                transcript={sessionData?.transcript}
-                sessionDuration={sessionData?.duration}
-              />
-            </div>
-          </div>
         </div>
 
         {/* Action Buttons */}

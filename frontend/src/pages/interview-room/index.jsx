@@ -160,6 +160,7 @@ const InterviewRoom = () => {
       const { data } = await api.post(`/interview/${sessionId}/end`, {
         transcript: conversationHistory
       });
+      console.log("Data sent to feedback page:", data.data);
       navigate('/interview-feedback', { state: { sessionData: data.data } });
     } catch (error) {
       console.error("Failed to end session:", error);
