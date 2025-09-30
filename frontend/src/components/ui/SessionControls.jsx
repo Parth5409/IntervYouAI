@@ -40,7 +40,7 @@ const SessionControls = ({
   return (
     <>
       {/* Main Session Controls - Fixed Position */}
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="fixed bottom-6 left-48 z-50">
         <div className="bg-card border border-border rounded-full shadow-elevated px-6 py-4 flex items-center space-x-4">
           {/* Connection Status */}
           <div className="flex items-center space-x-2">

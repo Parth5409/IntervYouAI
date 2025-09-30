@@ -180,21 +180,23 @@ const InterviewRoom = () => {
     <div className="min-h-screen bg-background">
       <InterviewProgressNav currentStep={2} totalSteps={3} />
       <div className="flex flex-col lg:flex-row h-screen lg:h-[calc(100vh-64px)]">
-        <div className="flex-1 lg:w-3/5 flex flex-col items-center justify-center p-6 space-y-8">
-          <AIAvatar isSpeaking={isAISpeaking} size="xlarge" />
-          <VoiceControls
-            isRecording={isRecording}
-            isMuted={isMuted}
-            onToggleRecording={handleToggleRecording}
-            onToggleMute={() => setIsMuted(!isMuted)}
-            disabled={isAISpeaking || isTranscribing}
-            isTranscribing={isTranscribing}
-          />
+        <div className="flex-1 lg:w-3/5 relative">
+          <div className="sticky top-0 h-screen flex flex-col items-center justify-center p-6 space-y-8">
+            <AIAvatar isSpeaking={isAISpeaking} size="xlarge" />
+            <VoiceControls
+              isRecording={isRecording}
+              isMuted={isMuted}
+              onToggleRecording={handleToggleRecording}
+              onToggleMute={() => setIsMuted(!isMuted)}
+              disabled={isAISpeaking || isTranscribing}
+              isTranscribing={isTranscribing}
+            />
+          </div>
         </div>
         <div className="hidden lg:flex lg:w-2/5 flex-col border-l border-border">
           <div className="flex-shrink-0 p-4 border-b border-border">
-            <SessionProgress 
-              sessionTime={sessionTime} 
+            <SessionProgress
+              sessionTime={sessionTime}
               questionsAnswered={questionsAnswered}
               totalQuestions={totalQuestions}
             />
@@ -204,6 +206,7 @@ const InterviewRoom = () => {
           </div>
         </div>
       </div>
+
       <SessionControls
         isRecording={isRecording}
         isMuted={isMuted}
@@ -211,7 +214,9 @@ const InterviewRoom = () => {
         onToggleRecording={handleToggleRecording}
         onToggleMute={() => setIsMuted(!isMuted)}
         onEndSession={handleEndSession}
+        className='mr-[404px]'
       />
+
       <EmergencyExit onExit={handleEndSession} />
       <div className="h-24 lg:hidden" />
     </div>

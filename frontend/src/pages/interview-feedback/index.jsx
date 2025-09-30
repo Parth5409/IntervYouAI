@@ -8,6 +8,7 @@ import ProgressComparison from './components/ProgressComparison';
 import ActionItems from './components/ActionItems';
 import SocialSharing from './components/SocialSharing';
 import useAuth from '../../hooks/useAuth';
+import Recommendations from './components/Recommendations';
 
 const InterviewFeedback = () => {
   const navigate = useNavigate();
@@ -137,6 +138,13 @@ const InterviewFeedback = () => {
               onBookmarkInsight={handleBookmarkInsight}
               bookmarkedInsights={bookmarkedInsights}
             />
+
+            <SocialSharing
+              sessionData={sessionData}
+              achievements={sessionData?.overallScore >= 80}
+            />
+
+            <Recommendations recommendations={sessionData?.feedback?.recommendations} />
         </div>
 
         {/* Action Buttons */}
