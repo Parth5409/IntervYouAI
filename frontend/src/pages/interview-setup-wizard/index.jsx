@@ -186,6 +186,7 @@ const InterviewSetupWizard = () => {
         sessionPayload.experience_level = formData.experienceLevel || 'mid';
         sessionPayload.industry = formData.industry || null;
       } else if (selectedType === 'salary-negotiation') {
+        sessionPayload.session_type = 'SALARY';
         sessionPayload.company_name = formData.company || null;
         sessionPayload.job_role = formData.jobRole;
         sessionPayload.experience_level = formData.experienceLevel || 'mid';
