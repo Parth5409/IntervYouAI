@@ -9,7 +9,8 @@ import GDRoom from './pages/gd-room';
 import NotFound from './pages/NotFound';
 import useAuth from './hooks/useAuth';
 import LoadingSpinner from 'components/LoadingSpinner';
-import InterviewFeedback from 'pages/interview-feedback'
+import InterviewFeedback from 'pages/interview-feedback';
+import GDFredback from 'pages/gd-feedback';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -76,6 +77,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <InterviewFeedback />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gd-feedback/:sessionId"
+          element={
+            <ProtectedRoute>
+              <GDFredback />
             </ProtectedRoute>
           }
         />

@@ -136,6 +136,26 @@ class GeminiLLM:
             logger.error(f"Error generating feedback: {e}")
             return self._get_default_feedback(detail=str(e))
 
+    async def generate_response(self, prompt: str, system_message: str, temperature: float = 0.7) -> str:
+        """Generates a generic response based on a prompt and system message."""
+        try:
+            # Create a temporary LLM instance with the desired temperature
+            llm_with_temp = ChatGoogleGenerativeAI(
+                model=self.model_name,
+                google_api_key=self.api_key,
+                temperature=temperature,
+                max_tokens=2048,
+                callbacks=[GeminiCallbackHandler()],
+                convert_system_message_to_human=True
+            )
+            
+            messages = [SystemMessage(content=system_message), HumanMessage(content=prompt)]
+            response = await llm_with_temp.ainvoke(messages)
+            return response.content.strip()
+        except Exception as e:
+            logger.error(f"Error generating generic response: {e}")
+            return "I am unable to respond at the moment."
+
     def _get_system_message(self, session_type: str, stage: str, context: Dict[str, Any]) -> str:
         """Generates the appropriate system message based on the interview type, stage, and difficulty."""
         difficulty = context.get('difficulty', 'Medium')

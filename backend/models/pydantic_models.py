@@ -102,7 +102,7 @@ class SalaryNegotiationCreate(InterviewSessionCreate):
 
 class GroupDiscussionCreate(InterviewSessionCreate):
     topic: str
-    group_size: str
+    group_size: Optional[str] = None
     duration_minutes: int
 
 class InterviewSessionResponse(BaseModel):
@@ -153,7 +153,7 @@ class GDMessage(BaseModel):
     speaker_id: str
     speaker_name: str
     message: str
-    timestamp: datetime
+    timestamp: str
     turn_number: int
 
 # Feedback Models

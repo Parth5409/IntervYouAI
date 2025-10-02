@@ -1,70 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Select from '../../../components/ui/Select';
 import Icon from '../../../components/AppIcon';
+import api from '../../../utils/api';
 
 const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
   const [topics, setTopics] = useState([]);
   const [loadingTopics, setLoadingTopics] = useState(false);
-
-  // Mock GD topics data
-  const mockTopics = [
-    { 
-      value: "remote-work-future", 
-      label: "The Future of Remote Work",
-      description: "Impact on productivity and work-life balance"
-    },
-    { 
-      value: "ai-job-displacement", 
-      label: "AI and Job Displacement",
-      description: "Technology\'s impact on employment"
-    },
-    { 
-      value: "social-media-society", 
-      label: "Social Media\'s Impact on Society",
-      description: "Benefits vs. negative effects"
-    },
-    { 
-      value: "climate-change-business", 
-      label: "Climate Change and Business Responsibility",
-      description: "Corporate environmental obligations"
-    },
-    { 
-      value: "education-system-reform", 
-      label: "Education System Reform",
-      description: "Traditional vs. modern learning approaches"
-    },
-    { 
-      value: "startup-vs-corporate", 
-      label: "Startup vs. Corporate Career",
-      description: "Pros and cons of different work environments"
-    },
-    { 
-      value: "digital-privacy", 
-      label: "Digital Privacy in Modern Age",
-      description: "Balancing convenience with privacy"
-    },
-    { 
-      value: "work-life-balance", 
-      label: "Work-Life Balance in Competitive World",
-      description: "Achieving personal and professional success"
-    },
-    { 
-      value: "entrepreneurship-youth", 
-      label: "Entrepreneurship Among Youth",
-      description: "Encouraging innovation and risk-taking"
-    },
-    { 
-      value: "globalization-impact", 
-      label: "Globalization and Cultural Identity",
-      description: "Preserving culture in connected world"
-    }
-  ];
-
-  const groupSizes = [
-    { value: "small", label: "Small Group (4-6 participants)" },
-    { value: "medium", label: "Medium Group (7-10 participants)" },
-    { value: "large", label: "Large Group (11-15 participants)" }
-  ];
 
   const durations = [
     { value: "15", label: "15 minutes" },
@@ -74,25 +15,26 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
   ];
 
   useEffect(() => {
-    // Simulate API call to fetch GD topics
-    setLoadingTopics(true);
-    setTimeout(() => {
-      setTopics(mockTopics);
-      setLoadingTopics(false);
-    }, 600);
+    const fetchTopics = async () => {
+      setLoadingTopics(true);
+      try {
+        const response = await api.get('/setup/topics');
+        setTopics(response.data.data || []);
+      } catch (error) {
+        console.error("Failed to fetch GD topics:", error);
+        setTopics([]);
+      } finally {
+        setLoadingTopics(false);
+      }
+    };
+
+    fetchTopics();
   }, []);
 
   const handleTopicChange = (value) => {
     onChange({
       ...formData,
       topic: value
-    });
-  };
-
-  const handleGroupSizeChange = (value) => {
-    onChange({
-      ...formData,
-      groupSize: value
     });
   };
 
@@ -148,17 +90,6 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
         )}
 
         <div className="grid gap-4 md:grid-cols-2">
-          <Select
-            label="Group Size"
-            description="Simulated group size"
-            placeholder="Choose group size"
-            options={groupSizes}
-            value={formData?.groupSize}
-            onChange={handleGroupSizeChange}
-            error={errors?.groupSize}
-            required
-          />
-
           <Select
             label="Duration"
             description="Discussion duration"

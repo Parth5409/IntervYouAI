@@ -114,7 +114,6 @@ const InterviewSetupWizard = () => {
           if (!formData?.industry) newErrors.industry = 'Industry selection is required';
         } else if (selectedType === 'group-discussion') {
           if (!formData?.topic) newErrors.topic = 'Discussion topic is required';
-          if (!formData?.groupSize) newErrors.groupSize = 'Group size is required';
           if (!formData?.duration) newErrors.duration = 'Duration is required';
         } else if (selectedType === 'salary-negotiation') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
@@ -196,7 +195,6 @@ const InterviewSetupWizard = () => {
       } else if (selectedType === 'group-discussion') {
         sessionPayload.session_type = 'GD';
         sessionPayload.topic = formData.topic;
-        sessionPayload.group_size = formData.groupSize;
         sessionPayload.duration_minutes = parseInt(formData.duration, 10) || 20;
       }
 
