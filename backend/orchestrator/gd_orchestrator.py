@@ -126,7 +126,6 @@ class GDOrchestrator:
             turn_number=len(session_state['transcript']) + 1,
         ).dict()
         session_state['transcript'].append(user_msg)
-        await sio.emit('new_message', user_msg, to=session_state['client_sid'])
 
         random.shuffle(session_state['turn_order'])
         session_state['current_turn_index'] = 0
