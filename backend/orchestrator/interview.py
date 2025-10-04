@@ -27,175 +27,192 @@ class InterviewState(Enum):
 
 
 class InterviewOrchestrator:
-    """Main orchestrator for handling different types of interviews via REST API"""
+    """Main orchestrator for handling different types of interviews via Socket.IO"""
 
     def __init__(self):
         """Initialize the interview orchestrator"""
         self.gemini_llm = GeminiLLM()
         self.vector_store_manager = get_vector_store_manager()
         self.document_processor = DocumentProcessor()
-        logger.info("InterviewOrchestrator initialized for stateless operation")
+        self.active_sessions: Dict[str, Dict[str, Any]] = {}
+        logger.info("InterviewOrchestrator initialized for stateful Socket.IO operation")
 
     def _build_chat_history(self, transcript: List[Dict[str, str]]) -> List[BaseMessage]:
         """Builds a LangChain chat history from a transcript."""
         messages: List[BaseMessage] = []
         for message_data in transcript:
-            role = message_data.get('role')
-            content = message_data.get('content', '')
+            # Accommodate frontend's transcript format ('type', 'text')
+            # and backend's format ('role', 'content')
+            content = message_data.get('text') or message_data.get('content', '')
             
-            if role == 'user':
+            # Check for frontend 'type' first, then backend 'role'
+            msg_type = message_data.get('type') or message_data.get('role')
+
+            if msg_type == 'user':
                 messages.append(HumanMessage(content=content))
-            elif role == 'assistant':
+            elif msg_type == 'ai' or msg_type == 'assistant':
                 messages.append(AIMessage(content=content))
         return messages
 
-    async def _get_rag_context(self, session: InterviewSession, query: str) -> Dict[str, Any]:
+    async def _get_rag_context(self, db_session: InterviewSession, query: str) -> Dict[str, Any]:
         """Retrieves context from resume and company vector stores."""
         context = {}
         try:
-            if session.user and session.user.resume_vs_id:
+            if db_session.user and db_session.user.resume_vs_id:
                 resume_results = await self.vector_store_manager.similarity_search(
-                    store_name=session.user.resume_vs_id,
+                    store_name=db_session.user.resume_vs_id,
                     query=query,
                     k=2
                 )
                 context['resume_context'] = [doc.page_content for doc in resume_results]
 
-            if session.context.get("company_vs_id"):
+            if db_session.context.get("company_vs_id"):
                 company_results = await self.vector_store_manager.similarity_search(
-                    store_name=session.context["company_vs_id"],
+                    store_name=db_session.context["company_vs_id"],
                     query=query,
                     k=3
                 )
                 context['company_context'] = [doc.page_content for doc in company_results]
         
         except Exception as e:
-            logger.error(f"Error retrieving RAG context for session {session.id}: {e}")
+            logger.error(f"Error retrieving RAG context for session {db_session.id}: {e}")
         
         return context
 
-    async def start_session(self, session: InterviewSession) -> tuple[str, list, dict]:
+    async def create_new_session(self, db_session: InterviewSession, client_sid: str) -> str:
         """
-        Starts an interview session, generates the initial message, and initializes context.
+        Starts an interview session, generates the initial message, and initializes state.
         """
         try:
-            initial_message = await self._generate_initial_message(session)
+            initial_message = await self._generate_initial_message(db_session)
             
-            transcript = session.transcript or []
-            transcript.append({
+            transcript = [{
                 "role": "assistant",
                 "content": initial_message,
                 "timestamp": datetime.now().isoformat(),
                 "message_type": "greeting",
-            })
+            }]
 
-            # Initialize question count in the session context
-            session.context['question_count'] = 1 # The greeting is the first question
+            self.active_sessions[db_session.id] = {
+                "session_id": db_session.id,
+                "client_sid": client_sid,
+                "db_session": db_session,
+                "transcript": transcript,
+                "question_count": 1, # The greeting is the first question
+                "state": InterviewState.ACTIVE
+            }
 
-            logger.info(f"Started session {session.id} via API.")
-            return initial_message, transcript, session.context
+            logger.info(f"Created new interview session {db_session.id} for client {client_sid}")
+            return initial_message
 
         except Exception as e:
-            logger.error(f"Error starting session {session.id}: {e}")
+            logger.error(f"Error starting session {db_session.id}: {e}")
             raise
 
-    async def process_user_message(self, session: InterviewSession, user_message: str) -> tuple[str, list, dict]:
+    async def handle_user_response(self, session_id: str, user_message: str) -> str:
         """ 
-        Process user message, generate AI response, and return updated transcript and context.
+        Process user message, generate AI response, and return it.
         """
-        try:
-            if session.transcript is None:
-                session.transcript = []
+        session_state = self.active_sessions.get(session_id)
+        if not session_state:
+            raise ValueError("Session not found or is not active")
 
-            session.transcript.append({
+        try:
+            session_state["transcript"].append({
                 "role": "user", 
                 "content": user_message, 
                 "timestamp": datetime.now().isoformat()
             })
 
-            response_data = await self._process_regular_message(session, user_message, session.transcript)
+            response_data = await self._process_regular_message(session_state, user_message)
             ai_response_content = response_data["message"]
-            updated_context = response_data["context"]
 
-            session.transcript.append({
+            session_state["transcript"].append({
                 "role": "assistant",
                 "content": ai_response_content,
                 "timestamp": datetime.now().isoformat(),
                 "message_type": response_data.get("message_type", "question"),
             })
             
-            logger.info(f"Processed message for session {session.id}")
-            return ai_response_content, session.transcript, updated_context
+            logger.info(f"Processed message for session {session_id}")
+            return ai_response_content
 
         except Exception as e:
-            logger.error(f"Error processing message for session {session.id}: {e}")
+            logger.error(f"Error processing message for session {session_id}: {e}")
             raise
 
-    async def end_session(self, session: InterviewSession) -> Dict[str, Any]:
+    async def end_session(self, session_id: str, final_transcript: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         End an interview session and generate feedback.
         """
+        session_state = self.active_sessions.get(session_id)
+        if not session_state:
+            raise ValueError("Session not found")
+
         try:
-            chat_history = self._build_chat_history(session.transcript)
-            feedback = await self._generate_session_feedback(session, chat_history)
-            logger.info(f"Ended session {session.id} and generated feedback.")
+            db_session = session_state['db_session']
+            chat_history = self._build_chat_history(final_transcript)
+            feedback = await self._generate_session_feedback(db_session, chat_history)
+            
+            logger.info(f"Ended session {session_id} and generated feedback.")
             return feedback
-
         except Exception as e:
-            logger.error(f"Error ending session {session.id}: {e}")
+            logger.error(f"Error ending session {session_id}: {e}")
             raise
+        finally:
+            if session_id in self.active_sessions:
+                del self.active_sessions[session_id]
+                logger.info(f"Cleaned up active session {session_id}")
 
-    async def _generate_initial_message(self, session: InterviewSession) -> str:
+    async def _generate_initial_message(self, db_session: InterviewSession) -> str:
         """Generate initial greeting message that includes the first question."""
         try:
-            rag_context = await self._get_rag_context(session, "Introduction and background")
+            rag_context = await self._get_rag_context(db_session, "Introduction and background")
             
             return await self.gemini_llm.generate_initial_greeting(
-                session_type=session.session_type,
-                session_context=session.context,
+                session_type=db_session.session_type,
+                session_context=db_session.context,
                 rag_context=rag_context
             )
         except Exception as e:
-            logger.error(f"Error generating initial message for session {session.id}: {e}")
+            logger.error(f"Error generating initial message for session {db_session.id}: {e}")
             return "Hello! Welcome to the interview. To start, can you please tell me a little bit about yourself?"
 
-    async def _process_regular_message(self, session: InterviewSession, user_message: str, transcript: list) -> Dict[str, Any]:
+    async def _process_regular_message(self, session_state: dict, user_message: str) -> Dict[str, Any]:
         """Process message for regular interview types using RAG and chat history."""
         try:
-            current_context = session.context
-            question_count = current_context.get('question_count', 0)
-            
+            db_session = session_state['db_session']
+            question_count = session_state.get('question_count', 0)
+            max_questions = db_session.context.get("max_questions", 8)
+
             user_message_lower = user_message.lower()
             is_short_message = len(user_message.split()) < 6
             wants_to_end = "thank you" in user_message_lower or "that's all" in user_message_lower
 
-            should_end = (
-                question_count >= current_context.get("max_questions", 8)
-                or (is_short_message and wants_to_end)
-            )
+            should_end = (question_count >= max_questions) or (is_short_message and wants_to_end)
 
             if should_end:
-                response = self._generate_closing_message(session)
+                response = self._generate_closing_message(db_session)
                 message_type = "closing"
             else:
-                chat_history = self._build_chat_history(transcript)
-                rag_context = await self._get_rag_context(session, user_message)
+                chat_history = self._build_chat_history(session_state['transcript'])
+                rag_context = await self._get_rag_context(db_session, user_message)
                 
                 response = await self.gemini_llm.generate_interview_question(
-                    session_type=session.session_type,
-                    session_context=current_context,
+                    session_type=db_session.session_type,
+                    session_context=db_session.context,
                     chat_history=chat_history,
                     rag_context=rag_context,
                     last_user_message=user_message
                 )
                 message_type = "question"
-                current_context['question_count'] = question_count + 1
+                session_state['question_count'] = question_count + 1
 
-            return {"message": response, "message_type": message_type, "should_end": should_end, "context": current_context}
+            return {"message": response, "message_type": message_type, "should_end": should_end}
 
         except Exception as e:
-            logger.error(f"Error processing regular message for session {session.id}: {e}")
-            return {"message": "Thank you for your response. Let me think of the next question...", "message_type": "response", "should_end": False, "context": session.context}
+            logger.error(f"Error processing regular message for session {session_state['session_id']}: {e}")
+            return {"message": "Thank you for your response. Let me think of the next question...", "message_type": "response", "should_end": False}
 
     def _generate_closing_message(self, session: InterviewSession) -> str:
         """Generate appropriate closing message"""
@@ -218,6 +235,12 @@ class InterviewOrchestrator:
                 session_context=session.context
             )
             feedback_data['session_id'] = session.id
+
+            # Safeguard against null scores from LLM
+            feedback_data['overall_score'] = feedback_data.get('overall_score') or 0
+            feedback_data['communication_score'] = feedback_data.get('communication_score') or 0
+            feedback_data['confidence_score'] = feedback_data.get('confidence_score') or 0
+
             return InterviewFeedback(**feedback_data).dict()
         except Exception as e:
             logger.error(f"Error generating session feedback for {session.id}: {e}")

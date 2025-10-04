@@ -69,7 +69,7 @@ const GDRoom = () => {
     };
 
     const handleStartInterruptionWindow = () => {
-      setInterruptionTimer(5);
+      setInterruptionTimer(15);
       setIsInterruptionWindow(true);
       setIsAISpeaking(false);
     };

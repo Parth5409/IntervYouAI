@@ -1,66 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import DashboardNavigation from '../../components/ui/DashboardNavigation';
 import Button from '../../components/ui/Button';
 import SessionHeader from './components/SessionHeader';
 import FeedbackSections from './components/FeedbackSections';
-import ProgressComparison from './components/ProgressComparison';
-import ActionItems from './components/ActionItems';
 import SocialSharing from './components/SocialSharing';
 import useAuth from '../../hooks/useAuth';
 import Recommendations from './components/Recommendations';
+import api from '../../utils/api';
 
 const InterviewFeedback = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { sessionId } = useParams();
+  const { user } = useAuth();
+
   const [sessionData, setSessionData] = useState(location.state?.sessionData || null);
   const [isLoading, setIsLoading] = useState(!location.state?.sessionData);
   const [expandedSections, setExpandedSections] = useState({
-    communication: true,
-    technical: false,
-    confidence: false,
-    improvements: false
+    communication_score: true,
+    technical_score: true,
+    confidence_score: true,
   });
-  const [bookmarkedInsights, setBookmarkedInsights] = useState([]);
-
-  const { user } = useAuth();
-
-  const [activeTab, setActiveTab] = useState('feedback');
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
 
   useEffect(() => {
+    const fetchSession = async () => {
+      if (!sessionId) {
+        setIsLoading(false);
+        console.error("No session ID provided.");
+        setSessionData(null);
+        return;
+      }
+      try {
+        const { data } = await api.get(`/session/${sessionId}`);
+        if (data.success) {
+          setSessionData(data.data);
+        } else {
+          setSessionData(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch session data:", error);
+        setSessionData(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (location.state?.sessionData) {
-      console.log("Session data received on feedback page:", location.state.sessionData);
       setSessionData(location.state.sessionData);
       setIsLoading(false);
     } else {
-      // Handle case where sessionData is not passed in state
-      // Maybe fetch it from an API using a session ID from params
-      // For now, we'll just log an error and show a not found state
-      console.error("No session data provided to feedback page");
-      setIsLoading(false);
+      fetchSession();
     }
-  }, [location.state]);
+  }, [sessionId, location.state]);
 
   const toggleSection = (section) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [section]: !prev?.[section]
+      [section]: !prev[section],
     }));
-  };
-
-  const handleBookmarkInsight = (insight) => {
-    setBookmarkedInsights(prev => {
-      const exists = prev?.some(item => item?.id === insight?.id);
-      if (exists) {
-        return prev?.filter(item => item?.id !== insight?.id);
-      } else {
-        return [...prev, { ...insight, bookmarkedAt: new Date()?.toISOString() }];
-      }
-    });
   };
 
   const handleReturnToDashboard = () => {
@@ -74,7 +72,7 @@ const InterviewFeedback = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <DashboardNavigation currentUser={user} onTabChange={handleTabChange} />
+        <DashboardNavigation currentUser={user}/>
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
           <div className="text-center space-y-4">
             <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -91,7 +89,7 @@ const InterviewFeedback = () => {
   if (!sessionData) {
     return (
       <div className="min-h-screen bg-background">
-        <DashboardNavigation currentUser={user} onTabChange={handleTabChange} />
+        <DashboardNavigation currentUser={user}/>
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
@@ -112,7 +110,7 @@ const InterviewFeedback = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNavigation currentUser={user} onTabChange={handleTabChange} />
+      <DashboardNavigation currentUser={user}/>
       <main className="container mx-auto px-4 py-6 pb-20 md:pb-6 max-w-4xl">
         {/* Back Navigation */}
         <div className="mb-6">
@@ -135,8 +133,6 @@ const InterviewFeedback = () => {
               feedback={sessionData?.feedback}
               expandedSections={expandedSections}
               onToggleSection={toggleSection}
-              onBookmarkInsight={handleBookmarkInsight}
-              bookmarkedInsights={bookmarkedInsights}
             />
 
             <SocialSharing

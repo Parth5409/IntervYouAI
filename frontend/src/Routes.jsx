@@ -73,7 +73,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/interview-feedback"
+          path="/interview-feedback/:sessionId"
           element={
             <ProtectedRoute>
               <InterviewFeedback />

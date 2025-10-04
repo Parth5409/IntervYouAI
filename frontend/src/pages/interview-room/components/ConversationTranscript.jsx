@@ -22,30 +22,6 @@ const ConversationTranscript = ({
     });
   };
 
-  const mockTranscript = transcript?.length === 0 ? [
-    {
-      id: 1,
-      speaker: 'AI',
-      text: "Hello! I'm your AI interview assistant. I'm excited to help you practice today. Let's start with a simple question - can you tell me about yourself?",
-      timestamp: new Date(Date.now() - 120000),
-      type: 'ai'
-    },
-    {
-      id: 2,
-      speaker: 'You',
-      text: "Hi! I'm a software developer with 3 years of experience in React and Node.js. I'm passionate about creating user-friendly applications and solving complex problems.",
-      timestamp: new Date(Date.now() - 90000),
-      type: 'user'
-    },
-    {
-      id: 3,
-      speaker: 'AI',
-      text: "That's great! Can you walk me through a challenging project you've worked on recently and how you approached solving the technical difficulties?",
-      timestamp: new Date(Date.now() - 60000),
-      type: 'ai'
-    }
-  ] : transcript;
-
   return (
     <div className={`flex flex-col h-full ${className}`}>
       {/* Header */}
@@ -55,7 +31,7 @@ const ConversationTranscript = ({
         </h3>
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <Icon name="MessageSquare" size={16} />
-          <span>{mockTranscript?.length} messages</span>
+          <span>{transcript?.length} messages</span>
         </div>
       </div>
       {/* Transcript Area */}
@@ -63,7 +39,7 @@ const ConversationTranscript = ({
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/20"
       >
-        {mockTranscript?.map((message) => (
+        {transcript?.map((message) => (
           <div
             key={message?.id}
             className={`flex ${
@@ -120,7 +96,7 @@ const ConversationTranscript = ({
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Session active</span>
           <div className="flex items-center space-x-4">
-            <span>Words spoken: {mockTranscript?.reduce((acc, msg) => acc + msg?.text?.split(' ')?.length, 0)}</span>
+            <span>Words spoken: {transcript?.reduce((acc, msg) => acc + msg?.text?.split(' ')?.length, 0)}</span>
             <div className="flex items-center space-x-1">
               <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
               <span>Live</span>

@@ -22,7 +22,7 @@ from fastapi.staticfiles import StaticFiles
 from socket_app.session import sio
 import socketio
 
-from routes import auth, user, data, session, interview, stt
+from routes import auth, user, data, session
 from utils.database import init_db
 from llm.embeddings import initialize_embeddings
 
@@ -80,8 +80,6 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(user.router, prefix="/api/user", tags=["User"])  
 app.include_router(data.router, prefix="/api", tags=["Data"])
 app.include_router(session.router, prefix="/api/session", tags=["Session"])
-app.include_router(interview.router, prefix="/api/interview", tags=["Interview"])
-app.include_router(stt.router, prefix="/api/stt", tags=["Speech-to-Text"])
 
 # Create the combined ASGI app
 application = socketio.ASGIApp(sio, other_asgi_app=app)

@@ -31,7 +31,7 @@ class GeminiLLM:
             model=model_name,
             google_api_key=self.api_key,
             temperature=0.7,
-            max_tokens=2048,
+            max_tokens=4096,
             callbacks=[GeminiCallbackHandler()],
             convert_system_message_to_human=True
         )
@@ -98,7 +98,7 @@ class GeminiLLM:
         try:
             system_msg = self._get_system_message(session_type, "feedback", session_context)
 
-            transcript_text = "\n".join([f"Interviewer: {msg.content}" if isinstance(msg, AIMessage) else f"Candidate: {msg.content}" for msg in chat_history])
+            transcript_text = "\n".join([f"assistant: {msg.content}" if isinstance(msg, AIMessage) else f"user: {msg.content}" for msg in chat_history])
 
             prompt = f"""
             **Interview Context:**

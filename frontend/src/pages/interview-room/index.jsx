@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAudioRecorder } from '../../hooks/useAudioRecorder'; // Import the new hook
+import io from 'socket.io-client';
+import { useAudioRecorder } from '../../hooks/useAudioRecorder';
+import useAuth from '../../hooks/useAuth';
 import api from '../../utils/api';
 
 // Import Components
@@ -15,6 +17,8 @@ import EmergencyExit from './components/EmergencyExit';
 const InterviewRoom = () => {
   const navigate = useNavigate();
   const { sessionId } = useParams();
+  const { user } = useAuth();
+  const socketRef = useRef(null);
 
   // State Management
   const [sessionDetails, setSessionDetails] = useState(null);
@@ -24,127 +28,105 @@ const InterviewRoom = () => {
   const [sessionTime, setSessionTime] = useState(0);
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const [isInterrupting, setIsInterrupting] = useState(false);
 
   // Custom hook for audio recording
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
 
   // --- EFFECTS ---
 
-  // Effect to start the interview on component mount
   useEffect(() => {
-    const startInterview = async () => {
-      try {
-        const detailsRes = await api.get(`/session/${sessionId}`);
-        setSessionDetails(detailsRes.data.data);
+    if (!sessionId || !user?.id) return;
 
-        const startRes = await api.post(`/interview/${sessionId}/start`);
-        const firstMessage = startRes.data.data.message;
+    socketRef.current = io('http://localhost:8000', { path: '/socket.io' });
+    const socket = socketRef.current;
 
-        setConversationHistory([{
+    const handleSessionStarted = (data) => {
+      const firstMessage = data.message;
+      setConversationHistory([
+        {
           id: Date.now(),
           speaker: 'AI',
           text: firstMessage,
           type: 'ai',
-          timestamp: new Date()
-        }]);
-        setIsSessionActive(true);
-        setIsAISpeaking(false);
-      } catch (error) {
-        console.error("Failed to start interview:", error);
-        navigate('/dashboard');
-      }
+          timestamp: new Date(),
+        },
+      ]);
+      setIsSessionActive(true);
+      setIsAISpeaking(false);
     };
-    startInterview();
-  }, [sessionId, navigate]);
 
-  // Effect to transcribe audio when a new blob is available
+    const handleUserMessageProcessed = ({ transcript }) => {
+      const userMessage = {
+        id: Date.now(),
+        speaker: 'You',
+        text: transcript,
+        type: 'user',
+        timestamp: new Date(),
+      };
+      setConversationHistory((prev) => [...prev, userMessage]);
+      setIsTranscribing(false);
+      setIsAISpeaking(true); // Waiting for AI response
+    };
+
+    const handleNewAIMessage = ({ message }) => {
+      const aiMessage = {
+        id: Date.now() + 1,
+        speaker: 'AI',
+        text: message,
+        type: 'ai',
+        timestamp: new Date(),
+      };
+      setConversationHistory((prev) => [...prev, aiMessage]);
+      setIsAISpeaking(false);
+    };
+
+    const handleInterviewEnded = ({ sessionData }) => {
+      navigate(`/interview-feedback/${sessionData.id}`, { state: { sessionData } });
+    };
+
+    socket.on('connect', () => {
+      api.get(`/session/${sessionId}`)
+        .then((res) => {
+          setSessionDetails(res.data.data);
+          socket.emit('start_interview', { session_id: sessionId, user_id: user.id });
+        })
+        .catch((err) => {
+          console.error('Failed to get session details:', err);
+          navigate('/dashboard');
+        });
+    });
+
+    socket.on('session_started', handleSessionStarted);
+    socket.on('user_message_processed', handleUserMessageProcessed);
+    socket.on('new_ai_message', handleNewAIMessage);
+    socket.on('interview_ended', handleInterviewEnded);
+    socket.on('error', (error) => console.error('Socket Error:', error.message));
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [sessionId, user?.id, navigate]);
+
   useEffect(() => {
-    if (audioBlob) {
-      handleTranscribe(audioBlob);
+    if (audioBlob && socketRef.current) {
+      setIsTranscribing(true);
+      socketRef.current.emit('audio_chunk', {
+        session_id: sessionId,
+        audio_blob: audioBlob,
+      });
+      resetAudio();
     }
-  }, [audioBlob]);
+  }, [audioBlob, sessionId, resetAudio]);
 
-  // Effect for the session timer
   useEffect(() => {
     let interval;
     if (isSessionActive) {
-      interval = setInterval(() => setSessionTime(prev => prev + 1), 1000);
+      interval = setInterval(() => setSessionTime((prev) => prev + 1), 1000);
     }
     return () => clearInterval(interval);
   }, [isSessionActive]);
 
-  // --- API HANDLERS ---
-
-  const handleTranscribe = async (blob) => {
-    setIsTranscribing(true);
-    const formData = new FormData();
-    formData.append("file", blob, "recording.webm");
-
-    try {
-      const { data } = await api.post("/stt/transcribe", formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      if (data.success && data.data.transcript) {
-        await sendMessage(data.data.transcript);
-      }
-    } catch (error) {
-      console.error("Failed to transcribe audio:", error);
-      // Handle transcription error in UI
-    } finally {
-      setIsTranscribing(false);
-      resetAudio(); // Clear the audio blob after processing
-    }
-  };
-
-  const sendMessage = async (messageText) => {
-    if (!messageText.trim()) return;
-
-    const userMessage = {
-      id: Date.now(),
-      speaker: 'You',
-      text: messageText,
-      type: 'user',
-      timestamp: new Date(),
-    };
-    setConversationHistory(prev => [...prev, userMessage]);
-    setIsAISpeaking(true);
-
-    // Check if this is the last question
-    if (questionsAnswered + 1 >= totalQuestions) {
-      const closingMessage = {
-        id: Date.now() + 1,
-        speaker: 'AI',
-        text: "Thank you for the technical discussion! This concludes the interview. We'll now move to the feedback phase.",
-        type: 'ai',
-        timestamp: new Date(),
-      };
-      setConversationHistory(prev => [...prev, closingMessage]);
-      setIsAISpeaking(false);
-      // Automatically end the session after a short delay
-      setTimeout(() => {
-        handleEndSession();
-      }, 10000); // 10-second delay
-      return;
-    }
-
-    try {
-      const { data } = await api.post(`/interview/${sessionId}/message`, { message: messageText });
-      const aiMessage = {
-        id: Date.now() + 1,
-        speaker: 'AI',
-        text: data.data.message,
-        type: 'ai',
-        timestamp: new Date(),
-      };
-      setConversationHistory(prev => [...prev, aiMessage]);
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    } finally {
-      setIsAISpeaking(false);
-    }
-  };
+  // --- HANDLERS ---
 
   const handleToggleRecording = () => {
     if (isRecording) {
@@ -154,22 +136,18 @@ const InterviewRoom = () => {
     }
   };
 
-  const handleEndSession = async () => {
-    setIsSessionActive(false);
-    try {
-      const { data } = await api.post(`/interview/${sessionId}/end`, {
-        transcript: conversationHistory
+  const handleEndSession = () => {
+    if (socketRef.current) {
+      setIsSessionActive(false);
+      socketRef.current.emit('end_interview', {
+        session_id: sessionId,
+        transcript: conversationHistory,
       });
-      console.log("Data sent to feedback page:", data.data);
-      navigate('/interview-feedback', { state: { sessionData: data.data } });
-    } catch (error) {
-      console.error("Failed to end session:", error);
-      navigate('/dashboard');
     }
   };
 
   const questionsAnswered = useMemo(() => {
-    return conversationHistory.filter(msg => msg.type === 'user').length;
+    return conversationHistory.filter((msg) => msg.type === 'user').length;
   }, [conversationHistory]);
 
   const totalQuestions = useMemo(() => {
