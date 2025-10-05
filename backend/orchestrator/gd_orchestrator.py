@@ -9,10 +9,12 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 from enum import Enum
 import socketio
+import base64
 
 from models.pydantic_models import GDParticipant, GDMessage, GDFeedback, GDSessionData
 from llm.gemini import GeminiLLM
 from utils.database import InterviewSession
+from tts.tts_service import tts_service
 
 logger = logging.getLogger(__name__)
 
@@ -158,11 +160,20 @@ class GDOrchestrator:
 
         await sio.emit('speaker_change', {'speaker_id': next_speaker_id}, to=client_sid)
         
-        bot_response_message = await self._generate_bot_response(session_state, next_speaker_id)
+        bot_response = await self._generate_bot_response(session_state, next_speaker_id)
         
-        if bot_response_message:
+        if bot_response:
+            bot_response_message, bot_response_audio = bot_response
             session_state['transcript'].append(bot_response_message)
+
             logger.info(f"Emitting new_message for bot: {bot_response_message}")
+
+            audio_b64 = None
+            if bot_response_audio:
+                audio_b64 = base64.b64encode(bot_response_audio).decode('utf-8')
+            
+            bot_response_message['audio'] = audio_b64
+
             await sio.emit('new_message', bot_response_message, to=client_sid)
         
         await sio.emit('start_interruption_window', to=client_sid)
@@ -171,8 +182,8 @@ class GDOrchestrator:
         """Ends the GD session and generates feedback."""
         return await self._generate_session_feedback(session)
 
-    async def _generate_bot_response(self, context: Dict[str, Any], bot_id: str) -> Optional[Dict[str, Any]]:
-        """Generate response from a specific bot."""
+    async def _generate_bot_response(self, context: Dict[str, Any], bot_id: str) -> Optional[tuple[Dict[str, Any], bytes | None]]:
+        """Generate response from a specific bot, including audio."""
         bot = next((p for p in context['participants'] if p['id'] == bot_id), None)
         if not bot:
             return None
@@ -192,13 +203,17 @@ class GDOrchestrator:
             temperature=0.85
         )
         
-        return GDMessage(
+        response_audio = await tts_service.text_to_audio(response_text)
+
+        message = GDMessage(
             speaker_id=bot["id"],
             speaker_name=bot["name"],
             message=response_text.strip(),
             timestamp=datetime.now().isoformat(),
             turn_number=len(context['transcript']) + 1
         ).dict()
+
+        return message, response_audio
 
     async def _generate_session_feedback(self, session: InterviewSession) -> Dict[str, Any]:
         """Generate comprehensive feedback for the GD session."""

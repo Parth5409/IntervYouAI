@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import 'regenerator-runtime/runtime';
+import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 import io from 'socket.io-client';
 import useAuth from '../../hooks/useAuth';
 
@@ -12,6 +11,8 @@ import GDTranscript from './components/GDTranscript';
 import Icon from '../../components/AppIcon';
 import VoiceControls from '../interview-room/components/VoiceControls';
 import api from '../../utils/api';
+
+import { playAudioFromBase64 } from '../../utils/audioPlayer';
 
 const TimerDisplay = ({ time }) => (
   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center bg-black/50 p-4 rounded-lg backdrop-blur-sm">
@@ -37,11 +38,12 @@ const GDRoom = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isAISpeaking, setIsAISpeaking] = useState(false);
+  const [isAIPlaying, setIsAIPlaying] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [interruptionTimer, setInterruptionTimer] = useState(0);
   const [isInterruptionWindow, setIsInterruptionWindow] = useState(false);
 
-  // Speech Recognition
-  const { transcript: sttTranscript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+  const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
 
   // --- EFFECTS ---
 
@@ -49,17 +51,20 @@ const GDRoom = () => {
     if (!user?.id) return;
 
     socketRef.current = io('http://localhost:8000', { path: '/socket.io' });
+    const socket = socketRef.current;
 
     const handleNewMessage = (message) => {
-      console.log("Frontend received new_message event with data:", message);
-      setInterruptionTimer(0);
-      setIsInterruptionWindow(false);
       setMessages(prev => [...prev, { ...message, timestamp: new Date() }]);
+      if (message.audio) {
+        setIsAIPlaying(true);
+        playAudioFromBase64(message.audio, () => setIsAIPlaying(false));
+      }
+      setIsAISpeaking(false);
     };
 
     const handleSpeakerChange = ({ speaker_id }) => {
       setActiveSpeakerId(speaker_id);
-      setIsAISpeaking(speaker_id !== 'human_user' && speaker_id !== 'moderator');
+      setIsAISpeaking(speaker_id !== 'human_user');
     };
 
     const handleStartTurnWindow = () => {
@@ -78,27 +83,40 @@ const GDRoom = () => {
       navigate(`/gd-feedback/${session_id}`);
     };
 
-    socketRef.current.on('connect', () => {
-      console.log('Socket connected');
-      socketRef.current.emit('start_discussion', { session_id: sessionId, user_id: user.id });
+    socket.on('connect', () => {
+      socket.emit('start_discussion', { session_id: sessionId, user_id: user.id });
     });
 
-    socketRef.current.on('session_started', ({ topic, participants }) => {
+    socket.on('session_started', ({ topic, participants }) => {
       setSessionDetails({ context: { topic } });
       setParticipants(participants);
       setIsLoading(false);
       setIsSessionActive(true);
     });
 
-    socketRef.current.on('new_message', handleNewMessage);
-    socketRef.current.on('speaker_change', handleSpeakerChange);
-    socketRef.current.on('start_turn_window', handleStartTurnWindow);
-    socketRef.current.on('start_interruption_window', handleStartInterruptionWindow);
-    socketRef.current.on('discussion_ended', handleDiscussionEnded);
-    socketRef.current.on('error', (error) => console.error('Socket Error:', error.message));
+    socket.on('new_message', handleNewMessage);
+    socket.on('speaker_change', handleSpeakerChange);
+    socket.on('start_turn_window', handleStartTurnWindow);
+    socket.on('start_interruption_window', handleStartInterruptionWindow);
+    socket.on('discussion_ended', handleDiscussionEnded);
+    socket.on('error', (error) => console.error('Socket Error:', error.message));
+
+    const handleUserMessageProcessed = ({ transcript }) => {
+        const userMessage = {
+            speaker_id: 'human_user',
+            speaker_name: 'You',
+            message: transcript,
+            timestamp: new Date().toISOString(),
+        };
+        setMessages(prev => [...prev, userMessage]);
+        setIsTranscribing(false);
+        setIsAISpeaking(true); // Wait for bot response
+    };
+
+    socket.on('user_message_processed', handleUserMessageProcessed);
 
     return () => {
-      socketRef.current.disconnect();
+      socket.disconnect();
     };
   }, [sessionId, navigate, user?.id]);
 
@@ -116,55 +134,38 @@ const GDRoom = () => {
       return () => clearTimeout(timer);
     } else if (interruptionTimer === 0 && isInterruptionWindow) {
       setIsInterruptionWindow(false);
-      if (socketRef.current && !listening) {
+      if (socketRef.current && !isRecording) {
         socketRef.current.emit('pass_turn', { session_id: sessionId });
         setIsAISpeaking(true);
       }
     }
-  }, [interruptionTimer, isInterruptionWindow, listening, sessionId]);
+  }, [interruptionTimer, isInterruptionWindow, isRecording, sessionId]);
 
   useEffect(() => {
-    if (listening && isInterruptionWindow) {
+    if (isRecording && isInterruptionWindow) {
       setInterruptionTimer(0);
       setIsInterruptionWindow(false);
     }
-  }, [listening, isInterruptionWindow]);
-
-  const handleSendMessage = useCallback((messageText) => {
-    if (!messageText.trim() || !socketRef.current || isSubmittingRef.current) return;
-
-    isSubmittingRef.current = true;
-
-    const userMessage = {
-        speaker_id: 'human_user',
-        speaker_name: 'You',
-        message: messageText,
-        timestamp: new Date().toISOString(),
-    };
-    setMessages(prev => [...prev, userMessage]);
-
-    socketRef.current.emit('user_message', { session_id: sessionId, message: messageText });
-    resetTranscript();
-    setIsAISpeaking(true); // Assume AI will speak next, disable mic immediately
-  }, [sessionId, resetTranscript]);
+  }, [isRecording, isInterruptionWindow]);
 
   useEffect(() => {
-    if (!listening && sttTranscript) {
-      handleSendMessage(sttTranscript);
+    if (audioBlob && socketRef.current) {
+      setIsTranscribing(true);
+      socketRef.current.emit('gd_audio_chunk', {
+        session_id: sessionId,
+        audio_blob: audioBlob,
+      });
+      resetAudio();
     }
-  }, [listening, sttTranscript, handleSendMessage]);
+  }, [audioBlob, sessionId, resetAudio]);
 
   // --- HANDLERS ---
 
-  const handleToggleListening = () => {
-    if (isMuted || isAISpeaking) return;
-
-    if (listening) {
-      SpeechRecognition.stopListening();
+  const handleToggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
     } else {
-      isSubmittingRef.current = false; // Reset lock for new message
-      resetTranscript();
-      SpeechRecognition.startListening({ continuous: true });
+      startRecording();
     }
   };
 
@@ -173,10 +174,6 @@ const GDRoom = () => {
       socketRef.current.emit('end_discussion', { session_id: sessionId });
     }
   };
-
-  if (!browserSupportsSpeechRecognition) {
-    return <span>Browser doesn't support speech recognition. Please use Google Chrome.</span>;
-  }
 
   if (isLoading) {
     return (
@@ -209,11 +206,12 @@ const GDRoom = () => {
             <ParticipantsGrid participants={participants} activeSpeakerId={activeSpeakerId} />
             {isInterruptionWindow && interruptionTimer > 0 && <TimerDisplay time={interruptionTimer} />}
             <VoiceControls 
-                isListening={listening}
+                isRecording={isRecording}
                 isMuted={isMuted}
-                onToggleListening={handleToggleListening}
+                onToggleRecording={handleToggleRecording}
                 onToggleMute={() => setIsMuted(!isMuted)}
-                disabled={isAISpeaking}
+                disabled={isAISpeaking || isAIPlaying || isTranscribing}
+                isTranscribing={isTranscribing}
             />
         </div>
 
@@ -223,10 +221,10 @@ const GDRoom = () => {
       </div>
 
       <SessionControls
-        isRecording={listening}
+        isRecording={isRecording}
         isMuted={isMuted}
         sessionTime={sessionTime}
-        onToggleRecording={handleToggleListening}
+        onToggleRecording={handleToggleRecording}
         onToggleMute={() => setIsMuted(!isMuted)}
         onEndSession={handleEndSession}
         showTimer={false}

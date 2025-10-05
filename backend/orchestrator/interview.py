@@ -14,6 +14,7 @@ from llm.gemini import GeminiLLM
 from orchestrator.rag_utils import get_vector_store_manager, DocumentProcessor
 from models.pydantic_models import SessionType, InterviewFeedback
 from utils.database import InterviewSession
+from tts.tts_service import tts_service
 
 logger = logging.getLogger(__name__)
 
@@ -79,12 +80,13 @@ class InterviewOrchestrator:
         
         return context
 
-    async def create_new_session(self, db_session: InterviewSession, client_sid: str) -> str:
+    async def create_new_session(self, db_session: InterviewSession, client_sid: str) -> tuple[str, bytes | None]:
         """
         Starts an interview session, generates the initial message, and initializes state.
         """
         try:
             initial_message = await self._generate_initial_message(db_session)
+            initial_audio = await tts_service.text_to_audio(initial_message)
             
             transcript = [{
                 "role": "assistant",
@@ -103,15 +105,15 @@ class InterviewOrchestrator:
             }
 
             logger.info(f"Created new interview session {db_session.id} for client {client_sid}")
-            return initial_message
+            return initial_message, initial_audio
 
         except Exception as e:
             logger.error(f"Error starting session {db_session.id}: {e}")
             raise
 
-    async def handle_user_response(self, session_id: str, user_message: str) -> str:
+    async def handle_user_response(self, session_id: str, user_message: str) -> tuple[str, bytes | None]:
         """ 
-        Process user message, generate AI response, and return it.
+        Process user message, generate AI response, and return it along with audio.
         """
         session_state = self.active_sessions.get(session_id)
         if not session_state:
@@ -126,6 +128,7 @@ class InterviewOrchestrator:
 
             response_data = await self._process_regular_message(session_state, user_message)
             ai_response_content = response_data["message"]
+            ai_response_audio = await tts_service.text_to_audio(ai_response_content)
 
             session_state["transcript"].append({
                 "role": "assistant",
@@ -135,7 +138,7 @@ class InterviewOrchestrator:
             })
             
             logger.info(f"Processed message for session {session_id}")
-            return ai_response_content
+            return ai_response_content, ai_response_audio
 
         except Exception as e:
             logger.error(f"Error processing message for session {session_id}: {e}")

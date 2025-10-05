@@ -41,3 +41,13 @@ Pillow
 numpy
 scikit-learn
 cloudinary
+
+# TTS Dependencies
+transformers
+faster_whisper
+datasets
+kokoro
+accelerate
+soundfile
+scipy
+huggingface-hub

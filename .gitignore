@@ -21,6 +21,7 @@ yarn-error.log*
 # Virtual Environment
 # This prevents the entire virtual environment from being committed.
 /backend/venv/
+/.venv
 
 # Environment variables file
 # IMPORTANT: This file contains secrets and should NEVER be committed.
@@ -68,3 +69,4 @@ GEMINI.md
 gd_implementation_plan.txt
 frontend_data.txt
 interview_migration_plan.txt
+tts_integration_plan.txt

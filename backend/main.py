@@ -25,6 +25,7 @@ import socketio
 from routes import auth, user, data, session
 from utils.database import init_db
 from llm.embeddings import initialize_embeddings
+from tts.tts_service import tts_service
 
 # Configure logging
 logging.basicConfig(

@@ -5,6 +5,8 @@ import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 import useAuth from '../../hooks/useAuth';
 import api from '../../utils/api';
 
+import { playAudioFromBase64 } from '../../utils/audioPlayer';
+
 // Import Components
 import InterviewProgressNav from '../../components/ui/InterviewProgressNav';
 import SessionControls from '../../components/ui/SessionControls';
@@ -28,6 +30,7 @@ const InterviewRoom = () => {
   const [sessionTime, setSessionTime] = useState(0);
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isAIPlaying, setIsAIPlaying] = useState(false);
 
   // Custom hook for audio recording
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
@@ -41,18 +44,22 @@ const InterviewRoom = () => {
     const socket = socketRef.current;
 
     const handleSessionStarted = (data) => {
-      const firstMessage = data.message;
+      const { text, audio } = data;
       setConversationHistory([
         {
           id: Date.now(),
           speaker: 'AI',
-          text: firstMessage,
+          text: text,
           type: 'ai',
           timestamp: new Date(),
         },
       ]);
       setIsSessionActive(true);
       setIsAISpeaking(false);
+      if (audio) {
+        setIsAIPlaying(true);
+        playAudioFromBase64(audio, () => setIsAIPlaying(false));
+      }
     };
 
     const handleUserMessageProcessed = ({ transcript }) => {
@@ -68,16 +75,20 @@ const InterviewRoom = () => {
       setIsAISpeaking(true); // Waiting for AI response
     };
 
-    const handleNewAIMessage = ({ message }) => {
+    const handleNewAIMessage = ({ text, audio }) => {
       const aiMessage = {
         id: Date.now() + 1,
         speaker: 'AI',
-        text: message,
+        text: text,
         type: 'ai',
         timestamp: new Date(),
       };
       setConversationHistory((prev) => [...prev, aiMessage]);
       setIsAISpeaking(false);
+      if (audio) {
+        setIsAIPlaying(true);
+        playAudioFromBase64(audio, () => setIsAIPlaying(false));
+      }
     };
 
     const handleInterviewEnded = ({ sessionData }) => {
@@ -160,13 +171,13 @@ const InterviewRoom = () => {
       <div className="flex flex-col lg:flex-row h-screen lg:h-[calc(100vh-64px)]">
         <div className="flex-1 lg:w-3/5 relative">
           <div className="sticky top-0 h-screen flex flex-col items-center justify-center p-6 space-y-8">
-            <AIAvatar isSpeaking={isAISpeaking} size="xlarge" />
+            <AIAvatar isSpeaking={isAIPlaying} size="xlarge" />
             <VoiceControls
               isRecording={isRecording}
               isMuted={isMuted}
               onToggleRecording={handleToggleRecording}
               onToggleMute={() => setIsMuted(!isMuted)}
-              disabled={isAISpeaking || isTranscribing}
+              disabled={isAISpeaking || isTranscribing || isAIPlaying}
               isTranscribing={isTranscribing}
             />
           </div>
