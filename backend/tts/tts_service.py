@@ -5,6 +5,7 @@ import logging
 import torch
 import numpy as np
 from scipy.io.wavfile import write as write_wav
+from typing import List
 
 
 logger = logging.getLogger(__name__)
@@ -27,6 +28,11 @@ class TTSService:
             # Set voice - you can change this to any of the 48+ available voices
             # Popular choices: 'af_bella', 'af_sarah', 'am_adam', 'am_michael'
             self.voice = 'af_bella'  # Professional female voice for interviewer
+
+            self.available_voices: List[str] = [
+                'af_bella', 'af_nicole', 'am_fenrir', 'am_michael', 'bf_emma', 'bm_fable',
+                'af_aoede', 'af_kore', 'af_sarah', 'am_puck', 'bf_isabella'
+            ]
             
             # Sample rate for Kokoro (always 24000 Hz)
             self.sample_rate = 24000
@@ -49,7 +55,7 @@ class TTSService:
         try:
             # The model inference is synchronous, so we run it in a thread
             audio_waveform = await asyncio.to_thread(
-                self._generate_speech, text
+                self._generate_speech, text, self.voice
             )
 
             # Convert the waveform to WAV bytes in memory
@@ -63,14 +69,32 @@ class TTSService:
             logger.error(f"Error generating audio from text: {e}")
             return None
 
+    async def text_to_audio_with_voice(self, text: str, voice: str) -> bytes | None:
+        """Converts text to WAV audio bytes in memory using a specific voice."""
+        if not self.model or not text.strip():
+            return None
+        
+        try:
+            audio_waveform = await asyncio.to_thread(
+                self._generate_speech, text, voice
+            )
+            wav_buffer = io.BytesIO()
+            write_wav(wav_buffer, self.sample_rate, audio_waveform)
+            wav_buffer.seek(0)
+            return wav_buffer.read()
 
-    def _generate_speech(self, text: str):
+        except Exception as e:
+            logger.error(f"Error generating audio with voice {voice}: {e}")
+            return None
+
+
+    def _generate_speech(self, text: str, voice: str):
         """Synchronous helper function for speech generation using Kokoro-82M."""
         # Generate audio using Kokoro pipeline
         # The pipeline returns a generator that yields (graphemes, phonemes, audio) tuples
         generator = self.pipeline(
             text, 
-            voice=self.voice,
+            voice=voice,
             speed=1.0,  # Adjust speed if needed (0.5 to 2.0)
             split_pattern=r'\n+'  # Split on newlines for better pacing
         )

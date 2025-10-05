@@ -165,12 +165,33 @@ const InterviewRoom = () => {
     return sessionDetails?.context?.max_questions || 5;
   }, [sessionDetails]);
 
+  const sessionTitle = useMemo(() => {
+    if (!sessionDetails) {
+      return 'Loading Interview...';
+    }
+    const type = sessionDetails.session_type || '';
+    const company = sessionDetails.context?.company_name || '';
+    const jobRole = sessionDetails.context?.job_role || '';
+
+    // Format the type: "TECHNICAL" -> "Technical Interview"
+    const formattedType = type.charAt(0).toUpperCase() + type.slice(1).toLowerCase().replace('_', ' ') + ' Interview';
+
+    let title = formattedType;
+    if (jobRole) {
+      title += ` for ${jobRole}`;
+    }
+    if (company) {
+      title += ` at ${company}`;
+    }
+    return title;
+  }, [sessionDetails]);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <InterviewProgressNav currentStep={2} totalSteps={3} />
-      <div className="flex flex-col lg:flex-row h-screen lg:h-[calc(100vh-64px)]">
-        <div className="flex-1 lg:w-3/5 relative">
-          <div className="sticky top-0 h-screen flex flex-col items-center justify-center p-6 space-y-8">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-y-hidden">
+        <div className="flex-1 lg:w-3/5 relative flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center p-6 space-y-8">
             <AIAvatar isSpeaking={isAIPlaying} size="xlarge" />
             <VoiceControls
               isRecording={isRecording}
@@ -185,12 +206,13 @@ const InterviewRoom = () => {
         <div className="hidden lg:flex lg:w-2/5 flex-col border-l border-border">
           <div className="flex-shrink-0 p-4 border-b border-border">
             <SessionProgress
+              currentPhase={sessionTitle.toUpperCase()}
               sessionTime={sessionTime}
               questionsAnswered={questionsAnswered}
               totalQuestions={totalQuestions}
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-1  style={{ height: 'calc(100vh - 380px)' }}">
             <ConversationTranscript transcript={conversationHistory} isLoading={isAISpeaking || isTranscribing} />
           </div>
         </div>

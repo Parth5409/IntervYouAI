@@ -2,7 +2,7 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 
 const SessionProgress = ({
-  currentPhase = 'Introduction',
+  currentPhase = 'Technical',
   totalPhases = 4,
   currentPhaseIndex = 1,
   sessionTime = 0,
@@ -10,12 +10,7 @@ const SessionProgress = ({
   questionsAnswered = 0,
   totalQuestions = 8
 }) => {
-  const phases = [
-    'Introduction',
-    'Technical Questions',
-    'Behavioral Questions',
-    'Wrap-up'
-  ];
+  const phases = [];
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -34,17 +29,11 @@ const SessionProgress = ({
           <h3 className="text-lg font-semibold text-foreground">
             {currentPhase}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            Phase {currentPhaseIndex} of {totalPhases}
-          </p>
         </div>
         <div className="text-right">
           <div className="text-lg font-mono font-semibold text-foreground">
             {formatTime(sessionTime)}
           </div>
-          <p className="text-xs text-muted-foreground">
-            Est. {formatTime(estimatedDuration)}
-          </p>
         </div>
       </div>
       {/* Phase Progress */}
@@ -76,43 +65,6 @@ const SessionProgress = ({
             style={{ width: `${questionProgress}%` }}
           />
         </div>
-      </div>
-      {/* Phase Indicators */}
-      <div className="flex items-center justify-between pt-2">
-        {phases?.map((phase, index) => {
-          const phaseNumber = index + 1;
-          const isActive = phaseNumber === currentPhaseIndex;
-          const isCompleted = phaseNumber < currentPhaseIndex;
-          
-          return (
-            <div key={phase} className="flex flex-col items-center space-y-1">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                  isCompleted
-                    ? 'bg-success text-success-foreground'
-                    : isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {isCompleted ? (
-                  <Icon name="Check" size={12} />
-                ) : (
-                  phaseNumber
-                )}
-              </div>
-              <span
-                className={`text-xs text-center max-w-16 leading-tight ${
-                  isActive
-                    ? 'text-foreground font-medium'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                {phase}
-              </span>
-            </div>
-          );
-        })}
       </div>
       {/* Session Stats */}
       <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border">

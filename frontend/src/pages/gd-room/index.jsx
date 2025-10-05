@@ -45,6 +45,12 @@ const GDRoom = () => {
 
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
 
+  const startInterruption = useCallback(() => {
+    setInterruptionTimer(5);
+    setIsInterruptionWindow(true);
+    setIsAISpeaking(false);
+  }, []);
+
   // --- EFFECTS ---
 
   useEffect(() => {
@@ -57,7 +63,13 @@ const GDRoom = () => {
       setMessages(prev => [...prev, { ...message, timestamp: new Date() }]);
       if (message.audio) {
         setIsAIPlaying(true);
-        playAudioFromBase64(message.audio, () => setIsAIPlaying(false));
+        playAudioFromBase64(message.audio, () => {
+          setIsAIPlaying(false);
+          // Start interruption window only for bot messages after audio ends
+          if (message.speaker_id !== 'moderator' && message.speaker_id !== 'human_user') {
+            startInterruption();
+          }
+        });
       }
       setIsAISpeaking(false);
     };
@@ -70,12 +82,6 @@ const GDRoom = () => {
     const handleStartTurnWindow = () => {
       setInterruptionTimer(0);
       setIsInterruptionWindow(false);
-      setIsAISpeaking(false);
-    };
-
-    const handleStartInterruptionWindow = () => {
-      setInterruptionTimer(15);
-      setIsInterruptionWindow(true);
       setIsAISpeaking(false);
     };
 
@@ -97,20 +103,19 @@ const GDRoom = () => {
     socket.on('new_message', handleNewMessage);
     socket.on('speaker_change', handleSpeakerChange);
     socket.on('start_turn_window', handleStartTurnWindow);
-    socket.on('start_interruption_window', handleStartInterruptionWindow);
     socket.on('discussion_ended', handleDiscussionEnded);
     socket.on('error', (error) => console.error('Socket Error:', error.message));
 
     const handleUserMessageProcessed = ({ transcript }) => {
-        const userMessage = {
-            speaker_id: 'human_user',
-            speaker_name: 'You',
-            message: transcript,
-            timestamp: new Date().toISOString(),
-        };
-        setMessages(prev => [...prev, userMessage]);
-        setIsTranscribing(false);
-        setIsAISpeaking(true); // Wait for bot response
+      const userMessage = {
+        speaker_id: 'human_user',
+        speaker_name: 'You',
+        message: transcript,
+        timestamp: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, userMessage]);
+      setIsTranscribing(false);
+      setIsAISpeaking(true); // Wait for bot response
     };
 
     socket.on('user_message_processed', handleUserMessageProcessed);
@@ -177,12 +182,12 @@ const GDRoom = () => {
 
   if (isLoading) {
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center">
-            <div className="text-center">
-                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Initializing Group Discussion...</p>
-            </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Initializing Group Discussion...</p>
         </div>
+      </div>
     );
   }
 
@@ -190,33 +195,34 @@ const GDRoom = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="p-4 border-b border-border flex items-center justify-between flex-shrink-0">
         <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-                <Icon name="MessageSquare" size={16} className="text-primary-foreground" />
-            </div>
-            <h1 className="text-xl font-bold text-foreground">Group Discussion</h1>
+          <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+            <Icon name="MessageSquare" size={16} className="text-primary-foreground" />
+          </div>
+          <h1 className="text-xl font-bold text-foreground">Group Discussion</h1>
         </div>
         <div className="text-sm font-mono text-foreground bg-muted px-3 py-1 rounded-full">
-            {new Date(sessionTime * 1000).toISOString().substr(14, 5)}
+          {new Date(sessionTime * 1000).toISOString().substr(14, 5)}
         </div>
       </header>
 
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-6 relative">
-            <DiscussionTopic topic={sessionDetails?.context?.topic || 'Loading...'} />
-            <ParticipantsGrid participants={participants} activeSpeakerId={activeSpeakerId} />
-            {isInterruptionWindow && interruptionTimer > 0 && <TimerDisplay time={interruptionTimer} />}
-            <VoiceControls 
-                isRecording={isRecording}
-                isMuted={isMuted}
-                onToggleRecording={handleToggleRecording}
-                onToggleMute={() => setIsMuted(!isMuted)}
-                disabled={isAISpeaking || isAIPlaying || isTranscribing}
-                isTranscribing={isTranscribing}
-            />
+        <div className="lg:flex-1 flex flex-col items-center justify-center p-6 space-y-6 relative">
+          <DiscussionTopic topic={sessionDetails?.context?.topic || 'Loading...'} />
+          <ParticipantsGrid participants={participants} activeSpeakerId={activeSpeakerId} />
+          {isInterruptionWindow && interruptionTimer > 0 && <TimerDisplay time={interruptionTimer} />}
+          <VoiceControls
+            isRecording={isRecording}
+            isMuted={isMuted}
+            onToggleRecording={handleToggleRecording}
+            onToggleMute={() => setIsMuted(!isMuted)}
+            disabled={isAISpeaking || isAIPlaying || isTranscribing}
+            isTranscribing={isTranscribing}
+          />
         </div>
 
-        <div className="w-full lg:w-2/5 border-l border-border flex flex-col">
-            <GDTranscript messages={messages} isLoading={isAISpeaking && activeSpeakerId !== 'human_user'} participants={participants} />
+        {/* Updated transcript container */}
+        <div className="flex-1 lg:flex-initial w-full lg:w-2/5 border-t lg:border-t-0 lg:border-l border-border flex flex-col" style={{ height: 'calc(100vh - 120px)' }}>
+          <GDTranscript messages={messages} isLoading={isAISpeaking && activeSpeakerId !== 'human_user'} participants={participants} />
         </div>
       </div>
 

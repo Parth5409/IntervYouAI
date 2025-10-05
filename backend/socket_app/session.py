@@ -192,15 +192,6 @@ async def pass_turn(sid, data):
     if not session_id:
         return
     await gd_orchestrator.progress_bot_turn(session_id, sio)
-
-@sio.event
-async def pass_turn(sid, data):
-    session_id = data.get('session_id')
-    if not session_id:
-        return
-    await gd_orchestrator.progress_bot_turn(session_id, sio)
-
-
 @sio.event
 async def end_discussion(sid, data):
     session_id = data.get('session_id')

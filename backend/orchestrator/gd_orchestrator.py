@@ -40,22 +40,27 @@ class GDOrchestrator:
         self.personality_prompts = {
             GDPersonality.SUPPORTIVE: {
                 "name": "Alex",
+                "voice": "af_bella", # Female, American
                 "prompt": "You are Alex, a collaborative and encouraging participant. You try to build on others' ideas and find consensus. You are polite and often agree with others before adding your own perspective."
             },
             GDPersonality.ASSERTIVE: {
                 "name": "Sam",
+                "voice": "am_michael", # Male, American
                 "prompt": "You are Sam, a confident and assertive participant. You are direct, state your opinions clearly, and are not afraid to challenge others. You aim to drive the conversation forward."
             },
             GDPersonality.FACTUAL: {
                 "name": "Jordan",
+                "voice": "am_fenrir", # Male, American
                 "prompt": "You are Jordan, a fact-focused and logical participant. You prefer to use data, evidence, and reason in your arguments. You often ask for clarification and question assumptions."
             },
             GDPersonality.ANALYTICAL: {
                 "name": "Casey",
+                "voice": "bf_isabella", # Female, British (if not working, use bf_emma)
                 "prompt": "You are Casey, an analytical thinker. You like to break down problems, explore different angles, and consider the pros and cons of various solutions. You are structured in your thinking."
             },
             GDPersonality.CREATIVE: {
                 "name": "Morgan",
+                "voice": "af_nicole", # Female, American
                 "prompt": "You are Morgan, a creative and out-of-the-box thinker. You enjoy proposing new, unconventional ideas and solutions, even if they seem a bit wild at first."
             },
         }
@@ -68,25 +73,29 @@ class GDOrchestrator:
         available_personalities = list(GDPersonality)
         selected_personalities = random.sample(available_personalities, min(num_bots, len(available_personalities)))
 
-        bots = [
-            GDParticipant(
+        bots = []
+        for p in selected_personalities:
+            personality_info = self.personality_prompts[p]
+            bot_participant = GDParticipant(
                 id=f"bot_{p.value}",
-                name=self.personality_prompts[p]["name"],
+                name=personality_info["name"],
                 personality=p.value,
                 is_human=False,
-            ) for p in selected_personalities
-        ]
-        human_participant = GDParticipant(id="human_user", name="You", personality="human", is_human=True)
+            ).dict()
+            bot_participant['voice'] = personality_info['voice'] # Assign voice from mapping
+            bots.append(bot_participant)
+
+        human_participant = GDParticipant(id="human_user", name="You", personality="human", is_human=True).dict()
         all_participants = bots + [human_participant]
         
-        turn_order = [bot.id for bot in bots]
+        turn_order = [bot['id'] for bot in bots]
         random.shuffle(turn_order)
 
         new_session_state = {
             "session_id": session_id,
             "client_sid": client_sid,
             "topic": session_context.get("topic", "a default topic"),
-            "participants": [p.dict() for p in all_participants],
+            "participants": all_participants,
             "transcript": [],
             "turn_order": turn_order,
             "current_turn_index": 0,
@@ -203,7 +212,7 @@ class GDOrchestrator:
             temperature=0.85
         )
         
-        response_audio = await tts_service.text_to_audio(response_text)
+        response_audio = await tts_service.text_to_audio_with_voice(response_text, bot.get("voice", "af_bella"))
 
         message = GDMessage(
             speaker_id=bot["id"],
