@@ -2,8 +2,6 @@
 
 **IntervYou.AI** is a full-stack, Generative AI-powered web platform designed to simulate real-world interview environments. It provides a seamless, real-time, voice-to-voice experience for users to practice for various interview formats, including Technical, HR, Salary Negotiation, and Group Discussions.
 
-![image](https://storage.googleapis.com/gemini-repo/projects/123/IntervYou.gif)
-
 ## ✨ Features
 
 - **Real-Time Voice Interviews**: Engage in natural, voice-to-voice conversations with an AI interviewer.
@@ -38,8 +36,8 @@
 ### Prerequisites
 
 - Docker and Docker Compose
-- Python 3.11+
-- Node.js 18+
+- Python 3.12+
+- Node.js v22.16+
 - An account with [Cloudinary](https://cloudinary.com/) and [Google AI Studio](https://aistudio.google.com/) for API keys.
 
 ### 1. Backend Setup
