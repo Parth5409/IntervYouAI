@@ -2,15 +2,6 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 
 const GDSummary = ({ formData }) => {
-  const formatValue = (key, value) => {
-    const valueMap = {
-      'small': 'Small Group (4-6 participants)',
-      'medium': 'Medium Group (7-10 participants)',
-      'large': 'Large Group (11-15 participants)',
-    };
-    return valueMap[value] || value;
-  };
-
   return (
     <div className="space-y-6">
       <div>
@@ -30,10 +21,6 @@ const GDSummary = ({ formData }) => {
           <div className="flex justify-between items-center py-2 border-b border-border">
             <span className="text-sm text-muted-foreground">Topic:</span>
             <span className="text-sm font-medium text-foreground text-right">{formData.topic}</span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-b border-border">
-            <span className="text-sm text-muted-foreground">Group Size:</span>
-            <span className="text-sm font-medium text-foreground text-right">{formatValue('groupSize', formData.groupSize)}</span>
           </div>
           <div className="flex justify-between items-center py-2 border-b border-border">
             <span className="text-sm text-muted-foreground">Duration:</span>
