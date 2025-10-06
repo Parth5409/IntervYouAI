@@ -157,6 +157,11 @@ class InterviewOrchestrator:
             chat_history = self._build_chat_history(final_transcript)
             feedback = await self._generate_session_feedback(db_session, chat_history)
             
+            if db_session.session_type == "TECHNICAL" and db_session.context.get("company_vs_id"):
+                store_name = db_session.context.get("company_vs_id")
+                await self.vector_store_manager.delete_vector_store(store_name)
+                logger.info(f"Deleted temporary vector store '{store_name}' for session {session_id}")
+
             logger.info(f"Ended session {session_id} and generated feedback.")
             return feedback
         except Exception as e:

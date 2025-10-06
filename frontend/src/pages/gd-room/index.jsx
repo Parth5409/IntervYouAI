@@ -56,7 +56,7 @@ const GDRoom = () => {
   useEffect(() => {
     if (!user?.id) return;
 
-    socketRef.current = io('http://localhost:8000', { path: '/socket.io' });
+    socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:8000', { path: '/socket.io' });
     const socket = socketRef.current;
 
     const handleNewMessage = (message) => {

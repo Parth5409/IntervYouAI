@@ -20,8 +20,11 @@ RUN python -m pip install --upgrade pip \
 # Copy full source code
 COPY . .
 
-# Preload heavy models (Faster-Whisper, Kokoro)
-RUN python preload_models.py || echo "Model preload skipped"
+# Preload heavy models with BuildKit cache mounts
+# (Faster-Whisper, Kokoro)
+RUN --mount=type=cache,target=/root/.cache/huggingface \
+    --mount=type=cache,target=/root/.cache/kokoro \
+    python preload_models.py || echo "Model preload skipped"
 
 # Expose FastAPI port
 EXPOSE 8000

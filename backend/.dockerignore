@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Python virtual environment
+venv/
+.venv/
+
+# Python cache files
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables file
+.env
+
+# Log files
+*.log
+
+# Test files and output
+test_files/
+test_audio_output/
+
+# Temporary directories
+temp_audio_stt/
+
+# Generated vector stores (created at runtime)
+vector_stores/
+
+# Model cache directories (won’t be copied into image)
+.huggingface/
+.kokoro/
+
+# OS-generated files
+.DS_Store
+
+# IDE directories
+.vscode/

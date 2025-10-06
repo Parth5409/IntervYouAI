@@ -1,6 +1,8 @@
 import os
 import logging
 import io
+import shutil
+import asyncio
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
 
@@ -176,10 +178,14 @@ class VectorStoreManager:
         """Create and persist a vector store"""
         try:
             store_path = self.persist_directory / store_name
-            if not overwrite and store_path.exists():
-                logger.info(f"Loading existing vector store: {store_name}")
-                return await self.load_vector_store(store_name)
-            
+            if store_path.exists():
+                if overwrite:
+                    logger.info(f"Overwriting existing vector store: {store_name}")
+                    await self.delete_vector_store(store_name)
+                else:
+                    logger.info(f"Loading existing vector store: {store_name}")
+                    return await self.load_vector_store(store_name)
+
             logger.info(f"Creating vector store '{store_name}' with {len(documents)} documents")
             embeddings = self.embedding_manager.embeddings
             
@@ -202,6 +208,23 @@ class VectorStoreManager:
         except Exception as e:
             logger.error(f"Error creating vector store '{store_name}': {e}")
             raise
+
+    async def delete_vector_store(self, store_name: str):
+        """Delete a vector store from disk and memory."""
+        try:
+            if store_name in self.vector_stores:
+                del self.vector_stores[store_name]
+                logger.info(f"Removed vector store '{store_name}' from memory cache.")
+
+            store_path = self.persist_directory / store_name
+            if store_path.exists() and store_path.is_dir():
+                await asyncio.to_thread(shutil.rmtree, str(store_path))
+                logger.info(f"Successfully deleted vector store directory '{store_path}'.")
+            else:
+                logger.warning(f"Vector store directory for '{store_name}' not found at '{store_path}'.")
+
+        except Exception as e:
+            logger.error(f"Error deleting vector store '{store_name}': {e}")
     
     async def load_vector_store(self, store_name: str) -> VectorStore:
         """Load existing vector store"""
