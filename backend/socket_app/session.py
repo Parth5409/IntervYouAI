@@ -4,10 +4,6 @@ Socket.IO event handlers for real-time interview sessions.
 import socketio
 import logging
 from datetime import datetime
-import os
-import whisper
-import aiofiles
-import asyncio
 import base64
 
 from tts import tts_service

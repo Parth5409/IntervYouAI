@@ -20,6 +20,7 @@ yarn-error.log*
 
 # Virtual Environment
 # This prevents the entire virtual environment from being committed.
+/backend/.venv/
 /backend/venv/
 /.venv
 
