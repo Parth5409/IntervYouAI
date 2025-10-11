@@ -15,19 +15,34 @@ COPY requirements.txt .
 
 # Upgrade pip and install dependencies
 RUN python -m pip install --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && python -m spacy download en_core_web_sm
+
+# Create a non-root user (UID 1000, GID 1000)
+RUN groupadd -r appgroup -g 1000 && \
+    useradd -r -g appgroup -u 1000 -d /home/appuser -s /sbin/nologin -c "Docker image user" appuser
 
 # Copy full source code
 COPY . .
 
-# Preload heavy models with BuildKit cache mounts
-# (Faster-Whisper, Kokoro)
-RUN --mount=type=cache,target=/root/.cache/huggingface \
-    --mount=type=cache,target=/root/.cache/kokoro \
-    python preload_models.py || echo "Model preload skipped"
+# Create cache directories and set ownership
+RUN mkdir -p /app/.cache/huggingface /app/.cache/kokoro && \
+    chown -R appuser:appgroup /app
+
+# Set environment variables for cache directories
+ENV HF_HOME=/app/.cache/huggingface
+ENV HF_DATASETS_CACHE=/app/.cache/huggingface
+ENV HUGGINGFACE_HUB_CACHE=/app/.cache/huggingface
+ENV HOME=/app
+
+# Switch to the non-root user
+USER appuser
+
+# Preload heavy models to be included in the image
+RUN python preload_models.py
 
 # Expose FastAPI port
 EXPOSE 8000
 
-# Start FastAPI app
-CMD ["uvicorn", "main:application", "--host", "0.0.0.0", "--port", "8000"]
+# Start FastAPI app with Gunicorn
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-w", "4", "main:application", "--host", "0.0.0.0", "--port", "8000"]

@@ -11,10 +11,10 @@ def preload_faster_whisper():
 
 def preload_kokoro_tts():
     try:
-        from kokoro import Kokoro
-        print("Loading Kokoro TTS model 'Kokoro-82M'...")
-        Kokoro('Kokoro-82M')
-        print("Kokoro TTS loaded successfully.")
+        from kokoro import KPipeline
+        print("Loading Kokoro TTS model 'Kokoro-82M' via KPipeline...")
+        KPipeline(repo_id='hexgrad/Kokoro-82M', lang_code='a')
+        print("Kokoro TTS via KPipeline loaded successfully.")
     except Exception as e:
         print("Kokoro preload skipped:", e, file=sys.stderr)
 
