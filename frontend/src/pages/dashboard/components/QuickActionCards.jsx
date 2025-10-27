@@ -9,8 +9,8 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
       title: 'Technical Interview',
       description: 'Practice coding problems and system design questions',
       icon: 'Code',
-      color: 'bg-blue-50 border-blue-200',
-      iconColor: 'text-blue-600',
+      color: 'bg-blue-100 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800',
+      iconColor: 'text-blue-600 dark:text-blue-400',
       action: () => onStartInterview('technical')
     },
     {
@@ -18,8 +18,8 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
       title: 'HR Interview',
       description: 'Behavioral questions and company culture fit',
       icon: 'Users',
-      color: 'bg-green-50 border-green-200',
-      iconColor: 'text-green-600',
+      color: 'bg-green-100 dark:bg-green-900/50 border-green-200 dark:border-green-800',
+      iconColor: 'text-green-600 dark:text-green-400',
       action: () => onStartInterview('hr')
     },
     {
@@ -27,8 +27,8 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
       title: 'Group Discussion',
       description: 'Practice group dynamics and communication skills',
       icon: 'MessageCircle',
-      color: 'bg-purple-50 border-purple-200',
-      iconColor: 'text-purple-600',
+      color: 'bg-purple-100 dark:bg-purple-900/50 border-purple-200 dark:border-purple-800',
+      iconColor: 'text-purple-600 dark:text-purple-400',
       action: () => onStartInterview('group')
     },
     {
@@ -36,8 +36,8 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
       title: 'Salary Negotiation',
       description: 'Learn to negotiate compensation effectively',
       icon: 'DollarSign',
-      color: 'bg-orange-50 border-orange-200',
-      iconColor: 'text-orange-600',
+      color: 'bg-orange-100 dark:bg-orange-900/50 border-orange-200 dark:border-orange-800',
+      iconColor: 'text-orange-600 dark:text-orange-400',
       action: () => onStartInterview('salary')
     }
   ];
@@ -65,7 +65,7 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
             onClick={card?.action}
           >
             <div className="flex items-center space-x-3 mb-3">
-              <div className={`w-10 h-10 rounded-lg bg-white flex items-center justify-center ${card?.iconColor}`}>
+              <div className={`w-10 h-10 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center ${card?.iconColor}`}>
                 <Icon name={card?.icon} size={20} />
               </div>
               <div className="flex-1">

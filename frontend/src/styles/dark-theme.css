@@ -1,0 +1,38 @@
+@layer base {
+  .dark {
+    /* Core Colors */
+    --color-background: #121212;
+    --color-foreground: #e9ecef;
+    --color-card: #1e1e1e;
+    --color-card-foreground: #e9ecef;
+    --color-popover: #1e1e1e;
+    --color-popover-foreground: #e9ecef;
+    --color-muted: #343a40;
+    --color-muted-foreground: #adb5bd;
+    --color-border: #343a40;
+    --color-input: #1e1e1e;
+    --color-ring: #0d6efd;
+
+    /* Brand Colors */
+    --color-primary: #0d6efd;
+    --color-primary-foreground: #ffffff;
+    --color-secondary: #6c757d;
+    --color-secondary-foreground: #ffffff;
+    --color-accent: #20c997;
+    --color-accent-foreground: #000;
+
+    /* Status Colors */
+    --color-success: #20c997;
+    --color-success-foreground: #000;
+    --color-warning: #ffca2c;
+    --color-warning-foreground: #000;
+    --color-error: #fd7e89;
+    --color-error-foreground: #000;
+    --color-destructive: #fd7e89;
+    --color-destructive-foreground: #000;
+
+    /* Text Colors */
+    --color-text-primary: #e9ecef;
+    --color-text-secondary: #adb5bd;
+  }
+}
