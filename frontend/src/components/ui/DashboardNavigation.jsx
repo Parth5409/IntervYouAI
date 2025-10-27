@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
+import { useTheme } from '../../hooks/useTheme';
 
 const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const navigationItems = [
     {
@@ -125,6 +127,14 @@ const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }
 
           {/* User Menu */}
           <div className="flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="hidden md:flex"
+            >
+              <Icon name={theme === 'dark' ? 'Sun' : 'Moon'} size={20} />
+            </Button>
             <div className="hidden md:flex items-center space-x-2">
               <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
                 <Icon name="User" size={16} color="var(--color-accent-foreground)" />
@@ -225,6 +235,18 @@ const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }
                   </Button>
                 ))}
               </nav>
+
+              {/* Theme Toggle - Mobile */}
+              <Button
+                variant="ghost"
+                onClick={toggleTheme}
+                iconName={theme === 'dark' ? 'Sun' : 'Moon'}
+                iconPosition="left"
+                fullWidth
+                className="justify-start mb-2"
+              >
+                Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
+              </Button>
 
               {/* Logout */}
               <Button
