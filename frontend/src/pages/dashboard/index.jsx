@@ -23,10 +23,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleViewHistory = () => {
-    setActiveTab('history');
-  };
-
   const handleViewFeedback = (sessionId) => {
     navigate('/interview-feedback', { state: { sessionId } });
   };
@@ -70,7 +66,6 @@ const Dashboard = () => {
         {activeTab === 'profile' && (
           <QuickActionCards
             onStartInterview={handleStartInterview}
-            onViewHistory={handleViewHistory}
           />
         )}
 

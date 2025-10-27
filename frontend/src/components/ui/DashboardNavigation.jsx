@@ -20,36 +20,12 @@ const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }
       label: 'Start Interview',
       path: '/interview-setup-wizard',
       icon: 'Play'
-    },
-    {
-      label: 'Practice History',
-      path: '/interview-feedback',
-      icon: 'History'
-    }
-  ];
-
-  const dashboardTabs = [
-    {
-      id: 'profile',
-      label: 'Profile',
-      icon: 'User'
-    },
-    {
-      id: 'history',
-      label: 'Interview History',
-      icon: 'Clock'
     }
   ];
 
   const handleNavigation = (path) => {
     navigate(path);
     setIsMobileMenuOpen(false);
-  };
-
-  const handleTabChange = (tabId) => {
-    if (onTabChange) {
-      onTabChange(tabId);
-    }
   };
 
   const handleLogout = async () => {
@@ -64,7 +40,6 @@ const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }
   };
 
   const isActive = (path) => location.pathname === path;
-  const isDashboard = location.pathname === '/dashboard';
 
   return (
     <>
@@ -164,29 +139,6 @@ const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }
             />
           </div>
         </div>
-
-        {/* Dashboard Tabs - Desktop */}
-        {isDashboard && (
-          <div className="hidden md:block border-t border-border">
-            <div className="px-6">
-              <nav className="flex space-x-8">
-                {dashboardTabs?.map((tab) => (
-                  <button
-                    key={tab?.id}
-                    onClick={() => handleTabChange(tab?.id)}
-                    className={`flex items-center space-x-2 py-4 border-b-2 transition-colors ${
-                      activeTab === tab?.id
-                        ? 'border-primary text-primary' :'border-transparent text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    <Icon name={tab?.icon} size={16} />
-                    <span className="text-sm font-medium">{tab?.label}</span>
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
-        )}
       </header>
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
@@ -261,26 +213,6 @@ const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }
               </Button>
             </div>
           </div>
-        </div>
-      )}
-      {/* Mobile Bottom Tabs - Dashboard Only */}
-      {isDashboard && (
-        <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border md:hidden z-40">
-          <nav className="flex">
-            {dashboardTabs?.map((tab) => (
-              <button
-                key={tab?.id}
-                onClick={() => handleTabChange(tab?.id)}
-                className={`flex-1 flex flex-col items-center py-3 px-2 transition-colors ${
-                  activeTab === tab?.id
-                    ? 'text-primary' :'text-muted-foreground'
-                }`}
-              >
-                <Icon name={tab?.icon} size={20} />
-                <span className="text-xs font-medium mt-1">{tab?.label}</span>
-              </button>
-            ))}
-          </nav>
         </div>
       )}
     </>

@@ -27,7 +27,7 @@ class TTSService:
             
             # Set voice - you can change this to any of the 48+ available voices
             # Popular choices: 'af_bella', 'af_sarah', 'am_adam', 'am_michael'
-            self.voice = 'af_bella'  # Professional female voice for interviewer
+            self.voice = 'am_michael'  # Professional male voice for interviewer
 
             self.available_voices: List[str] = [
                 'af_bella', 'af_nicole', 'am_fenrir', 'am_michael', 'bf_emma', 'bm_fable',
