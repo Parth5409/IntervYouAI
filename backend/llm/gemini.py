@@ -4,8 +4,8 @@ import json
 from typing import Optional, Dict, Any, List
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.schema import HumanMessage, AIMessage, SystemMessage, BaseMessage
-from langchain.callbacks.base import BaseCallbackHandler
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
+from langchain_core.callbacks import BaseCallbackHandler
 
 logger = logging.getLogger(__name__)
 
@@ -42,19 +42,26 @@ class GeminiLLM:
         try:
             system_msg = self._get_system_message(session_type, "greeting", session_context)
             
+            candidate_name = session_context.get('candidate_name', 'Candidate')
+            
             prompt_template = f"""Based on the following context, generate a warm and professional opening message for the interview. 
             Acknowledge the candidate's background from their resume, but keep it brief.
             End the message by asking the candidate to introduce themselves.
 
-            **Example:** "Hi [Candidate Name], thanks for joining. I see you have experience with [General Skill]. To start, can you please tell me a little bit about yourself?"
-
-            **Interview Context:**
+            **Context:**
+            - Candidate Name: {candidate_name}
             - Company: {session_context.get('company_name', 'the company')}
             - Role: {session_context.get('job_role', 'the position')}
             - Difficulty: {session_context.get('difficulty', 'Medium')}
 
             **Candidate Resume Context:**
             {rag_context.get('resume_context', ['No resume information available.'])}
+            
+            **Instructions:**
+            - Start with "Hi {candidate_name}, ..." or similar.
+            - Mention the company and role.
+            - Briefly reference a key skill or experience from the resume if available.
+            - Ask them to introduce themselves.
             """
             
             messages = [SystemMessage(content=system_msg), HumanMessage(content=prompt_template)]

@@ -57,7 +57,7 @@ async def start_interview(sid, data):
             session_db.started_at = datetime.now()
             await db.commit()
             
-            sio.enter_room(sid, session_id)
+            await sio.enter_room(sid, session_id)
 
             audio_b64 = None
             if initial_audio:

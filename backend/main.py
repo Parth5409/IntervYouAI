@@ -60,7 +60,7 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down Interview Platform API...")
 
 # Create FastAPI app
-app = FastAPI(
+fastapi_app = FastAPI(
     title="Interview Platform API",
     description="AI-powered interview platform with LangChain integration",
     version="1.0.0",
@@ -68,7 +68,7 @@ app = FastAPI(
 )
 
 # CORS middleware
-app.add_middleware(
+fastapi_app.add_middleware(
     CORSMiddleware,
     allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:4028").split(","),
     allow_credentials=True,
@@ -77,19 +77,20 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
-app.include_router(user.router, prefix="/api/user", tags=["User"])  
-app.include_router(data.router, prefix="/api", tags=["Data"])
-app.include_router(session.router, prefix="/api/session", tags=["Session"])
+fastapi_app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+fastapi_app.include_router(user.router, prefix="/api/user", tags=["User"])  
+fastapi_app.include_router(data.router, prefix="/api", tags=["Data"])
+fastapi_app.include_router(session.router, prefix="/api/session", tags=["Session"])
 
 # Create the combined ASGI app
-application = socketio.ASGIApp(sio, other_asgi_app=app)
+# This ensures uvicorn serves BOTH Socket.IO and FastAPI
+app = socketio.ASGIApp(sio, other_asgi_app=fastapi_app)
 
 # Static files
 os.makedirs("uploads", exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+fastapi_app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-@app.get("/")
+@fastapi_app.get("/")
 async def root():
     """Health check endpoint"""
     return {
@@ -98,7 +99,7 @@ async def root():
         "status": "healthy"
     }
 
-@app.get("/health")
+@fastapi_app.get("/health")
 async def health_check():
     """Detailed health check"""
     try:
@@ -121,7 +122,7 @@ if __name__ == "__main__":
     import uvicorn
     
     uvicorn.run(
-        "main:application",
+        "main:app",
         host="0.0.0.0",
         port=int(os.getenv("PORT", 8000)),
         reload=True if os.getenv("ENVIRONMENT") == "development" else False,

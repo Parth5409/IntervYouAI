@@ -8,7 +8,7 @@ import logging
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 
-from langchain.schema import HumanMessage, AIMessage, BaseMessage
+from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
 from llm.gemini import GeminiLLM
 from orchestrator.rag_utils import get_vector_store_manager, DocumentProcessor
@@ -176,6 +176,10 @@ class InterviewOrchestrator:
         """Generate initial greeting message that includes the first question."""
         try:
             rag_context = await self._get_rag_context(db_session, "Introduction and background")
+            
+            # Inject candidate name into context for personalization
+            if db_session.user and db_session.user.full_name:
+                db_session.context['candidate_name'] = db_session.user.full_name
             
             return await self.gemini_llm.generate_initial_greeting(
                 session_type=db_session.session_type,

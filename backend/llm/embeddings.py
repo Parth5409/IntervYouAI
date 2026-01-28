@@ -6,7 +6,7 @@ import os
 import logging
 from typing import List, Dict, Any, Optional
 from langchain_ollama import OllamaEmbeddings
-from langchain.embeddings.base import Embeddings
+from langchain_core.embeddings import Embeddings
 
 logger = logging.getLogger(__name__)
 

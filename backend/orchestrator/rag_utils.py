@@ -11,7 +11,7 @@ import PyPDF2
 import httpx
 from docx import Document
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document as LangChainDocument
 from langchain_core.vectorstores import VectorStore
 from langchain_core.retrievers import BaseRetriever

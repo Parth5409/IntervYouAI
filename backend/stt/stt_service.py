@@ -18,8 +18,9 @@ class STTService:
     def __init__(self):
         """Loads the Whisper model into memory."""
         try:
-            device = "cuda" if torch.cuda.is_available() else "cpu"
-            compute_type = "float16" if torch.cuda.is_available() else "int8"
+            # Fallback to CPU to avoid CUDA OOM errors, especially with large models
+            device = os.getenv("STT_DEVICE", "cpu")
+            compute_type = "int8"
             
             logger.info(f"Loading Faster-Whisper STT model on device: {device} with compute type: {compute_type}")
             

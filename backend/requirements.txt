@@ -16,6 +16,8 @@ torch
 
 # LangChain ecosystem
 langchain
+langchain-core
+langchain-text-splitters
 langchain-google-genai
 langchain-ollama
 langchain-community
