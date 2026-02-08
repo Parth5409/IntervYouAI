@@ -10,49 +10,58 @@ yarn-error.log*
 
 # IDE and editor directories
 .vscode/
+.idea/
+*.swp
+*.swo
 
 # OS-generated files
 .DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# AI Data (Local Vector Stores & Temp Audio)
+ai-engine/vector_stores/*
+!ai-engine/vector_stores/.gitkeep
+ai-engine/temp_audio_stt/*
+ai-engine/uploads/*
 
 # =========================================================================
-# Backend (Python / FastAPI)
+# AI Engine (Python / FastAPI)
 # =========================================================================
 
-# Virtual Environment
-# This prevents the entire virtual environment from being committed.
-/backend/.venv/
-/backend/venv/
-/.venv
-
-# Environment variables file
-# IMPORTANT: This file contains secrets and should NEVER be committed.
-/backend/.env
-
-# Python cache files
-/backend/**/__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
+ai-engine/venv/
+ai-engine/.venv/
+ai-engine/.env
+ai-engine/__pycache__/
+ai-engine/**/*.pyc
+ai-engine/**/*.pyo
+ai-engine/**/*.pyd
 
 # =========================================================================
-# Frontend (React)
+# Backend Core (Java / Spring Boot)
 # =========================================================================
 
-# Node.js dependency directory
-/frontend/node_modules/
+backend-core/target/
+backend-core/.mvn/
+backend-core/mvnw
+backend-core/mvnw.cmd
+backend-core/*.jar
+backend-core/*.war
 
-# Build output
-/frontend/build/
-/frontend/dist/
+# =========================================================================
+# Frontend (React / Vite)
+# =========================================================================
 
-# Environment variables files
-# These contain environment-specific variables and secrets.
-/frontend/.env
-/frontend/.env.local
-
-# Test reports
-/frontend/coverage/
-
-# Ignore everything inside vector_stores
-/backend/vector_stores/*
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/coverage/
