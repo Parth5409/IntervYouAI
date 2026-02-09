@@ -12,7 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/tpo/profile")
+@RequestMapping("/api/core/v1/tpo/profile")
 public class TPOController {
 
     @Autowired

@@ -20,8 +20,8 @@ public class AiIntegrationService {
     private String aiEngineUrl;
 
     public Set<String> extractSkillsFromJd(String jobDescription) {
-        String url = aiEngineUrl + "/api/analysis/extract-skills";
-        
+        String url = aiEngineUrl + "/api/engine/analysis/extract-skills";
+
         JDExtractionRequest request = new JDExtractionRequest();
         request.setJob_description(jobDescription);
 

@@ -5,46 +5,25 @@ import Button from '../../../components/ui/Button';
 const LoginPrompt = () => {
   const navigate = useNavigate();
 
-  const handleLoginRedirect = () => {
-    navigate('/login-screen');
-  };
-
   return (
-    <div className="text-center space-y-4">
-      <div className="flex items-center">
-        <div className="flex-1 border-t border-border"></div>
-        <span className="px-4 text-xs text-muted-foreground">OR</span>
-        <div className="flex-1 border-t border-border"></div>
+    <div className="text-center space-y-6 pt-6 border-t border-slate-800 mt-6">
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-800" />
+        </div>
+        <div className="relative flex justify-center text-[10px] uppercase font-mono">
+          <span className="bg-slate-900 px-2 text-slate-500 tracking-widest">Already Registered?</span>
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">
-          Already have an account?
-        </p>
+      <div className="space-y-3">
         <Button
           variant="outline"
-          onClick={handleLoginRedirect}
-          fullWidth
-          iconName="LogIn"
-          iconPosition="left"
+          onClick={() => navigate('/login')}
+          className="w-full h-10 text-xs"
         >
-          Sign In
+          Return to Login
         </Button>
-      </div>
-
-      {/* Additional Help */}
-      <div className="pt-4 border-t border-border">
-        <p className="text-xs text-muted-foreground mb-2">
-          Need help getting started?
-        </p>
-        <div className="flex flex-col space-y-1">
-          <button className="text-xs text-primary hover:underline">
-            View Demo
-          </button>
-          <button className="text-xs text-primary hover:underline">
-            Contact Support
-          </button>
-        </div>
       </div>
     </div>
   );

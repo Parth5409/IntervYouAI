@@ -8,9 +8,10 @@ import InterviewRoom from './pages/interview-room';
 import GDRoom from './pages/gd-room';
 import NotFound from './pages/NotFound';
 import useAuth from './hooks/useAuth';
-import LoadingSpinner from 'components/LoadingSpinner';
-import InterviewFeedback from 'pages/interview-feedback';
-import GDFredback from 'pages/gd-feedback';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import InterviewFeedback from '@/pages/interview-feedback';
+import GDFredback from '@/pages/gd-feedback';
+import LandingPage from './pages/LandingPage';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -89,10 +90,7 @@ const AppRoutes = () => {
           }
         />
         {/* Redirect root to dashboard if logged in, otherwise to login */}
-        <Route
-          path="/"
-          element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
-        />
+        <Route path="/" element={<LandingPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

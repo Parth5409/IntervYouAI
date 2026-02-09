@@ -57,9 +57,9 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/v1/auth/**").permitAll()
-                                .requestMatchers("/api/v1/organizations").permitAll() // Allow organization onboarding
-                                .requestMatchers("/api/v1/test/**").permitAll()
+                        auth.requestMatchers("/api/core/v1/auth/**").permitAll()
+                                .requestMatchers("/api/core/v1/organizations").permitAll() // Allow organization onboarding
+                                .requestMatchers("/api/core/v1/test/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 

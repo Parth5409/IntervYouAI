@@ -1,38 +1,37 @@
 @layer base {
   .dark {
-    /* Core Colors */
-    --color-background: #121212;
-    --color-foreground: #e9ecef;
-    --color-card: #1e1e1e;
-    --color-card-foreground: #e9ecef;
-    --color-popover: #1e1e1e;
-    --color-popover-foreground: #e9ecef;
-    --color-muted: #343a40;
-    --color-muted-foreground: #adb5bd;
-    --color-border: #343a40;
-    --color-input: #1e1e1e;
-    --color-ring: #0d6efd;
+    /* Core Colors - Industrial Slate */
+    --color-background: #020617; /* Slate-950 */
+    --color-foreground: #f8fafc; /* Slate-50 */
+    --color-card: #0f172a;       /* Slate-900 */
+    --color-card-foreground: #f8fafc;
+    --color-popover: #0f172a;
+    --color-popover-foreground: #f8fafc;
+    --color-muted: #1e293b;      /* Slate-800 */
+    --color-muted-foreground: #64748b; /* Slate-500 */
+    --color-border: #1e293b;     /* Slate-800 */
+    --color-input: #0f172a;      /* Slate-900 */
+    --color-ring: #10b981;       /* Emerald-500 */
 
     /* Brand Colors */
-    --color-primary: #0d6efd;
-    --color-primary-foreground: #ffffff;
-    --color-secondary: #6c757d;
-    --color-secondary-foreground: #ffffff;
-    --color-accent: #20c997;
-    --color-accent-foreground: #000;
+    --color-primary: #10b981;    /* Emerald-500 */
+    --color-primary-foreground: #020617; /* Slate-950 */
+    --color-secondary: #334155;  /* Slate-700 */
+    --color-secondary-foreground: #f8fafc;
+    --color-accent: #38bdf8;     /* Sky-400 */
+    --color-accent-foreground: #020617;
 
     /* Status Colors */
-    --color-success: #20c997;
-    --color-success-foreground: #000;
-    --color-warning: #ffca2c;
-    --color-warning-foreground: #000;
-    --color-error: #fd7e89;
-    --color-error-foreground: #000;
-    --color-destructive: #fd7e89;
-    --color-destructive-foreground: #000;
+    --color-success: #10b981;
+    --color-success-foreground: #020617;
+    --color-warning: #f59e0b;
+    --color-warning-foreground: #020617;
+    --color-error: #ef4444;
+    --color-error-foreground: #f8fafc;
+    --color-destructive: #ef4444;
+    --color-destructive-foreground: #f8fafc;
 
-    /* Text Colors */
-    --color-text-primary: #e9ecef;
-    --color-text-secondary: #adb5bd;
+    /* Radius - Industrial Sharpness */
+    --radius: 0px; 
   }
 }

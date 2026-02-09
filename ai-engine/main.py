@@ -100,19 +100,20 @@ fastapi_app.add_middleware(
 )
 
 # Include routers
-fastapi_app.include_router(data.router, prefix="/api", tags=["Data"])
-fastapi_app.include_router(session.router, prefix="/api/session", tags=["Session"])
-fastapi_app.include_router(analysis.router, prefix="/api/analysis", tags=["Analysis"])
+fastapi_app.include_router(data.router, prefix="/api/engine", tags=["Data"])
+fastapi_app.include_router(session.router, prefix="/api/engine/session", tags=["Session"])
+fastapi_app.include_router(analysis.router, prefix="/api/engine/analysis", tags=["Analysis"])
 
 # Create the combined ASGI app
 # This ensures uvicorn serves BOTH Socket.IO and FastAPI
-app = socketio.ASGIApp(sio, other_asgi_app=fastapi_app)
+# Mount Socket.IO under /api/engine prefix
+app = socketio.ASGIApp(sio, other_asgi_app=fastapi_app, socketio_path="/api/engine/socket.io")
 
 # Static files
 os.makedirs("uploads", exist_ok=True)
-fastapi_app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+fastapi_app.mount("/api/engine/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-@fastapi_app.get("/")
+@fastapi_app.get("/api/engine/")
 async def root():
     """Health check endpoint"""
     return {
@@ -121,7 +122,7 @@ async def root():
         "status": "healthy"
     }
 
-@fastapi_app.get("/health")
+@fastapi_app.get("/api/engine/health")
 async def health_check():
     """Detailed health check"""
     try:
@@ -139,6 +140,10 @@ async def health_check():
     except Exception as e:
         logger.error(f"Health check failed: {e}")
         raise HTTPException(status_code=503, detail="Service unhealthy")
+
+@fastapi_app.get("/api/engine/ping")
+async def ping():
+    return {"message": "pong"}
 
 if __name__ == "__main__":
     import uvicorn

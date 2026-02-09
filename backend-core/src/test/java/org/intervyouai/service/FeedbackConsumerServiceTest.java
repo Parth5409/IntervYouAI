@@ -44,7 +44,7 @@ public class FeedbackConsumerServiceTest {
         event.setTranscript("Mock Transcript");
 
         when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(session));
-        when(objectMapper.writeValueAsString(any())).thenReturn("{"json":"mock"}");
+        when(objectMapper.writeValueAsString(any())).thenReturn("{\"json\":\"mock\"}");
 
         feedbackConsumerService.consumeFeedback(event);
 

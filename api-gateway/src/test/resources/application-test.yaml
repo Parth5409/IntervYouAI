@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    gateway:
+      mvc:
+        http-client:
+          type: rest-template

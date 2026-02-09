@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/drives")
+@RequestMapping("/api/core/v1/drives")
 public class PlacementDriveController {
 
     @Autowired

@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/admin/tpo")
+@RequestMapping("/api/core/v1/admin/tpo")
 public class TPOManagementController {
 
     @Autowired

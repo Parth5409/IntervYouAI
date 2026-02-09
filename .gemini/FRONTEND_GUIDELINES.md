@@ -1,158 +1,104 @@
 # Frontend Design System (FRONTEND_GUIDELINES.md)
 
 ## 1. DESIGN PRINCIPLES
-* **High Fidelity**: Interfaces should mimic real-world corporate software to prepare students for professional environments.
-* **Focus-Centric**: Minimalist layouts that reduce cognitive load during high-stress mock interviews.
-* **Unbiased Accessibility**: Design must exceed WCAG 2.1 AA standards to ensure all students have an equal preparation ground.
-* **Feedback Immediacy**: Every user action (especially voice input) must have an instant visual state change.
+*   **Technical Precision**: Interfaces should feel like professional engineering tools (IDEs, Terminals) rather than generic consumer apps.
+*   **Industrial Sharpness**: Use sharp corners (`rounded-none`) and thin borders (`border-[1px]`) to convey stability and professional rigor.
+*   **Dark-Mode First**: Optimized for high-focus environments. A deep slate/black base reduces eye strain during long interview sessions.
+*   **Blueprint Aesthetic**: Use monospaced accents, grid patterns, and data-heavy layouts to signal "Intelligence" and "System Transparency."
+*   **High Contrast & Visibility**: Ensure text remains legible on hover. Avoid low-contrast gray-on-gray interactions. Use brightness or color shifts instead of opacity fades for active states.
 
 ---
 
 ## 2. DESIGN TOKENS
 
 ### Color Palette (Tailwind-Compatible)
-**Primary (Industrial Slate)** - Used for headers, sidebars, and primary actions.
-- `slate-50`:  #f8fafc
-- `slate-200`: #e2e8f0
-- `slate-500`: #64748b
-- `slate-700`: #334155
-- `slate-900`: #0f172a (Primary Brand Color)
+**Base (Deep Industrial)** - The foundation of the UI.
+-   `background`: #020617 (Slate-950) - **Primary Canvas**
+-   `surface`:    #0f172a (Slate-900) - **Card/Panel Background**
+-   `border`:     #1e293b (Slate-800) - **Structural Dividers**
+-   `foreground`: #f8fafc (Slate-50)  - **Primary Text**
+-   `muted`:      #64748b (Slate-500) - **Secondary Text / Metadata**
 
-**Neutral (Concrete)** - Used for backgrounds and borders.
-- `gray-50`:  #f9fafb
-- `gray-200`: #e5e7eb
-- `gray-500`: #6b7280
-- `gray-900`: #111827
+**Brand & Accents**
+-   `primary`:    #10b981 (Emerald-500) - **Action / Success / AI Active**
+    -   *Hover State*: `hover:bg-emerald-400` or `hover:text-emerald-400`
+-   `accent`:     #38bdf8 (Sky-400)     - **Info / Focus / Selection**
+-   `code`:       #e2e8f0 (Slate-200)   - **Monospace Data**
 
 **Semantic**
-- **Success**: #059669 (Emerald 600) - Placement Ready
-- **Warning**: #d97706 (Amber 600) - Needs Improvement
-- **Error**:   #dc2626 (Red 600) - Critical Fail
-- **Info**:    #2563eb (Blue 600) - System Updates
+-   **Success**: #10b981 (Emerald-500)
+-   **Warning**: #f59e0b (Amber-500)
+-   **Error**:   #ef4444 (Red-500)
 
 ### Typography
-- **Primary Sans**: `Inter`, system-ui, sans-serif.
-- **Monospace**: `JetBrains Mono`, monospace (for code feedback).
-- **Sizes**:
-    - `text-xs`: 0.75rem (12px)
-    - `text-base`: 1rem (16px) - **Default Body**
-    - `text-xl`: 1.25rem (20px) - **H3**
-    - `text-4xl`: 2.25rem (36px) - **H1**
-- **Weights**: Light (300), Regular (400), Medium (500), Bold (700).
+-   **Primary Font**: `Inter`, system-ui (For long-form reading).
+-   **Technical Mono**: `JetBrains Mono` or `Fira Code`.
+    -   **Usage**: Headers, Buttons, Navigation, Labels, Data Values, "System" Status messages.
+    -   **Style**: often `uppercase` with `tracking-widest` or `tracking-tighter` for headers.
+-   **Scale**:
+    -   `text-[10px]` / `text-xs`: Metadata, tags, footer links.
+    -   `text-sm` / `text-base`: Body copy, standard buttons.
+    -   `text-xl` / `text-2xl`: Section headers, card titles.
+    -   `text-4xl` - `text-7xl`: Hero titles.
 
 ### Spacing & Borders
-- **Base Unit**: 4px (`1` in Tailwind = 0.25rem).
-- **Border Radius**: 
-    - `sm`: 0.125rem | `md`: 0.375rem (Default) | `lg`: 0.5rem | `full`: 9999px.
-- **Shadows**:
-    - `base`: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)
-    - `xl`: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)
+-   **Border Radius**:
+    -   **GLOBAL DEFAULT**: `rounded-none` (0px).
+    -   *Exceptions*: Circular avatars or status indicators (rare).
+-   **Borders**:
+    -   Standard: `border border-border` (1px solid Slate-800).
+    -   Active/Focus: `ring-1 ring-primary` (Emerald-500).
 
 ---
 
 ## 3. LAYOUT SYSTEM
-- **Container**: `max-width: 1280px` (xl) centered.
-- **Breakpoints**:
-    - Mobile (`sm`): 640px (Single column)
-    - Tablet (`md`): 768px (Sidebar collapses to drawer)
-    - Desktop (`lg`): 1024px (Standard)
-- **Grid**: 12-column system with `gap-6` (24px) gutters.
+-   **Blueprint Grid**: Use a background grid pattern on major pages (Landing, Auth, Dashboard Home).
+    ```jsx
+    <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 -z-10" />
+    ```
+-   **Container**: `max-width: 1440px` centered (`container mx-auto px-4`).
+-   **Section Spacing**: Generous vertical spacing (`py-24` or `py-32`) to allow the "industrial" layout to breathe.
 
 ---
 
-## 4. COMPONENT LIBRARY
+## 4. COMPONENT LIBRARY STYLE
 
-### Buttons
-```jsx
-// Variants: Primary, Outline, Danger
-const Button = ({ variant = 'primary', size = 'md', isLoading, children, ...props }) => {
-  const baseStyles = "inline-flex items-center justify-center font-medium transition-all focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
-  
-  const variants = {
-    primary: "bg-slate-900 text-white hover:bg-slate-800",
-    outline: "border-2 border-slate-200 bg-transparent hover:bg-slate-50 text-slate-900",
-    danger: "bg-red-600 text-white hover:bg-red-700",
-    ghost: "text-slate-600 hover:bg-slate-100"
-  };
+### Buttons (Industrial Style)
+-   **Shape**: `rounded-none`.
+-   **Font**: `font-mono`, `uppercase`, `tracking-widest`, `font-bold`.
+-   **Primary**:
+    ```jsx
+    className="bg-primary text-slate-950 hover:bg-primary/90"
+    ```
+-   **Ghost/Nav**:
+    ```jsx
+    className="text-foreground hover:text-primary transition-colors"
+    ```
 
-  const sizes = {
-    sm: "px-3 py-1.5 text-sm rounded-sm",
-    md: "px-6 py-3 text-base rounded-md",
-    lg: "px-8 py-4 text-lg rounded-lg"
-  };
-
-  return (
-    <button className={`${baseStyles} ${variants[variant]} ${sizes[size]}`} {...props}>
-      {isLoading ? <Spinner className="mr-2" /> : null}
-      {children}
-    </button>
-  );
-};
 ### Input Fields
-```javascript
-// States: Default, Error, Success
-<div className="space-y-1">
-  <label className="text-sm font-medium text-slate-700">Email Address</label>
-  <input 
-    type="email" 
-    className="w-full border-gray-300 rounded-md shadow-sm focus:border-slate-900 focus:ring-slate-900 sm:text-sm 
-               invalid:border-red-500 invalid:text-red-600"
-    placeholder="student@university.edu"
-  />
-  <p className="text-xs text-slate-500">Use your university-issued email.</p>
-</div>
-```
+-   **Style**: `rounded-none`, `bg-background` (or Slate-950), `border-border`.
+-   **Focus**: `focus:ring-1 focus:ring-primary` (No heavily blurred glow).
+-   **Labels**: `font-mono`, `uppercase`, `text-xs`, `text-muted-foreground`.
+
+### Cards & Panels
+-   **Background**: `bg-background` or `bg-surface`.
+-   **Border**: `border border-border`.
+-   **Hover Effect**: subtle background shift (`hover:bg-primary/5`) or border highlight.
+    -   *Crucial*: Ensure text contrast remains high on hover. `group-hover:text-primary` for titles.
 
 ---
 
-## 5. ACCESSIBILITY GUIDELINES
-1. **Contrast**: All text must maintain a 4.5:1 ratio against backgrounds. Use `slate-900` for primary text.
-2. **Keyboard**: All interactive elements (Buttons, Inputs, Cards) must show a 2px solid slate outline when focused via Tab.
-3. **ARIA Labels**: All icon-only buttons must have `aria-label`.
-4. **Touch Targets**: Minimum 44x44px for all clickable areas on mobile.
+## 5. ANIMATION GUIDELINES
+-   **Motion**: Use `framer-motion` for "mechanical" entrances.
+-   **Text Reveal**: Staggered fade-ins or slide-ups for hero text.
+-   **Hover**: fast, precise transitions (`duration-300`, `ease-out`).
+-   **Scroll**: Smooth scrolling enabled globally (`scroll-behavior: smooth`).
 
 ---
 
-## 6. ANIMATION GUIDELINES
-* **Standard Transition**: `duration-200 ease-in-out` for hover states.
-* **Modals**: Scale-in with opacity (`scale-95` to `scale-100`).
-* **Performance**: Animate only `transform` and `opacity`. Use `will-change-transform` for the Live Waveform.
+## 6. REFERENCE IMPLEMENTATION
+For the definitive look and feel, refer to:
+-   **Hero Component**: `frontend/src/components/ui/intervyou-hero.jsx`
+-   **Auth Layout**: `frontend/src/components/ui/AuthLayout.jsx`
 
----
-
-## 7. ICON SYSTEM
-* **Library**: Lucide React.
-* **Sizing**:
-    * **UI Icons**: 16px (stroke: 2)
-    * **Feature Icons**: 24px (stroke: 1.5)
-* **Color**: Inherit from text color unless semantic (e.g., green checkmark).
-
----
-
-## 8. STATE INDICATORS
-
-### Loading State (Skeleton)
-```javascript
-<div className="animate-pulse flex space-x-4">
-  <div className="rounded-full bg-slate-200 h-10 w-10"></div>
-  <div className="flex-1 space-y-6 py-1">
-    <div className="h-2 bg-slate-200 rounded"></div>
-    <div className="h-2 bg-slate-200 rounded w-3/4"></div>
-  </div>
-</div>
-```
-
-### Empty State
-```javascript
-<div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg">
-  <Search className="mx-auto h-12 w-12 text-slate-400" />
-  <h3 className="mt-2 text-sm font-medium text-slate-900">No drives found</h3>
-  <p className="mt-1 text-sm text-slate-500">Contact your TPO to assign a mock interview.</p>
-</div>
-```
-
----
-
-## 9. BROWSER SUPPORT
-* **Target**: Last 2 versions of Chrome, Firefox, Edge, and Safari.
-* **Polyfills**: Handled via `regenerator-runtime` for Speech Recognition in older browsers.
+*Any new UI element must align with the visual language established in these files.*

@@ -17,7 +17,7 @@ import java.util.List;
 import org.intervyouai.dto.ResumeUploadRequest;
 
 @RestController
-@RequestMapping("/api/v1/students")
+@RequestMapping("/api/core/v1/students")
 public class StudentController {
 
     @Autowired

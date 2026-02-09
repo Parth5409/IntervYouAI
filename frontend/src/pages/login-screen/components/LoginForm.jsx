@@ -18,12 +18,6 @@ const LoginForm = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mock credentials for authentication
-  const mockCredentials = {
-    email: 'john.doe@example.com',
-    password: 'password123'
-  };
-
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e?.target;
     setFormData(prev => ({
@@ -31,7 +25,6 @@ const LoginForm = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
     
-    // Clear error when user starts typing
     if (errors?.[name]) {
       setErrors(prev => ({
         ...prev,
@@ -42,7 +35,6 @@ const LoginForm = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
     if (!formData?.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/?.test(formData?.email)) {
@@ -51,8 +43,6 @@ const LoginForm = () => {
     
     if (!formData?.password) {
       newErrors.password = 'Password is required';
-    } else if (formData?.password?.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
     }
     
     setErrors(newErrors);
@@ -61,9 +51,7 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
-    
     if (!validateForm()) return;
-    
     setIsLoading(true);
     
     try {
@@ -71,54 +59,41 @@ const LoginForm = () => {
         email: formData.email,
         password: formData.password
       });
-      
-      // Refetch user data and then navigate to dashboard
       await refetchUser();
       navigate('/dashboard');
     } catch (error) {
       setErrors({
-        general: error.response?.data?.detail || 'Invalid credentials. Please try again.'
+        general: error.response?.data?.detail || 'Invalid email or password. Please try again.'
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleForgotPassword = () => {
-    // In a real app, this would navigate to forgot password page
-    alert('Forgot password functionality would be implemented here');
-  };
-
-  const handleSocialLogin = (provider) => {
-    // In a real app, this would handle social authentication
-    alert(`${provider} login would be implemented here`);
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* General Error Message */}
       {errors?.general && (
-        <div className="bg-error/10 border border-error/20 rounded-lg p-4 flex items-start space-x-3">
-          <Icon name="AlertCircle" size={20} color="var(--color-error)" />
+        <div className="bg-red-500/10 border border-red-500/20 p-4 flex items-start space-x-3">
+          <Icon name="AlertCircle" size={16} color="var(--color-error)" className="mt-0.5" />
           <div>
-            <p className="text-sm text-error font-medium">Authentication Failed</p>
-            <p className="text-xs text-error/80 mt-1">{errors?.general}</p>
+            <p className="text-[10px] text-red-500 font-mono font-bold uppercase tracking-widest">Authentication Failed</p>
+            <p className="text-xs text-red-500/80 mt-1">{errors?.general}</p>
           </div>
         </div>
       )}
-      {/* Email Field */}
+
       <Input
         label="Email Address"
         type="email"
         name="email"
-        placeholder="Enter your email"
+        placeholder="student@university.edu"
         value={formData?.email}
         onChange={handleInputChange}
         error={errors?.email}
         required
         disabled={isLoading}
       />
-      {/* Password Field */}
+
       <Input
         label="Password"
         type="password"
@@ -130,7 +105,7 @@ const LoginForm = () => {
         required
         disabled={isLoading}
       />
-      {/* Remember Me Checkbox */}
+
       <div className="flex items-center justify-between">
         <Checkbox
           label="Remember me"
@@ -142,43 +117,39 @@ const LoginForm = () => {
         
         <button
           type="button"
-          onClick={handleForgotPassword}
-          className="text-sm text-primary hover:text-primary/80 transition-colors"
+          onClick={() => alert('Recovery process initialized.')}
+          className="text-xs font-mono text-slate-500 hover:text-emerald-500 transition-colors uppercase tracking-tight"
           disabled={isLoading}
         >
           Forgot Password?
         </button>
       </div>
-      {/* Sign In Button */}
+
       <Button
         type="submit"
         variant="default"
-        fullWidth
-        loading={isLoading}
+        className="w-full h-12"
         disabled={isLoading}
-        className="h-12"
       >
-        {isLoading ? 'Signing In...' : 'Sign In'}
+        {isLoading ? 'Signing In...' : 'SIGN IN'}
       </Button>
-      {/* Divider */}
-      <div className="relative">
+
+      <div className="relative py-4">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
+          <div className="w-full border-t border-slate-800" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+        <div className="relative flex justify-center text-[10px] uppercase font-mono">
+          <span className="bg-slate-900 px-2 text-slate-500 tracking-widest">Or continue with</span>
         </div>
       </div>
-      {/* Social Login Options */}
-      <div className="grid grid-cols-2 gap-3">
+
+      <div className="grid grid-cols-2 gap-4">
         <Button
           type="button"
           variant="outline"
-          onClick={() => handleSocialLogin('Google')}
+          onClick={() => alert('Google authentication module not loaded.')}
           disabled={isLoading}
-          iconName="Chrome"
-          iconPosition="left"
-          iconSize={18}
+          className="h-10 text-xs"
         >
           Google
         </Button>
@@ -186,26 +157,24 @@ const LoginForm = () => {
         <Button
           type="button"
           variant="outline"
-          onClick={() => handleSocialLogin('LinkedIn')}
+          onClick={() => alert('LinkedIn authentication module not loaded.')}
           disabled={isLoading}
-          iconName="Linkedin"
-          iconPosition="left"
-          iconSize={18}
+          className="h-10 text-xs"
         >
           LinkedIn
         </Button>
       </div>
-      {/* Sign Up Link */}
-      <div className="text-center">
-        <p className="text-sm text-muted-foreground">
-          New to IntervYou.AI?{' '}
+
+      <div className="text-center pt-4 border-t border-slate-800">
+        <p className="text-xs text-slate-500">
+          Don't have an account?{' '}
           <button
             type="button"
             onClick={() => navigate('/register')}
-            className="text-primary hover:text-primary/80 font-medium transition-colors"
+            className="text-emerald-500 hover:text-emerald-400 font-bold transition-colors uppercase tracking-wide text-[10px]"
             disabled={isLoading}
           >
-            Create an account
+            Create Account
           </button>
         </p>
       </div>

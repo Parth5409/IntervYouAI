@@ -43,16 +43,13 @@ public class PlacementDriveServiceTest {
         org.setId(orgId);
 
         User tpo = User.builder().id(tpoId).organization(org).build();
-import java.math.BigDecimal;
 
-// ...
         PlacementDrive drive = PlacementDrive.builder()
                 .id(driveId)
                 .tpo(tpo)
                 .companyName("Test Corp")
-                .minCgpa(BigDecimal.valueOf(7.5))
+                .minCgpa(java.math.BigDecimal.valueOf(7.5))
                 .build();
-// ...
 
         // Student 1: Eligible
         User s1User = User.builder().id(UUID.randomUUID()).organization(org).build();
