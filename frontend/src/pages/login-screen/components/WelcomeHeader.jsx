@@ -6,7 +6,7 @@ const WelcomeHeader = () => {
       <h2 className="text-2xl font-mono font-bold text-slate-50 uppercase tracking-tighter">
         Welcome Back
       </h2>
-      <p className="text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em] mt-1">
+      <p className="text-slate-400 font-mono text-[10px] uppercase tracking-[0.2em] mt-1">
         Sign in to continue your session
       </p>
     </div>

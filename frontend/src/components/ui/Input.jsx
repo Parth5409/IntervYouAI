@@ -6,7 +6,7 @@ const Input = React.forwardRef(
     return (
       <div className="space-y-2 w-full">
         {label && (
-          <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest block">
+          <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
             {label}
           </label>
         )}

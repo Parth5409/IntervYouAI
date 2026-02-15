@@ -12,7 +12,7 @@ const LoginPrompt = () => {
           <div className="w-full border-t border-slate-800" />
         </div>
         <div className="relative flex justify-center text-[10px] uppercase font-mono">
-          <span className="bg-slate-900 px-2 text-slate-500 tracking-widest">Already Registered?</span>
+          <span className="bg-slate-900 px-2 text-slate-400 tracking-widest">Already Registered?</span>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginScreen from './pages/login-screen';
 import RegistrationScreen from './pages/registration-screen';
 import Dashboard from './pages/dashboard';
@@ -12,16 +12,32 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import InterviewFeedback from '@/pages/interview-feedback';
 import GDFredback from '@/pages/gd-feedback';
 import LandingPage from './pages/LandingPage';
+import OnboardingScreen from './pages/onboarding';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
-    return <LoadingSpinner />; // Or a more sophisticated loading spinner
+    return <LoadingSpinner />;
   }
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Check if user needs onboarding (Student role only for now, assuming simple check)
+  // If user is a student and has no skills listed, redirect to onboarding
+  // We exclude the onboarding route itself to prevent infinite loops
+  const needsOnboarding = user.role === 'STUDENT' && (!user.skills || user.skills.length === 0);
+  
+  if (needsOnboarding && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  // If user is fully onboarded but tries to access onboarding, redirect to dashboard
+  if (!needsOnboarding && location.pathname === '/onboarding') {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
@@ -31,7 +47,7 @@ const AppRoutes = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <LoadingSpinner />; // Or a more sophisticated loading spinner
+    return <LoadingSpinner />;
   }
 
   return (
@@ -41,6 +57,14 @@ const AppRoutes = () => {
         <Route path="/register" element={<RegistrationScreen />} />
 
         {/* Protected Routes */}
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <OnboardingScreen />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard"
           element={

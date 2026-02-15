@@ -55,10 +55,17 @@ const LoginForm = () => {
     setIsLoading(true);
     
     try {
-      await api.post('/auth/login', {
+      const response = await api.post('/auth/login', {
         email: formData.email,
         password: formData.password
       });
+      
+      // Store the token
+      const token = response.data.access_token || response.data.data?.access_token;
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+
       await refetchUser();
       navigate('/dashboard');
     } catch (error) {
@@ -118,7 +125,7 @@ const LoginForm = () => {
         <button
           type="button"
           onClick={() => alert('Recovery process initialized.')}
-          className="text-xs font-mono text-slate-500 hover:text-emerald-500 transition-colors uppercase tracking-tight"
+          className="text-xs font-mono text-slate-300 hover:text-emerald-500 transition-colors uppercase tracking-tight"
           disabled={isLoading}
         >
           Forgot Password?
@@ -139,7 +146,7 @@ const LoginForm = () => {
           <div className="w-full border-t border-slate-800" />
         </div>
         <div className="relative flex justify-center text-[10px] uppercase font-mono">
-          <span className="bg-slate-900 px-2 text-slate-500 tracking-widest">Or continue with</span>
+          <span className="bg-slate-900 px-2 text-slate-300 tracking-widest">Or continue with</span>
         </div>
       </div>
 
@@ -149,7 +156,7 @@ const LoginForm = () => {
           variant="outline"
           onClick={() => alert('Google authentication module not loaded.')}
           disabled={isLoading}
-          className="h-10 text-xs"
+          className="h-10 text-xs text-slate-200 hover:text-emerald-500"
         >
           Google
         </Button>
@@ -159,14 +166,14 @@ const LoginForm = () => {
           variant="outline"
           onClick={() => alert('LinkedIn authentication module not loaded.')}
           disabled={isLoading}
-          className="h-10 text-xs"
+          className="h-10 text-xs text-slate-200 hover:text-emerald-500"
         >
           LinkedIn
         </Button>
       </div>
 
       <div className="text-center pt-4 border-t border-slate-800">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-300">
           Don't have an account?{' '}
           <button
             type="button"

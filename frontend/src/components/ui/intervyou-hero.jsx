@@ -112,7 +112,7 @@ export function IntervYouHero() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
+    <div className="dark min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
       <div className="container mx-auto px-4">
         <header>
           <div className="flex h-16 items-center justify-between">
@@ -128,7 +128,7 @@ export function IntervYouHero() {
                 <a
                   key={item.title}
                   href={item.href}
-                  className="text-base font-mono text-foreground hover:text-primary transition-colors"
+                  className="text-base font-mono text-slate-200 hover:text-primary transition-colors"
                 >
                   {item.title}
                 </a>
@@ -205,7 +205,7 @@ export function IntervYouHero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2, duration: 0.6 }}
-                className="mx-auto mt-8 max-w-2xl text-xl text-foreground font-mono"
+                className="mx-auto mt-8 max-w-2xl text-xl text-slate-200 font-mono"
               >
                 We empower institutions with cutting-edge AI solutions to transform
                 campus recruitment into a data-driven success story.
@@ -300,7 +300,7 @@ export function IntervYouHero() {
                   <h3 className="mb-4 text-2xl font-mono font-bold uppercase tracking-tight group-hover:text-primary transition-colors relative z-10">
                     {feature.label}
                   </h3>
-                  <p className="text-muted-foreground group-hover:text-foreground font-mono text-base leading-relaxed transition-colors relative z-10">
+                  <p className="text-slate-300 group-hover:text-foreground font-mono text-base leading-relaxed transition-colors relative z-10">
                     {feature.description}
                   </p>
                 </motion.div>
@@ -327,7 +327,7 @@ export function IntervYouHero() {
                     <step.icon className="h-10 w-10" />
                   </div>
                   <h4 className="font-mono text-xl font-bold mb-3 uppercase group-hover:text-primary transition-colors">{step.title}</h4>
-                  <p className="text-muted-foreground group-hover:text-foreground font-mono text-base leading-relaxed transition-colors">
+                  <p className="text-slate-300 group-hover:text-foreground font-mono text-base leading-relaxed transition-colors">
                     {step.description}
                   </p>
                 </motion.div>
@@ -348,7 +348,7 @@ export function IntervYouHero() {
                   <div className="text-4xl md:text-5xl font-mono font-bold text-primary mb-2">
                     {stat.value}
                   </div>
-                  <div className="font-mono text-sm text-muted-foreground uppercase tracking-widest text-center">
+                  <div className="font-mono text-sm text-slate-400 uppercase tracking-widest text-center">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -364,19 +364,19 @@ export function IntervYouHero() {
                 <Brain className="h-8 w-8 text-primary" />
                 <span className="font-mono text-2xl font-bold tracking-tighter">IntervYou.AI</span>
               </div>
-              <p className="text-muted-foreground font-mono text-sm max-w-sm mb-8 leading-relaxed">
+              <p className="text-slate-300 font-mono text-sm max-w-sm mb-8 leading-relaxed">
                 Empowering the next generation of professionals with AI-driven interview intelligence. Industrial-grade preparation for top-tier careers.
               </p>
               <div className="flex space-x-6">
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Twitter className="h-5 w-5" /></a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Github className="h-5 w-5" /></a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors"><Linkedin className="h-5 w-5" /></a>
+                <a href="#" className="text-slate-300 hover:text-primary transition-colors"><Twitter className="h-5 w-5" /></a>
+                <a href="#" className="text-slate-300 hover:text-primary transition-colors"><Github className="h-5 w-5" /></a>
+                <a href="#" className="text-slate-300 hover:text-primary transition-colors"><Linkedin className="h-5 w-5" /></a>
               </div>
             </div>
             
             <div>
               <h5 className="font-mono text-sm font-bold uppercase tracking-widest mb-6">Platform</h5>
-              <ul className="space-y-4 font-mono text-sm text-muted-foreground">
+              <ul className="space-y-4 font-mono text-sm text-slate-300">
                 <li><a href="#features" className="hover:text-primary transition-colors uppercase">Features</a></li>
                 <li><a href="#workflow" className="hover:text-primary transition-colors uppercase">Workflow</a></li>
                 <li><a href="/dashboard" className="hover:text-primary transition-colors uppercase">Dashboard</a></li>
@@ -385,7 +385,7 @@ export function IntervYouHero() {
 
             <div>
               <h5 className="font-mono text-sm font-bold uppercase tracking-widest mb-6">Legal</h5>
-              <ul className="space-y-4 font-mono text-sm text-muted-foreground">
+              <ul className="space-y-4 font-mono text-sm text-slate-300">
                 <li><a href="#" className="hover:text-primary transition-colors uppercase">Privacy</a></li>
                 <li><a href="#" className="hover:text-primary transition-colors uppercase">Terms</a></li>
                 <li><a href="#" className="hover:text-primary transition-colors uppercase">Cookies</a></li>
@@ -394,12 +394,12 @@ export function IntervYouHero() {
           </div>
           
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-t border-border pt-10">
-            <div className="font-mono text-xs text-muted-foreground uppercase tracking-widest">
+            <div className="font-mono text-xs text-slate-300 uppercase tracking-widest">
               © 2026 IntervYou.AI // INDUSTRIAL_INTELLIGENCE // ALL_RIGHTS_RESERVED
             </div>
             <div className="flex items-center gap-2">
-              <Globe className="h-4 w-4 text-muted-foreground" />
-              <span className="font-mono text-xs text-muted-foreground uppercase tracking-widest">Region: Global_Node_01</span>
+              <Globe className="h-4 w-4 text-slate-300" />
+              <span className="font-mono text-xs text-slate-300 uppercase tracking-widest">Region: Global_Node_01</span>
             </div>
           </div>
         </footer>
