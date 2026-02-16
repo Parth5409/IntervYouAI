@@ -27,4 +27,5 @@ public class UserResponse {
     private BigDecimal currentCgpa;
     private Integer passingYear;
     private String organizationName;
+    private String organizationCode;
 }

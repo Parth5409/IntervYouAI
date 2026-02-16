@@ -36,7 +36,8 @@ public class UserController {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .role("ROLE_" + user.getRole().name())
-                .organizationName(user.getOrganization() != null ? user.getOrganization().getName() : null);
+                .organizationName(user.getOrganization() != null ? user.getOrganization().getName() : null)
+                .organizationCode(user.getOrganization() != null ? user.getOrganization().getCode() : null);
 
         if (user.getRole().name().equals("STUDENT")) {
             Optional<StudentProfile> profile = studentProfileRepository.findByUser(user);

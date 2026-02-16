@@ -67,7 +67,7 @@ public class StudentService {
             }
 
             // Generate default password (e.g., ST<CODE><PRN>)
-            String defaultPassword = "ST" + org.getCode() + dto.getPrn();
+            String defaultPassword = "ST" + org.getCode().toUpperCase() + dto.getPrn();
 
             User user = User.builder()
                     .email(dto.getEmail())

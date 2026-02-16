@@ -117,26 +117,26 @@ const RegistrationForm = () => {
           />
         </div>
 
-        <div className="relative">
-          <Input
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Create a strong password"
-            value={formData?.password}
-            onChange={(e) => handleInputChange('password', e?.target?.value)}
-            error={errors?.password}
-            required
-            disabled={isLoading}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-9 text-slate-500 hover:text-emerald-500 transition-colors"
-            disabled={isLoading}
-          >
-            <Icon name={showPassword ? "EyeOff" : "Eye"} size={14} />
-          </button>
-        </div>
+        <Input
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          placeholder="Create a strong password"
+          value={formData?.password}
+          onChange={(e) => handleInputChange('password', e?.target?.value)}
+          error={errors?.password}
+          required
+          disabled={isLoading}
+          rightElement={
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-slate-500 hover:text-emerald-500 transition-colors focus:outline-none"
+              disabled={isLoading}
+            >
+              <Icon name={showPassword ? "EyeOff" : "Eye"} size={14} />
+            </button>
+          }
+        />
 
         {role === 'ROLE_ORG_ADMIN' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

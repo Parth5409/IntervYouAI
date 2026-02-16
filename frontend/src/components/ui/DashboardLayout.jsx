@@ -13,9 +13,9 @@ const DashboardLayout = ({ children }) => {
 
   const studentMenu = [
     { label: 'OVERVIEW', path: '/student/dashboard', icon: 'LayoutDashboard' },
-    { label: 'INTERVIEWS', path: '/interview-setup-wizard', icon: 'Play' },
-    { label: 'FEEDBACK', path: '/results', icon: 'FileText' },
-    { label: 'SETTINGS', path: '/settings', icon: 'Settings' },
+    { label: 'INTERVIEWS', path: '/interview/setup', icon: 'Play' },
+    { label: 'HISTORY', path: '/student/history', icon: 'History' },
+    { label: 'PROFILE', path: '/student/profile', icon: 'User' },
   ];
 
   const tpoMenu = [

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
+import { cn } from '../../utils/cn';
 
 const SessionControls = ({
   isRecording = false,
@@ -13,7 +14,8 @@ const SessionControls = ({
   isConnected = true,
   microphoneLevel = 0,
   showTimer = true,
-  showMicLevel = true
+  showMicLevel = true,
+  className
 }) => {
   const navigate = useNavigate();
   const [showEndConfirm, setShowEndConfirm] = useState(false);
@@ -21,207 +23,108 @@ const SessionControls = ({
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins?.toString()?.padStart(2, '0')}:${secs?.toString()?.padStart(2, '0')}`;
-  };
-
-  const handleEndSession = () => {
-    if (onEndSession) {
-      onEndSession();
-    } else {
-      navigate('/interview-feedback');
-    }
-    setShowEndConfirm(false);
-  };
-
-  const handleEmergencyExit = () => {
-    navigate('/dashboard');
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
     <>
-      {/* Main Session Controls - Fixed Position */}
-      <div className="fixed bottom-6 left-48 z-50">
-        <div className="bg-card border border-border rounded-full shadow-elevated px-6 py-4 flex items-center space-x-4">
-          {/* Connection Status */}
-          <div className="flex items-center space-x-2">
-            <div
-              className={`w-2 h-2 rounded-full ${
-                isConnected ? 'bg-success animate-pulse-gentle' : 'bg-error'
-              }`}
-            />
-            <span className="text-xs text-muted-foreground hidden sm:block">
-              {isConnected ? 'Connected' : 'Disconnected'}
+      {/* Main Session Controls - Industrial Bar */}
+      <div className={cn("fixed bottom-8 left-1/2 -translate-x-1/2 z-50", className)}>
+        <div className="bg-slate-950 border border-slate-800 p-2 flex items-center gap-4 shadow-2xl backdrop-blur-md">
+          {/* Status Segment */}
+          <div className="flex items-center gap-3 px-4 border-r border-slate-800">
+            <div className={cn(
+              "w-2 h-2",
+              isConnected ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+            )} />
+            <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest hidden sm:block">
+              {isConnected ? 'Uplink_Active' : 'Uplink_Lost'}
             </span>
           </div>
 
-          {/* Microphone Level Indicator */}
-          {showMicLevel && (
-            <div className="flex items-center space-x-2">
-              <Icon 
-                name={isMuted ? "MicOff" : "Mic"} 
-                size={16} 
-                color={isMuted ? "var(--color-error)" : "var(--color-success)"}
-              />
-              <div className="w-12 h-2 bg-muted rounded-full overflow-hidden hidden sm:block">
-                <div
-                  className="h-full bg-success transition-all duration-100"
-                  style={{ width: `${microphoneLevel}%` }}
-                />
-              </div>
-            </div>
-          )}
+          {/* Controls Segment */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onToggleRecording}
+              className={cn(
+                "w-10 h-10 border flex items-center justify-center transition-all",
+                isRecording 
+                  ? "bg-red-500/10 border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]" 
+                  : "bg-emerald-500/10 border-emerald-500/50 text-emerald-500 hover:border-emerald-500"
+              )}
+            >
+              <Icon name={isRecording ? "Square" : "Mic"} size={18} />
+            </button>
 
-          {/* Recording Button */}
-          <Button
-            variant={isRecording ? "destructive" : "default"}
-            onClick={onToggleRecording}
-            iconName={isRecording ? "Square" : "Play"}
-            iconSize={20}
-            className="rounded-full w-12 h-12 p-0"
-          />
+            <button
+              onClick={onToggleMute}
+              className={cn(
+                "w-10 h-10 border flex items-center justify-center transition-all",
+                isMuted 
+                  ? "bg-amber-500/10 border-amber-500 text-amber-500" 
+                  : "border-slate-800 text-slate-400 hover:border-slate-600"
+              )}
+            >
+              <Icon name={isMuted ? "MicOff" : "Volume2"} size={18} />
+            </button>
+          </div>
 
-          {/* Mute Button */}
-          <Button
-            variant={isMuted ? "destructive" : "secondary"}
-            onClick={onToggleMute}
-            iconName={isMuted ? "MicOff" : "Mic"}
-            iconSize={18}
-            className="rounded-full w-10 h-10 p-0"
-          />
-
-          {/* Session Timer */}
+          {/* Timer Segment */}
           {showTimer && (
-            <div className="text-sm font-mono text-foreground bg-muted px-3 py-1 rounded-full">
-              {formatTime(sessionTime)}
-            </div>
-          )}
-
-          {/* End Session Button */}
-          <Button
-            variant="outline"
-            onClick={() => setShowEndConfirm(true)}
-            iconName="Square"
-            iconSize={16}
-            className="hidden sm:flex"
-          >
-            End
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile Controls - Bottom Sheet Style */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 sm:hidden z-40">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-3">
-            <div
-              className={`w-2 h-2 rounded-full ${
-                isConnected ? 'bg-success animate-pulse-gentle' : 'bg-error'
-              }`}
-            />
-            <span className="text-xs text-muted-foreground">
-              {isConnected ? 'Connected' : 'Disconnected'}
-            </span>
-            {showTimer && (
-              <div className="text-sm font-mono text-foreground">
+            <div className="px-4 border-l border-slate-800">
+              <div className="font-mono text-xs font-bold text-slate-300 tracking-widest">
                 {formatTime(sessionTime)}
               </div>
-            )}
-          </div>
-          
-          <Button
-            variant="ghost"
-            onClick={() => setShowEndConfirm(true)}
-            iconName="Square"
-            iconSize={16}
-            className="text-destructive"
-          >
-            End
-          </Button>
-        </div>
-
-        <div className="flex items-center justify-center space-x-6">
-          <Button
-            variant={isMuted ? "destructive" : "secondary"}
-            onClick={onToggleMute}
-            iconName={isMuted ? "MicOff" : "Mic"}
-            iconSize={20}
-            className="rounded-full w-14 h-14 p-0"
-          />
-
-          <Button
-            variant={isRecording ? "destructive" : "default"}
-            onClick={onToggleRecording}
-            iconName={isRecording ? "Square" : "Play"}
-            iconSize={24}
-            className="rounded-full w-16 h-16 p-0"
-          />
-
-          {showMicLevel && (
-            <div className="flex flex-col items-center space-y-1">
-              <Icon 
-                name="Volume2" 
-                size={16} 
-                color="var(--color-muted-foreground)"
-              />
-              <div className="w-2 h-12 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="w-full bg-success transition-all duration-100"
-                  style={{ 
-                    height: `${microphoneLevel}%`,
-                    transform: 'translateY(100%)',
-                    transformOrigin: 'bottom'
-                  }}
-                />
-              </div>
             </div>
           )}
+
+          {/* Termination Segment */}
+          <button
+            onClick={() => setShowEndConfirm(true)}
+            className="ml-2 bg-slate-900 border border-slate-800 hover:border-red-500/50 hover:text-red-500 text-slate-500 font-mono text-[10px] font-bold tracking-widest uppercase h-10 px-4 transition-all"
+          >
+            Terminate
+          </button>
         </div>
       </div>
 
-      {/* Emergency Exit Button - Top Corner */}
-      <div className="fixed top-4 right-4 z-50">
-        <Button
-          variant="ghost"
-          onClick={handleEmergencyExit}
-          iconName="X"
-          iconSize={20}
-          className="rounded-full w-10 h-10 p-0 bg-card/80 backdrop-blur-sm border border-border"
-        />
-      </div>
-
-      {/* End Session Confirmation Modal */}
+      {/* End Session Confirmation Modal - Industrial Style */}
       {showEndConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setShowEndConfirm(false)} />
-          <div className="bg-card rounded-lg shadow-elevated border border-border p-6 w-full max-w-md relative">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-warning/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icon name="AlertTriangle" size={24} color="var(--color-warning)" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="fixed inset-0 bg-slate-950/80" onClick={() => setShowEndConfirm(false)} />
+          <div className="bg-slate-900 border border-slate-800 p-8 w-full max-w-md relative animate-in zoom-in-95 duration-200">
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-red-500/30" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-red-500/30" />
+
+            <div className="text-center space-y-6">
+              <div className="w-12 h-12 border border-red-500/30 bg-red-500/5 flex items-center justify-center mx-auto">
+                <Icon name="AlertTriangle" size={24} className="text-red-500" />
               </div>
               
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                End Interview Session?
-              </h3>
+              <div className="space-y-2">
+                <h3 className="font-mono font-bold text-slate-100 uppercase tracking-widest">
+                  TERMINATE_MISSION_LOG?
+                </h3>
+                <p className="text-slate-500 font-mono text-[10px] uppercase leading-relaxed">
+                  Confirmation required to end current simulation. 
+                  All captured data will be processed for analysis.
+                </p>
+              </div>
               
-              <p className="text-muted-foreground text-sm mb-6">
-                Are you sure you want to end this interview session? Your progress will be saved and you'll receive feedback.
-              </p>
-              
-              <div className="flex space-x-3">
-                <Button
-                  variant="outline"
+              <div className="flex gap-4 pt-4">
+                <button
                   onClick={() => setShowEndConfirm(false)}
-                  fullWidth
+                  className="flex-1 bg-slate-800 text-slate-300 font-mono text-[10px] font-bold py-3 uppercase tracking-widest hover:bg-slate-750 transition-colors"
                 >
-                  Continue
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleEndSession}
-                  fullWidth
+                  Aborted
+                </button>
+                <button
+                  onClick={onEndSession}
+                  className="flex-1 bg-red-500 text-slate-950 font-mono text-[10px] font-bold py-3 uppercase tracking-widest hover:bg-red-400 transition-colors"
                 >
-                  End Session
-                </Button>
+                  Confirm_End
+                </button>
               </div>
             </div>
           </div>

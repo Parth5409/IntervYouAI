@@ -59,8 +59,14 @@ class InterviewSession(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     student_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     drive_id = Column(UUID(as_uuid=True), ForeignKey('placement_drives.id'), nullable=False)
+    session_type = Column(String, nullable=True)
+    status = Column(String, default="created")
+    difficulty = Column(String, nullable=True)
+    duration_minutes = Column(Integer, default=0)
     overall_score = Column(Integer, default=0)
+    context = Column(JSON, nullable=True)
     transcript = Column(JSON, nullable=True)
+    feedback = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships

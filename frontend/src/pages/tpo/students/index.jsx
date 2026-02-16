@@ -247,7 +247,7 @@ const StudentDirectoryPage = () => {
                       {isImporting ? 'PROCESSING_DATA...' : 'EXECUTE_IMPORT'}
                     </Button>
                     <p className="text-[8px] font-mono text-slate-500 text-center uppercase leading-relaxed">
-                      * Default passwords will be generated as ST + ORG_CODE + PRN.
+                      * Default passwords will be generated as ST + INSTITUTION_CODE + PRN (e.g., STMIT20230001).
                       Students will be required to update credentials on first node access.
                     </p>
                   </div>

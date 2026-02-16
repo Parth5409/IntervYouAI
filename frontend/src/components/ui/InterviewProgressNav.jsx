@@ -1,12 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
+import { cn } from '../../utils/cn';
 
 const InterviewProgressNav = ({ 
   currentStep = 1, 
   totalSteps = 3, 
-  stepLabels = ['Setup', 'Interview', 'Feedback'],
+  stepLabels = ['SETUP', 'INTERVIEW', 'FEEDBACK'],
   showProgress = true,
   showBackButton = true,
   onBack,
@@ -14,6 +15,7 @@ const InterviewProgressNav = ({
   isInterviewActive = false
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleBack = () => {
     if (onBack) {
@@ -27,133 +29,80 @@ const InterviewProgressNav = ({
     navigate('/dashboard');
   };
 
-  // Hide navigation during active interview
-  if (isInterviewActive) {
-    return null;
-  }
+  // Hide navigation during active interview (Optional, but let's keep it visible for now with tool-like style)
+  // if (isInterviewActive) { return null; }
 
   return (
-    <header className="bg-card border-b border-border sticky top-0 z-50">
-      <div className="px-4 md:px-6 h-16 flex items-center justify-between">
-        {/* Left Section - Back Button */}
-        <div className="flex items-center space-x-4">
-          {showBackButton && (
-            <Button
-              variant="ghost"
-              iconName="ArrowLeft"
-              iconSize={20}
+    <header className="bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 h-16 shrink-0">
+      <div className="container mx-auto h-full flex items-center justify-between px-6">
+        {/* Left: Terminal Style Home/Back */}
+        <div className="flex items-center gap-4">
+          {showBackButton ? (
+            <button
               onClick={handleBack}
-              className="p-2"
-            />
-          )}
-          
-          {/* Logo - Mobile */}
-          <div className="flex items-center space-x-2 md:hidden">
-            <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-              <svg
-                className="w-4 h-4 text-primary-foreground"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 2L2 7L12 12L22 7L12 2Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              className="text-slate-500 hover:text-emerald-500 transition-colors p-2"
+            >
+              <Icon name="ChevronLeft" size={20} />
+            </button>
+          ) : (
+            <div className="w-8 h-8 bg-emerald-500 flex items-center justify-center">
+              <Icon name="Brain" size={20} className="text-slate-950" />
             </div>
-            <span className="text-sm font-semibold text-foreground">
-              IntervYou.AI
-            </span>
+          )}
+          <span className="font-mono font-bold tracking-tighter text-sm hidden sm:block">
+            INTERVYOU.AI // NODE_01
+          </span>
+        </div>
+
+        {/* Center: Mission Progress */}
+        <div className="flex-1 max-w-xl mx-8">
+          <div className="flex items-center gap-2">
+            {stepLabels.map((label, index) => {
+              const stepNumber = index + 1;
+              const isActive = stepNumber === currentStep;
+              const isCompleted = stepNumber < currentStep;
+
+              return (
+                <React.Fragment key={label}>
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-6 h-6 border font-mono text-[10px] flex items-center justify-center transition-all duration-500",
+                      isCompleted ? "bg-emerald-500 border-emerald-500 text-slate-950" :
+                      isActive ? "border-emerald-500 text-emerald-500 bg-emerald-500/10 shadow-[0_0_10px_rgba(16,185,129,0.2)]" :
+                      "border-slate-800 text-slate-600"
+                    )}>
+                      {isCompleted ? <Icon name="Check" size={12} /> : `0${stepNumber}`}
+                    </div>
+                    <span className={cn(
+                      "font-mono text-[10px] tracking-widest hidden lg:block transition-colors",
+                      isActive ? "text-slate-100 font-bold" : "text-slate-600"
+                    )}>
+                      {label}
+                    </span>
+                  </div>
+                  {index < stepLabels.length - 1 && (
+                    <div className="flex-1 h-[1px] bg-slate-800 min-w-[20px]" />
+                  )}
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
 
-        {/* Center Section - Progress or Title */}
-        <div className="flex-1 flex items-center justify-center">
-          {showProgress ? (
-            <div className="flex items-center space-x-4 max-w-md w-full">
-              {/* Progress Steps */}
-              <div className="flex items-center space-x-2 flex-1">
-                {stepLabels?.map((label, index) => {
-                  const stepNumber = index + 1;
-                  const isActive = stepNumber === currentStep;
-                  const isCompleted = stepNumber < currentStep;
-                  
-                  return (
-                    <React.Fragment key={stepNumber}>
-                      <div className="flex items-center">
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors ${
-                            isCompleted
-                              ? 'bg-success text-success-foreground'
-                              : isActive
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted text-muted-foreground'
-                          }`}
-                        >
-                          {isCompleted ? (
-                            <Icon name="Check" size={14} />
-                          ) : (
-                            stepNumber
-                          )}
-                        </div>
-                        <span
-                          className={`ml-2 text-sm font-medium hidden sm:block ${
-                            isActive
-                              ? 'text-foreground'
-                              : 'text-muted-foreground'
-                          }`}
-                        >
-                          {label}
-                        </span>
-                      </div>
-                      {index < stepLabels?.length - 1 && (
-                        <div
-                          className={`flex-1 h-0.5 mx-2 transition-colors ${
-                            stepNumber < currentStep
-                              ? 'bg-success' :'bg-muted'
-                          }`}
-                        />
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </div>
-            </div>
-          ) : title ? (
-            <h1 className="text-lg font-semibold text-foreground">{title}</h1>
-          ) : null}
-        </div>
-
-        {/* Right Section - Home Button */}
-        <div className="flex items-center">
-          <Button
-            variant="ghost"
-            iconName="Home"
-            iconSize={20}
+        {/* Right: Actions */}
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex flex-col items-end mr-4">
+            <span className="text-[8px] font-mono text-slate-500 uppercase">Status</span>
+            <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-tighter">Live_Uplink</span>
+          </div>
+          <button 
             onClick={handleHome}
-            className="p-2"
-          />
+            className="text-slate-500 hover:text-emerald-500 transition-colors p-2"
+          >
+            <Icon name="Home" size={18} />
+          </button>
         </div>
       </div>
-      {/* Mobile Progress Bar */}
-      {showProgress && (
-        <div className="md:hidden px-4 pb-3">
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-            <span>Step {currentStep} of {totalSteps}</span>
-            <span>{Math.round((currentStep / totalSteps) * 100)}% Complete</span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-2">
-            <div
-              className="bg-primary h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-            />
-          </div>
-        </div>
-      )}
     </header>
   );
 };

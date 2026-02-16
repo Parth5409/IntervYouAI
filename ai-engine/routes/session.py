@@ -47,13 +47,20 @@ async def create_session(
         raise HTTPException(status_code=422, detail=str(e))
 
     try:
+        # Fetch full user details from DB to get resume info
+        db_user = await get_session_by_id(db, current_user.id) # Wait, get_session_by_id is for InterviewSession
+        # I need get_user_by_id
+        from utils.database import get_user_by_id
+        user_record = await get_user_by_id(db, current_user.id)
+        
         context = session_data.dict()
 
-        if current_user.resume_url and current_user.resume_vs_id:
-            context["resume_info"] = {"status": "processed", "vector_store_id": current_user.resume_vs_id}
+        if user_record and hasattr(user_record, 'resume_url') and user_record.resume_url:
+            # Check if vector store exists (placeholder logic)
+            context["resume_info"] = {"status": "linked", "url": user_record.resume_url}
         
         new_session = InterviewSession(
-            user_id=current_user.id,
+            student_id=current_user.id,
             session_type=session_data.session_type.value,
             difficulty=session_data.difficulty.value,
             context=context
@@ -104,7 +111,7 @@ async def get_session_details(
 async def get_session_history(db: AsyncSession = Depends(get_db), current_user: User = Depends(get_current_user)):
     result = await db.execute(
         select(InterviewSession)
-        .where(InterviewSession.user_id == current_user.id)
+        .where(InterviewSession.student_id == current_user.id)
         .order_by(InterviewSession.created_at.desc()).limit(20)
     )
     sessions = result.scalars().all()

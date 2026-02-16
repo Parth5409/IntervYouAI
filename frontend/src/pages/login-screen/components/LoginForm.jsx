@@ -17,6 +17,7 @@ const LoginForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e?.target;
@@ -103,7 +104,7 @@ const LoginForm = () => {
 
       <Input
         label="Password"
-        type="password"
+        type={showPassword ? "text" : "password"}
         name="password"
         placeholder="Enter your password"
         value={formData?.password}
@@ -111,6 +112,16 @@ const LoginForm = () => {
         error={errors?.password}
         required
         disabled={isLoading}
+        rightElement={
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="text-slate-500 hover:text-emerald-500 transition-colors focus:outline-none"
+            disabled={isLoading}
+          >
+            <Icon name={showPassword ? "EyeOff" : "Eye"} size={14} />
+          </button>
+        }
       />
 
       <div className="flex items-center justify-between">

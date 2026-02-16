@@ -2,7 +2,7 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const Input = React.forwardRef(
-  ({ className, type, label, error, id, ...props }, ref) => {
+  ({ className, type, label, error, id, rightElement, ...props }, ref) => {
     const generatedId = React.useId();
     const inputId = id || generatedId;
     
@@ -16,17 +16,25 @@ const Input = React.forwardRef(
             {label}
           </label>
         )}
-        <input
-          id={inputId}
-          type={type}
-          className={cn(
-            "flex h-10 w-full rounded-none border border-slate-800 bg-slate-950 px-4 py-2 text-slate-50 font-mono text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
-            error && "border-red-500 focus-visible:ring-red-500",
-            className
+        <div className="relative">
+          <input
+            id={inputId}
+            type={type}
+            className={cn(
+              "flex h-10 w-full rounded-none border border-slate-800 bg-slate-950 px-4 py-2 text-slate-50 font-mono text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
+              error && "border-red-500 focus-visible:ring-red-500",
+              rightElement && "pr-10",
+              className
+            )}
+            ref={ref}
+            {...props}
+          />
+          {rightElement && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center">
+              {rightElement}
+            </div>
           )}
-          ref={ref}
-          {...props}
-        />
+        </div>
         {error && (
           <p className="font-mono text-[10px] text-red-500 uppercase tracking-tight mt-1">
             {error}

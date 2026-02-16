@@ -33,6 +33,22 @@ public class InterviewSession {
     @Column(name = "overall_score")
     private Integer overallScore;
 
+    @Column(name = "session_type")
+    private String sessionType;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "difficulty")
+    private String difficulty;
+
+    @Column(name = "duration_minutes")
+    private Integer durationMinutes;
+
+    @Column(name = "context", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private String context;
+
     @Column(name = "transcript", columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     private String transcript;

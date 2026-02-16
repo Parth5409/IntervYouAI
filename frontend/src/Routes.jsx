@@ -2,18 +2,19 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginScreen from './pages/login-screen';
 import RegistrationScreen from './pages/registration-screen';
-import Dashboard from './pages/dashboard';
 import StudentDashboard from './pages/dashboard/StudentDashboard';
+import StudentHistoryPage from './pages/student/StudentHistoryPage';
+import StudentProfilePage from './pages/student/StudentProfilePage';
 import TpoDashboard from './pages/dashboard/TpoDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
-import InterviewSetupWizard from './pages/interview-setup-wizard';
-import InterviewRoom from './pages/interview-room';
-import GDRoom from './pages/gd-room';
+import InterviewSetupWizard from './pages/interview/setup';
+import InterviewRoom from './pages/interview/room';
+import GDRoom from './pages/gd/room';
 import NotFound from './pages/NotFound';
 import useAuth from './hooks/useAuth';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import InterviewFeedback from '@/pages/interview-feedback';
-import GDFredback from '@/pages/gd-feedback';
+import InterviewFeedback from './pages/interview/feedback';
+import GDFredback from './pages/gd/feedback';
 import LandingPage from './pages/LandingPage';
 import OnboardingScreen from './pages/onboarding';
 
@@ -99,6 +100,24 @@ const AppRoutes = () => {
         />
 
         <Route
+          path="/student/history"
+          element={
+            <ProtectedRoute allowedRoles={['ROLE_STUDENT']}>
+              <StudentHistoryPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/student/profile"
+          element={
+            <ProtectedRoute allowedRoles={['ROLE_STUDENT']}>
+              <StudentProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/tpo/dashboard"
           element={
             <ProtectedRoute allowedRoles={['ROLE_TPO']}>
@@ -116,7 +135,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/interview-setup-wizard"
+          path="/interview/setup"
           element={
             <ProtectedRoute>
               <InterviewSetupWizard />
@@ -124,7 +143,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/interview-room/:sessionId"
+          path="/interview/room/:sessionId"
           element={
             <ProtectedRoute>
               <InterviewRoom />
@@ -132,7 +151,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/gd-room/:sessionId"
+          path="/gd/room/:sessionId"
           element={
             <ProtectedRoute>
               <GDRoom />
@@ -140,7 +159,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/interview-feedback/:sessionId"
+          path="/interview/feedback/:sessionId"
           element={
             <ProtectedRoute>
               <InterviewFeedback />
@@ -148,7 +167,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/gd-feedback/:sessionId"
+          path="/gd/feedback/:sessionId"
           element={
             <ProtectedRoute>
               <GDFredback />
