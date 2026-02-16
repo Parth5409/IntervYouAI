@@ -92,21 +92,23 @@ public class StudentService {
         return createdProfiles;
     }
 
+    @Transactional
     public StudentProfile createProfile(UUID userId, StudentProfileRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        StudentProfile profile = StudentProfile.builder()
-                .user(user)
-                .prn(request.getPrn())
-                .branch(request.getBranch())
-                .currentSemester(request.getCurrentSemester())
-                .currentCgpa(request.getCurrentCgpa())
-                .passingYear(request.getPassingYear())
-                .skills(request.getSkills())
-                .resumeUrl(request.getResumeUrl())
-                .careerGoal(request.getCareerGoal())
-                .build();
+        StudentProfile profile = studentProfileRepository.findByUser(user)
+                .orElse(new StudentProfile());
+        
+        profile.setUser(user);
+        profile.setPrn(request.getPrn());
+        profile.setBranch(request.getBranch());
+        profile.setCurrentSemester(request.getCurrentSemester());
+        profile.setCurrentCgpa(request.getCurrentCgpa());
+        profile.setPassingYear(request.getPassingYear());
+        profile.setSkills(request.getSkills());
+        profile.setResumeUrl(request.getResumeUrl());
+        profile.setCareerGoal(request.getCareerGoal());
 
         return studentProfileRepository.save(profile);
     }

@@ -3,6 +3,7 @@ package org.intervyouai.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,21 @@ public class JwtUtils {
     @Value("${intervyouai.jwt.expirationMs}")
     private int jwtExpirationMs;
 
+    private SecretKey key;
+
+    @PostConstruct
+    public void init() {
+        try {
+            // Attempt Base64 decoding first
+            this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+            logger.info("JWT Secret initialized successfully (Base64)");
+        } catch (Exception e) {
+            // Fallback to raw bytes if not valid Base64
+            this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+            logger.warn("JWT Secret initialized using raw bytes (Base64 decode failed)");
+        }
+    }
+
     public String generateJwtToken(UserDetailsImpl userPrincipal) {
         return Jwts.builder()
                 .subject(userPrincipal.getEmail())
@@ -28,17 +44,17 @@ public class JwtUtils {
                 .claim("role", userPrincipal.getAuthorities().iterator().next().getAuthority())
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(key(), Jwts.SIG.HS256)
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 
     private SecretKey key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        return this.key;
     }
 
     public String getEmailFromJwtToken(String token) {
         return Jwts.parser()
-                .verifyWith(key())
+                .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
@@ -47,7 +63,7 @@ public class JwtUtils {
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser().verifyWith(key()).build().parse(authToken);
+            Jwts.parser().verifyWith(key).build().parse(authToken);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());

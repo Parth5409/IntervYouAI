@@ -33,8 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
-
-
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 
@@ -128,48 +127,230 @@ public class AuthService {
 
 
 
-    public void registerUser(SignupRequest signUpRequest) {
+        @Transactional
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
 
-            throw new RuntimeException("Error: Email is already in use!");
+
+        public void registerUser(SignupRequest signUpRequest) {
+
+
+
+            if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+
+
+
+                throw new RuntimeException("Error: Email is already in use!");
+
+
+
+            }
+
+
+
+    
+
+
+
+            Organization organization = null;
+
+
+
+            UserRole role = signUpRequest.getRole() != null ? signUpRequest.getRole() : UserRole.STUDENT;
+
+
+
+    
+
+
+
+                    if (role == UserRole.ORG_ADMIN) {
+
+
+
+    
+
+
+
+                        if (signUpRequest.getOrganizationName() == null || signUpRequest.getOrganizationCode() == null) {
+
+
+
+    
+
+
+
+                            throw new RuntimeException("Error: Organization name and code are required for ORG_ADMIN registration.");
+
+
+
+    
+
+
+
+                        }
+
+
+
+    
+
+
+
+                        
+
+
+
+    
+
+
+
+                        if (organizationRepository.existsByCode(signUpRequest.getOrganizationCode())) {
+
+
+
+    
+
+
+
+                            throw new RuntimeException("Error: Organization code '" + signUpRequest.getOrganizationCode() + "' is already in use!");
+
+
+
+    
+
+
+
+                        }
+
+
+
+    
+
+
+
+            
+
+
+
+    
+
+
+
+                        // Create new organization
+
+
+
+    
+
+
+
+                        organization = Organization.builder()
+
+
+
+    
+
+
+
+                                .name(signUpRequest.getOrganizationName())
+
+
+
+    
+
+
+
+                                .code(signUpRequest.getOrganizationCode())
+
+
+
+    
+
+
+
+                                .isActive(true)
+
+
+
+    
+
+
+
+                                .build();
+
+
+
+    
+
+
+
+                        organization = organizationRepository.save(organization);
+
+
+
+    
+
+
+
+                    } else if (signUpRequest.getOrganizationCode() != null && !signUpRequest.getOrganizationCode().isEmpty()) {
+
+
+
+                organization = organizationRepository.findByCode(signUpRequest.getOrganizationCode())
+
+
+
+                        .orElseThrow(() -> new RuntimeException("Error: Organization not found with code: " + signUpRequest.getOrganizationCode()));
+
+
+
+            }
+
+
+
+    
+
+
+
+            User user = User.builder()
+
+
+
+                    .email(signUpRequest.getEmail())
+
+
+
+                    .password(encoder.encode(signUpRequest.getPassword()))
+
+
+
+                    .fullName(signUpRequest.getFullName() != null ? signUpRequest.getFullName() : signUpRequest.getEmail().split("@")[0])
+
+
+
+                    .role(role)
+
+
+
+                    .organization(organization)
+
+
+
+                    .isActive(true)
+
+
+
+                    .build();
+
+
+
+    
+
+
+
+            userRepository.save(user);
+
+
 
         }
-
-
-
-        Organization organization = null;
-
-        if (signUpRequest.getOrganizationCode() != null && !signUpRequest.getOrganizationCode().isEmpty()) {
-
-            organization = organizationRepository.findByCode(signUpRequest.getOrganizationCode())
-
-                    .orElseThrow(() -> new RuntimeException("Error: Organization not found with code: " + signUpRequest.getOrganizationCode()));
-
-        }
-
-
-
-        User user = User.builder()
-
-                .email(signUpRequest.getEmail())
-
-                .password(encoder.encode(signUpRequest.getPassword()))
-
-                .fullName(signUpRequest.getFullName() != null ? signUpRequest.getFullName() : signUpRequest.getEmail().split("@")[0])
-
-                .role(signUpRequest.getRole() != null ? signUpRequest.getRole() : UserRole.STUDENT)
-
-                .organization(organization)
-
-                .isActive(true)
-
-                .build();
-
-
-
-        userRepository.save(user);
-
-    }
 
 }

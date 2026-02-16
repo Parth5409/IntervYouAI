@@ -23,6 +23,28 @@ public class TPOManagementController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @GetMapping
+    @PreAuthorize("hasRole('ORG_ADMIN')")
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<java.util.List<org.intervyouai.dto.UserResponse>>> listTPOs(@AuthenticationPrincipal UserDetailsImpl adminDetails) {
+        User admin = userRepository.findById(adminDetails.getId())
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        java.util.List<User> tpos = userRepository.findByOrganizationAndRole(admin.getOrganization(), UserRole.TPO);
+
+        java.util.List<org.intervyouai.dto.UserResponse> response = tpos.stream()
+                .map(tpo -> org.intervyouai.dto.UserResponse.builder()
+                        .id(tpo.getId())
+                        .email(tpo.getEmail())
+                        .fullName(tpo.getFullName())
+                        .role(tpo.getRole().name())
+                        .organizationName(tpo.getOrganization().getName())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(response));
+    }
+
     @PostMapping("/create")
     @PreAuthorize("hasRole('ORG_ADMIN')")
     public ResponseEntity<?> createTPO(@AuthenticationPrincipal UserDetailsImpl adminDetails,
@@ -47,5 +69,24 @@ public class TPOManagementController {
         userRepository.save(tpo);
 
         return ResponseEntity.ok("TPO created successfully for organization: " + admin.getOrganization().getName());
+    }
+
+    @DeleteMapping("/{tpoId}")
+    @PreAuthorize("hasRole('ORG_ADMIN')")
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<String>> deleteTPO(
+            @AuthenticationPrincipal UserDetailsImpl adminDetails,
+            @PathVariable java.util.UUID tpoId) {
+        User admin = userRepository.findById(adminDetails.getId())
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+        User tpo = userRepository.findById(tpoId)
+                .orElseThrow(() -> new RuntimeException("TPO not found"));
+
+        if (tpo.getOrganization() == null || !tpo.getOrganization().getId().equals(admin.getOrganization().getId()) || tpo.getRole() != UserRole.TPO) {
+            throw new RuntimeException("Unauthorized to delete this user");
+        }
+
+        userRepository.delete(tpo);
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success("TPO_DEPROVISIONED_SUCCESSFULLY"));
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import java.util.UUID;
+
 @Service
 public class OrganizationService {
 
@@ -24,6 +26,19 @@ public class OrganizationService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Transactional
+    public Organization updateOrganization(UUID orgId, OrganizationRequest request) {
+        Organization org = organizationRepository.findById(orgId)
+                .orElseThrow(() -> new RuntimeException("Organization not found"));
+
+        org.setName(request.getName());
+        org.setAddress(request.getAddress());
+        org.setContactEmail(request.getContactEmail());
+        org.setWebsiteUrl(request.getWebsiteUrl());
+        
+        return organizationRepository.save(org);
+    }
 
     @Transactional
     public Organization createOrganization(OrganizationRequest request) {

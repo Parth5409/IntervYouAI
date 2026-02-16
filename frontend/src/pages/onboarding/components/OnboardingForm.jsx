@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
@@ -9,7 +9,7 @@ import { uploadToCloudinary } from '../../../utils/cloudinary';
 
 const OnboardingForm = () => {
   const navigate = useNavigate();
-  const { refetchUser } = useAuth();
+  const { user, refetchUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     prn: '',
@@ -20,11 +20,35 @@ const OnboardingForm = () => {
     skills: '',
     careerGoal: ''
   });
+  const [lockedFields, setLockedFields] = useState({});
   const [resume, setResume] = useState(null);
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    if (user) {
+      const newFormData = {
+        prn: user.prn || '',
+        branch: user.branch || '',
+        currentSemester: user.currentSemester || '',
+        currentCgpa: user.currentCgpa || '',
+        passingYear: user.passingYear || '',
+        skills: user.skills ? user.skills.join(', ') : '',
+        careerGoal: user.careerGoal || ''
+      };
+      setFormData(newFormData);
+
+      // Lock fields that are already provided (e.g. by TPO bulk import)
+      const newLockedFields = {};
+      if (user.prn) newLockedFields.prn = true;
+      if (user.branch) newLockedFields.branch = true;
+      setLockedFields(newLockedFields);
+    }
+  }, [user]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    if (lockedFields[name]) return; // Prevent editing locked fields
+    
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
@@ -104,24 +128,38 @@ const OnboardingForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input
-          label="PRN (Registration Number)"
-          name="prn"
-          placeholder="e.g. 2021000123"
-          value={formData.prn}
-          onChange={handleInputChange}
-          error={errors.prn}
-          required
-          disabled={isLoading}
-        />
-        <Input
-          label="Branch / Department"
-          name="branch"
-          placeholder="e.g. Computer Science"
-          value={formData.branch}
-          onChange={handleInputChange}
-          disabled={isLoading}
-        />
+        <div className="relative">
+          <Input
+            label="PRN (Registration Number)"
+            name="prn"
+            placeholder="e.g. 2021000123"
+            value={formData.prn}
+            onChange={handleInputChange}
+            error={errors.prn}
+            required
+            disabled={isLoading || lockedFields.prn}
+          />
+          {lockedFields.prn && (
+            <div className="absolute right-3 top-9 text-slate-600" title="Verified by Institution">
+              <Icon name="Lock" size={14} />
+            </div>
+          )}
+        </div>
+        <div className="relative">
+          <Input
+            label="Branch / Department"
+            name="branch"
+            placeholder="e.g. Computer Science"
+            value={formData.branch}
+            onChange={handleInputChange}
+            disabled={isLoading || lockedFields.branch}
+          />
+          {lockedFields.branch && (
+            <div className="absolute right-3 top-9 text-slate-600" title="Verified by Institution">
+              <Icon name="Lock" size={14} />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

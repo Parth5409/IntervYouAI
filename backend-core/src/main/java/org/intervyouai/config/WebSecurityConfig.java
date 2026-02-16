@@ -54,12 +54,15 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable()) // Disable backend CORS, handled by Gateway
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/core/v1/auth/**").permitAll()
-                                .requestMatchers("/api/core/v1/organizations").permitAll() // Allow organization onboarding
+                        auth.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers("/api/core/v1/auth/**").permitAll()
                                 .requestMatchers("/api/core/v1/test/**").permitAll()
+                                .requestMatchers("/api/core/v1/organizations/me").authenticated()
+                                .requestMatchers("/api/core/v1/organizations").permitAll()
                                 .anyRequest().authenticated()
                 );
 

@@ -69,7 +69,7 @@ public class FullSystemIntegrationTest {
         orgRequest.setAdminPassword("admin123");
         orgRequest.setAdminName("Admin User");
 
-        mockMvc.perform(post("/api/v1/organizations")
+        mockMvc.perform(post("/api/core/v1/organizations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orgRequest)))
                 .andExpect(status().isOk())
@@ -80,13 +80,13 @@ public class FullSystemIntegrationTest {
         adminLogin.setEmail("admin@iitb.ac.in");
         adminLogin.setPassword("admin123");
 
-        MvcResult adminResult = mockMvc.perform(post("/api/v1/auth/login")
+        MvcResult adminResult = mockMvc.perform(post("/api/core/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(adminLogin)))
                 .andExpect(status().isOk())
                 .andReturn();
         
-        String adminToken = objectMapper.readTree(adminResult.getResponse().getContentAsString()).get("accessToken").asText();
+        String adminToken = objectMapper.readTree(adminResult.getResponse().getContentAsString()).get("access_token").asText();
 
         // 3. Admin creates TPO
         SignupRequest tpoRequest = new SignupRequest();
@@ -95,7 +95,7 @@ public class FullSystemIntegrationTest {
         tpoRequest.setFullName("Prof. Sharma");
         tpoRequest.setRole(UserRole.TPO);
 
-        mockMvc.perform(post("/api/v1/admin/tpo/create")
+        mockMvc.perform(post("/api/core/v1/admin/tpo/create")
                 .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tpoRequest)))
@@ -109,7 +109,7 @@ public class FullSystemIntegrationTest {
         studentRequest.setRole(UserRole.STUDENT);
         studentRequest.setOrganizationCode("IITB"); // Linking to IITB
 
-        mockMvc.perform(post("/api/v1/auth/signup")
+        mockMvc.perform(post("/api/core/v1/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(studentRequest)))
                 .andExpect(status().isOk());
@@ -119,13 +119,13 @@ public class FullSystemIntegrationTest {
         loginRequest.setEmail("student@iitb.ac.in");
         loginRequest.setPassword("password123");
 
-        MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
+        MvcResult loginResult = mockMvc.perform(post("/api/core/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String token = objectMapper.readTree(loginResult.getResponse().getContentAsString()).get("accessToken").asText();
+        String token = objectMapper.readTree(loginResult.getResponse().getContentAsString()).get("access_token").asText();
 
         // 6. Create Student Profile
         StudentProfileRequest profileRequest = new StudentProfileRequest();
@@ -136,12 +136,20 @@ public class FullSystemIntegrationTest {
         profileRequest.setPassingYear(2026);
         profileRequest.setSkills(Set.of("Java", "Spring Boot", "React"));
 
-        mockMvc.perform(post("/api/v1/student/profile")
+        mockMvc.perform(post("/api/core/v1/students/profile")
                 .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(profileRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.prn", is("12345678")));
+
+        // 7. Verify /user/me
+        mockMvc.perform(get("/api/core/v1/user/me")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.email", is("student@iitb.ac.in")))
+                .andExpect(jsonPath("$.data.role", is("STUDENT")))
+                .andExpect(jsonPath("$.data.skills[0]", is("Java")));
     }
 
     @Test
@@ -155,7 +163,7 @@ public class FullSystemIntegrationTest {
         orgRequest.setAdminPassword("admin123");
         orgRequest.setAdminName("Admin");
         
-        mockMvc.perform(post("/api/v1/organizations")
+        mockMvc.perform(post("/api/core/v1/organizations")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orgRequest)))
                 .andExpect(status().isOk());
@@ -164,9 +172,9 @@ public class FullSystemIntegrationTest {
         LoginRequest adminLogin = new LoginRequest();
         adminLogin.setEmail("admin@coe.edu");
         adminLogin.setPassword("admin123");
-        String adminToken = objectMapper.readTree(mockMvc.perform(post("/api/v1/auth/login")
+        String adminToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(adminLogin))).andReturn().getResponse().getContentAsString()).get("accessToken").asText();
+                .content(objectMapper.writeValueAsString(adminLogin))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
 
         // Create TPO
         SignupRequest tpoRequest = new SignupRequest();
@@ -174,7 +182,7 @@ public class FullSystemIntegrationTest {
         tpoRequest.setPassword("tpo123");
         tpoRequest.setFullName("TPO Staff");
         tpoRequest.setRole(UserRole.TPO);
-        mockMvc.perform(post("/api/v1/admin/tpo/create")
+        mockMvc.perform(post("/api/core/v1/admin/tpo/create")
                 .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tpoRequest)))
@@ -184,9 +192,9 @@ public class FullSystemIntegrationTest {
         LoginRequest tpoLogin = new LoginRequest();
         tpoLogin.setEmail("tpo@coe.edu");
         tpoLogin.setPassword("tpo123");
-        String tpoToken = objectMapper.readTree(mockMvc.perform(post("/api/v1/auth/login")
+        String tpoToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tpoLogin))).andReturn().getResponse().getContentAsString()).get("accessToken").asText();
+                .content(objectMapper.writeValueAsString(tpoLogin))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
 
         // Create Student
         SignupRequest studentRequest = new SignupRequest();
@@ -195,7 +203,7 @@ public class FullSystemIntegrationTest {
         studentRequest.setFullName("Student One");
         studentRequest.setOrganizationCode("COE");
         studentRequest.setRole(UserRole.STUDENT);
-        mockMvc.perform(post("/api/v1/auth/signup")
+        mockMvc.perform(post("/api/core/v1/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(studentRequest)))
                 .andExpect(status().isOk());
@@ -204,9 +212,9 @@ public class FullSystemIntegrationTest {
         LoginRequest studentLogin = new LoginRequest();
         studentLogin.setEmail("student@coe.edu");
         studentLogin.setPassword("student123");
-        String studentToken = objectMapper.readTree(mockMvc.perform(post("/api/v1/auth/login")
+        String studentToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(studentLogin))).andReturn().getResponse().getContentAsString()).get("accessToken").asText();
+                .content(objectMapper.writeValueAsString(studentLogin))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
 
         // 2. TPO Creates Drive
         PlacementDriveRequest driveRequest = new PlacementDriveRequest();
@@ -214,7 +222,7 @@ public class FullSystemIntegrationTest {
         driveRequest.setJobDescription("Software Engineer");
         driveRequest.setMinCgpa(BigDecimal.valueOf(8.5));
 
-        String driveResponse = mockMvc.perform(post("/api/v1/drives")
+        String driveResponse = mockMvc.perform(post("/api/core/v1/drives")
                 .header("Authorization", "Bearer " + tpoToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(driveRequest)))
@@ -225,7 +233,7 @@ public class FullSystemIntegrationTest {
         String driveId = objectMapper.readTree(driveResponse).get("id").asText();
 
         // 3. Student Lists Drives
-        mockMvc.perform(get("/api/v1/drives")
+        mockMvc.perform(get("/api/core/v1/drives")
                 .header("Authorization", "Bearer " + studentToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].companyName", is("Google")));
@@ -234,7 +242,7 @@ public class FullSystemIntegrationTest {
         CreateSessionRequest sessionRequest = new CreateSessionRequest();
         sessionRequest.setDriveId(UUID.fromString(driveId));
 
-        mockMvc.perform(post("/api/v1/sessions")
+        mockMvc.perform(post("/api/core/v1/sessions")
                 .header("Authorization", "Bearer " + studentToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(sessionRequest)))

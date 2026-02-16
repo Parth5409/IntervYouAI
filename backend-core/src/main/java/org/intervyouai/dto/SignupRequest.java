@@ -23,5 +23,7 @@ public class SignupRequest {
 
     private String organizationCode;
 
+    private String organizationName;
+
     private UserRole role;
 }

@@ -5,13 +5,17 @@ import Button from '../../../components/ui/Button';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import Icon from '../../../components/AppIcon';
 import api from '../../../utils/api';
+import RoleSelection from './RoleSelection';
 
 const RegistrationForm = () => {
   const navigate = useNavigate();
+  const [role, setRole] = useState('ROLE_STUDENT'); // Default role
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
+    organizationName: '',
+    organizationCode: '', // This will be collegeCode for students
     careerGoal: ''
   });
   const [errors, setErrors] = useState({});
@@ -45,6 +49,14 @@ const RegistrationForm = () => {
     if (!formData?.fullName?.trim()) newErrors.fullName = 'Full Name is required';
     if (!formData?.email?.trim() || !validateEmail(formData?.email)) newErrors.email = 'Please enter a valid email address';
     if (!formData?.password || !validatePassword(formData?.password)) newErrors.password = 'Password must be 8+ chars with uppercase & numbers';
+    
+    if (role === 'ROLE_ORG_ADMIN') {
+      if (!formData?.organizationName?.trim()) newErrors.organizationName = 'Organization Name is required';
+      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'Organization Code is required';
+    } else {
+      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'College Code is required';
+    }
+
     if (!agreedToTerms) newErrors.terms = 'You must agree to the Terms of Service';
 
     setErrors(newErrors);
@@ -57,102 +69,149 @@ const RegistrationForm = () => {
     setIsLoading(true);
 
     try {
-      await api.post('/auth/register', {
-        full_name: formData.fullName,
+      const payload = {
+        fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
-        career_goal: formData.careerGoal || 'General SDE'
-      });
+        role: role.replace('ROLE_', ''), // Strip prefix for backend enum if needed, or keep if backend handles it.
+        // Actually, backend UserRole enum matches the name without prefix.
+        organizationCode: formData.organizationCode,
+        organizationName: role === 'ROLE_ORG_ADMIN' ? formData.organizationName : undefined
+      };
+      await api.post('/auth/signup', payload);
       navigate('/login');
     } catch (error) {
-      setErrors({ submit: error.response?.data?.detail || 'Registration failed. Please try again.' });
+      setErrors({ submit: error.response?.data?.message || 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <Input
-        label="Full Name"
-        type="text"
-        placeholder="e.g. Rahul Sharma"
-        value={formData?.fullName}
-        onChange={(e) => handleInputChange('fullName', e?.target?.value)}
-        error={errors?.fullName}
-        required
-        disabled={isLoading}
-      />
+    <div className="space-y-8">
+      <RoleSelection selectedRole={role} onSelect={setRole} />
 
-      <Input
-        label="Email Address"
-        type="email"
-        placeholder="student@university.edu"
-        value={formData?.email}
-        onChange={(e) => handleInputChange('email', e?.target?.value)}
-        error={errors?.email}
-        required
-        disabled={isLoading}
-      />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Full Name"
+            type="text"
+            placeholder="e.g. Rahul Sharma"
+            value={formData?.fullName}
+            onChange={(e) => handleInputChange('fullName', e?.target?.value)}
+            error={errors?.fullName}
+            required
+            disabled={isLoading}
+          />
 
-      <div className="relative">
-        <Input
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          placeholder="Create a strong password"
-          value={formData?.password}
-          onChange={(e) => handleInputChange('password', e?.target?.value)}
-          error={errors?.password}
-          required
-          disabled={isLoading}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-9 text-slate-500 hover:text-emerald-500 transition-colors"
+          <Input
+            label="Email Address"
+            type="email"
+            placeholder="student@university.edu"
+            value={formData?.email}
+            onChange={(e) => handleInputChange('email', e?.target?.value)}
+            error={errors?.email}
+            required
+            disabled={isLoading}
+          />
+        </div>
+
+        <div className="relative">
+          <Input
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Create a strong password"
+            value={formData?.password}
+            onChange={(e) => handleInputChange('password', e?.target?.value)}
+            error={errors?.password}
+            required
+            disabled={isLoading}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-9 text-slate-500 hover:text-emerald-500 transition-colors"
+            disabled={isLoading}
+          >
+            <Icon name={showPassword ? "EyeOff" : "Eye"} size={14} />
+          </button>
+        </div>
+
+        {role === 'ORG_ADMIN' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Organization Name"
+              type="text"
+              placeholder="e.g. Indian Institute of Technology"
+              value={formData?.organizationName}
+              onChange={(e) => handleInputChange('organizationName', e?.target?.value)}
+              error={errors?.organizationName}
+              required
+              disabled={isLoading}
+            />
+            <Input
+              label="Organization Code"
+              type="text"
+              placeholder="e.g. IITB"
+              value={formData?.organizationCode}
+              onChange={(e) => handleInputChange('organizationCode', e?.target?.value)}
+              error={errors?.organizationCode}
+              required
+              disabled={isLoading}
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="College Code"
+              type="text"
+              placeholder="e.g. IITB"
+              value={formData?.organizationCode}
+              onChange={(e) => handleInputChange('organizationCode', e?.target?.value)}
+              error={errors?.organizationCode}
+              required
+              disabled={isLoading}
+            />
+            <Input
+              label="Career Goal (Optional)"
+              type="text"
+              placeholder="e.g. Software Engineer"
+              value={formData?.careerGoal}
+              onChange={(e) => handleInputChange('careerGoal', e.target.value)}
+              error={errors?.careerGoal}
+              disabled={isLoading}
+            />
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <Checkbox
+            label="I agree to the Terms & Privacy Policy"
+            checked={agreedToTerms}
+            onChange={(e) => setAgreedToTerms(e?.target?.checked)}
+            disabled={isLoading}
+          />
+          {errors?.terms && (
+            <p className="text-[10px] font-mono text-red-500 uppercase">{errors.terms}</p>
+          )}
+        </div>
+
+        {errors?.submit && (
+          <div className="p-3 bg-red-500/10 border border-red-500/20">
+            <p className="text-[10px] font-mono text-red-500 uppercase">{errors?.submit}</p>
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          variant="default"
+          className="w-full h-12"
           disabled={isLoading}
         >
-          <Icon name={showPassword ? "EyeOff" : "Eye"} size={14} />
-        </button>
-      </div>
-
-      <Input
-        label="Career Goal (Optional)"
-        type="text"
-        placeholder="e.g. Software Engineer, Data Scientist"
-        value={formData?.careerGoal}
-        onChange={(e) => handleInputChange('careerGoal', e.target.value)}
-        error={errors?.careerGoal}
-        disabled={isLoading}
-      />
-
-      <div className="space-y-3">
-        <Checkbox
-          label="I agree to the Terms & Privacy Policy"
-          checked={agreedToTerms}
-          onChange={(e) => setAgreedToTerms(e?.target?.checked)}
-          disabled={isLoading}
-        />
-        {errors?.terms && (
-          <p className="text-[10px] font-mono text-red-500 uppercase">{errors.terms}</p>
-        )}
-      </div>
-
-      {errors?.submit && (
-        <div className="p-3 bg-red-500/10 border border-red-500/20">
-          <p className="text-[10px] font-mono text-red-500 uppercase">{errors?.submit}</p>
-        </div>
-      )}
-
-      <Button
-        type="submit"
-        variant="default"
-        className="w-full h-12"
-        disabled={isLoading}
-      >
-        {isLoading ? 'Creating Account...' : 'CREATE ACCOUNT'}
-      </Button>
-    </form>
+          {isLoading ? 'INITIALIZING_SYSTEM...' : 'CREATE_ACCOUNT'}
+        </Button>
+      </form>
+    </div>
   );
 };
 

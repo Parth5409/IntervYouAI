@@ -1,9 +1,15 @@
 import axios from 'axios';
 
 // Create an Axios instance
+const getBaseURL = () => {
+  const envUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  if (envUrl.includes('/api/core/v1')) return envUrl;
+  return `${envUrl.replace(/\/$/, '')}/api/core/v1`;
+};
+
 const axiosInstance = axios.create({
-  // Pointing to the API Gateway (Spring Boot default port is 8080)
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/core/v1',
+  // Pointing to the API Gateway
+  baseURL: getBaseURL(),
   withCredentials: true, // For handling cookies if used, but we'll primarily use headers for JWT
   headers: {
     'Content-Type': 'application/json',
