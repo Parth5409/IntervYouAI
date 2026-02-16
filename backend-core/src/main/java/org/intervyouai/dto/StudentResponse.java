@@ -1,17 +1,20 @@
 package org.intervyouai.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import java.math.BigDecimal;
 import java.util.Set;
+import java.util.UUID;
 
-@Getter
-@Setter
-public class StudentProfileRequest {
-    @NotBlank
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class StudentResponse {
+    private UUID id;
+    private UUID userId;
+    private String email;
+    private String fullName;
     private String prn;
-    
     private String branch;
     private String currentSemester;
     private BigDecimal currentCgpa;

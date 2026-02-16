@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class UserResponse {
     private String prn;
     private String branch;
     private String currentSemester;
-    private Double currentCgpa;
+    private BigDecimal currentCgpa;
     private Integer passingYear;
     private String organizationName;
 }

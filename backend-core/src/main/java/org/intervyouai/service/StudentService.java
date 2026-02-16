@@ -1,6 +1,7 @@
 package org.intervyouai.service;
 
 import org.intervyouai.dto.StudentProfileRequest;
+import org.intervyouai.dto.StudentResponse;
 import org.intervyouai.model.StudentProfile;
 import org.intervyouai.model.User;
 import org.intervyouai.repository.StudentProfileRepository;
@@ -53,12 +54,12 @@ public class StudentService {
     }
 
     @Transactional
-    public List<StudentProfile> bulkImportStudents(UUID tpoId, List<BulkStudentDTO> students) {
+    public List<StudentResponse> bulkImportStudents(UUID tpoId, List<BulkStudentDTO> students) {
         User tpo = userRepository.findById(tpoId)
                 .orElseThrow(() -> new RuntimeException("TPO not found"));
         Organization org = tpo.getOrganization();
 
-        List<StudentProfile> createdProfiles = new ArrayList<>();
+        List<StudentResponse> createdProfiles = new ArrayList<>();
 
         for (BulkStudentDTO dto : students) {
             if (userRepository.existsByEmail(dto.getEmail())) {
@@ -87,13 +88,13 @@ public class StudentService {
                     .passingYear(dto.getPassingYear())
                     .build();
 
-            createdProfiles.add(studentProfileRepository.save(profile));
+            createdProfiles.add(mapToResponse(studentProfileRepository.save(profile)));
         }
         return createdProfiles;
     }
 
     @Transactional
-    public StudentProfile createProfile(UUID userId, StudentProfileRequest request) {
+    public StudentResponse createProfile(UUID userId, StudentProfileRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -110,13 +111,92 @@ public class StudentService {
         profile.setResumeUrl(request.getResumeUrl());
         profile.setCareerGoal(request.getCareerGoal());
 
-        return studentProfileRepository.save(profile);
+        return mapToResponse(studentProfileRepository.save(profile));
     }
 
-    public StudentProfile getProfile(UUID userId) {
+    public StudentResponse getProfile(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return studentProfileRepository.findByUser(user)
+        StudentProfile profile = studentProfileRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Profile not found"));
+        return mapToResponse(profile);
+    }
+
+    public List<StudentResponse> getAllStudentsByTpoOrganization(UUID tpoId) {
+        User tpo = userRepository.findById(tpoId)
+                .orElseThrow(() -> new RuntimeException("TPO not found"));
+        return studentProfileRepository.findByUserOrganizationId(tpo.getOrganization().getId()).stream()
+                .map(this::mapToResponse)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteStudent(UUID tpoId, UUID profileId) {
+        User tpo = userRepository.findById(tpoId)
+                .orElseThrow(() -> new RuntimeException("TPO not found"));
+        
+        StudentProfile profile = studentProfileRepository.findById(profileId)
+                .orElseThrow(() -> new RuntimeException("Student profile not found"));
+
+        if (!profile.getUser().getOrganization().getId().equals(tpo.getOrganization().getId())) {
+            throw new RuntimeException("Unauthorized: Student belongs to another organization");
+        }
+
+        User studentUser = profile.getUser();
+        studentProfileRepository.delete(profile);
+        userRepository.delete(studentUser);
+    }
+
+    @Transactional
+    public void bulkDeleteStudents(UUID tpoId, List<UUID> profileIds) {
+        for (UUID profileId : profileIds) {
+            deleteStudent(tpoId, profileId);
+        }
+    }
+
+    @Transactional
+    public StudentResponse updateStudent(UUID tpoId, UUID profileId, StudentProfileRequest request) {
+        User tpo = userRepository.findById(tpoId)
+                .orElseThrow(() -> new RuntimeException("TPO not found"));
+        
+        StudentProfile profile = studentProfileRepository.findById(profileId)
+                .orElseThrow(() -> new RuntimeException("Student profile not found"));
+
+        if (!profile.getUser().getOrganization().getId().equals(tpo.getOrganization().getId())) {
+            throw new RuntimeException("Unauthorized: Student belongs to another organization");
+        }
+
+        User studentUser = profile.getUser();
+        // Update user-level fields if provided
+        // For now we don't have fullName in StudentProfileRequest, let's assume it's just profile fields
+        // or we could expand StudentProfileRequest to include fullName if needed.
+        
+        profile.setPrn(request.getPrn());
+        profile.setBranch(request.getBranch());
+        profile.setCurrentSemester(request.getCurrentSemester());
+        profile.setCurrentCgpa(request.getCurrentCgpa());
+        profile.setPassingYear(request.getPassingYear());
+        profile.setSkills(request.getSkills());
+        profile.setCareerGoal(request.getCareerGoal());
+
+        return mapToResponse(studentProfileRepository.save(profile));
+    }
+
+    private StudentResponse mapToResponse(StudentProfile profile) {
+        if (profile == null) return null;
+        return StudentResponse.builder()
+                .id(profile.getId())
+                .userId(profile.getUser() != null ? profile.getUser().getId() : null)
+                .email(profile.getUser() != null ? profile.getUser().getEmail() : null)
+                .fullName(profile.getUser() != null ? profile.getUser().getFullName() : null)
+                .prn(profile.getPrn())
+                .branch(profile.getBranch())
+                .currentSemester(profile.getCurrentSemester())
+                .currentCgpa(profile.getCurrentCgpa())
+                .passingYear(profile.getPassingYear())
+                .skills(profile.getSkills())
+                .resumeUrl(profile.getResumeUrl())
+                .careerGoal(profile.getCareerGoal())
+                .build();
     }
 }

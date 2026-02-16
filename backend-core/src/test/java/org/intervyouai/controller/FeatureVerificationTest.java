@@ -86,14 +86,14 @@ public class FeatureVerificationTest {
         s1.setFullName("Student One");
         s1.setPrn("1001");
         s1.setBranch("CS");
-        s1.setCurrentCgpa(8.5);
+        s1.setCurrentCgpa(java.math.BigDecimal.valueOf(8.5));
 
         BulkStudentDTO s2 = new BulkStudentDTO();
         s2.setEmail("s2@kit.edu");
         s2.setFullName("Student Two");
         s2.setPrn("1002");
         s2.setBranch("IT");
-        s2.setCurrentCgpa(7.5);
+        s2.setCurrentCgpa(java.math.BigDecimal.valueOf(7.5));
 
         mockMvc.perform(post("/api/v1/students/bulk-import")
                 .header("Authorization", "Bearer " + tpoToken)

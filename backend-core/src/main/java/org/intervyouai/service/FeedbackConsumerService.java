@@ -34,7 +34,8 @@ public class FeedbackConsumerService {
             sessionRepository.save(session);
             log.info("Successfully updated session {} with feedback and scores", event.getSessionId());
         } catch (Exception e) {
-            log.error("Error processing feedback event for session {}: {}", event.getSessionId(), e.getMessage());
+            log.error("Error processing feedback event for session {}", event.getSessionId(), e);
+            throw new RuntimeException("Failed to process feedback event", e);
         }
     }
 }

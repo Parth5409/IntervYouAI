@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,7 +23,6 @@ public class StudentProfile {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @JsonIgnore
     private User user;
 
     @Column(nullable = false)
@@ -32,7 +32,8 @@ public class StudentProfile {
 
     private String currentSemester;
 
-    private Double currentCgpa;
+    @Column(precision = 3, scale = 2)
+    private BigDecimal currentCgpa;
 
     private Integer passingYear;
 

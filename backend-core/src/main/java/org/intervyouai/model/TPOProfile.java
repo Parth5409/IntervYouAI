@@ -21,7 +21,6 @@ public class TPOProfile {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
-    @JsonIgnore
     private User user;
 
     private String designation; // e.g., "Head of Placement"

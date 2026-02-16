@@ -76,7 +76,8 @@ const RegistrationForm = () => {
         role: role.replace('ROLE_', ''), // Strip prefix for backend enum if needed, or keep if backend handles it.
         // Actually, backend UserRole enum matches the name without prefix.
         organizationCode: formData.organizationCode,
-        organizationName: role === 'ROLE_ORG_ADMIN' ? formData.organizationName : undefined
+        organizationName: role === 'ROLE_ORG_ADMIN' ? formData.organizationName : undefined,
+        careerGoal: role === 'ROLE_STUDENT' ? formData.careerGoal : undefined
       };
       await api.post('/auth/signup', payload);
       navigate('/login');
@@ -137,7 +138,7 @@ const RegistrationForm = () => {
           </button>
         </div>
 
-        {role === 'ORG_ADMIN' ? (
+        {role === 'ROLE_ORG_ADMIN' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Organization Name"

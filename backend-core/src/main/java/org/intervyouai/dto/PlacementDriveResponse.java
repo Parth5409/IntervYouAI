@@ -18,4 +18,5 @@ public class PlacementDriveResponse {
     private BigDecimal minCgpa;
     private String tpoName;
     private LocalDateTime createdAt;
+    private String status;
 }

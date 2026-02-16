@@ -12,7 +12,9 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 
 # Use the same secret key as backend-core
-SECRET_KEY = os.getenv("SECRET_KEY", "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970")
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY environment variable is required")
 ALGORITHM = "HS256"
 
 class CurrentUser(BaseModel):

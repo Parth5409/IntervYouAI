@@ -32,24 +32,24 @@ public class PlacementDriveController {
 
     @PostMapping
     @PreAuthorize("hasRole('TPO')")
-    public ResponseEntity<PlacementDriveResponse> createDrive(
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<PlacementDriveResponse>> createDrive(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody PlacementDriveRequest request) {
-        return ResponseEntity.ok(placementDriveService.createDrive(userDetails.getId(), request));
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.createDrive(userDetails.getId(), request)));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     @PreAuthorize("hasAnyRole('TPO', 'STUDENT')")
-    public ResponseEntity<List<PlacementDriveResponse>> getDrives(
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<List<PlacementDriveResponse>>> getDrives(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         
         boolean isTpo = userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_TPO"));
 
         if (isTpo) {
-            return ResponseEntity.ok(placementDriveService.getDrivesForTpo(userDetails.getId()));
+            return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.getDrivesForTpo(userDetails.getId())));
         } else {
-            return ResponseEntity.ok(placementDriveService.getAvailableDrivesForStudent(userDetails.getId()));
+            return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.getAvailableDrivesForStudent(userDetails.getId())));
         }
     }
 }

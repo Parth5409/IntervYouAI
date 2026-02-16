@@ -14,7 +14,7 @@ spring:
             predicates:
               - Path=/api/engine/**
             filters:
-              - AddRequestHeader=Host, localhost:8000
+              - AddRequestHeader=Host, ${AI_ENGINE_HOST:localhost:8000}
           - id: backend_core
             uri: ${CORE_BACKEND_URL:http://localhost:${CORE_BACKEND_PORT:8081}/}
             predicates:

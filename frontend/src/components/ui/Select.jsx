@@ -6,15 +6,29 @@ import { cn } from "@/lib/utils"
 
 const Select = React.forwardRef(({ className, options = [], value, onChange, placeholder, label, error, ...props }, ref) => {
   const [isOpen, setIsOpen] = React.useState(false)
+  const containerRef = React.useRef(null)
+
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen])
 
   return (
-    <div className="space-y-2 w-full relative">
+    <div className="space-y-2 w-full relative" ref={containerRef}>
       {label && (
         <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest block">
           {label}
         </label>
       )}
       <button
+        ref={ref}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
@@ -33,7 +47,7 @@ const Select = React.forwardRef(({ className, options = [], value, onChange, pla
             <div
               key={option.value}
               onClick={() => {
-                onChange(option.value)
+                onChange?.(option.value)
                 setIsOpen(false)
               }}
               className={cn(

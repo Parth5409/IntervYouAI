@@ -60,6 +60,7 @@ public class OrganizationController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ORG_ADMIN')")
     @org.springframework.transaction.annotation.Transactional
     public ResponseEntity<GenericResponse<OrganizationResponse>> createOrganization(@Valid @RequestBody org.intervyouai.dto.OrganizationRequest request) {
         Organization created = organizationService.createOrganization(request);
@@ -67,6 +68,7 @@ public class OrganizationController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ORG_ADMIN')")
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public ResponseEntity<GenericResponse<java.util.List<OrganizationResponse>>> getAllOrganizations() {
         java.util.List<OrganizationResponse> response = organizationService.getAllOrganizations().stream()

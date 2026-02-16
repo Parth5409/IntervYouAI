@@ -554,7 +554,7 @@ lucide-react, framer-motion, @radix-ui/react-slot, class-variance-authority, @ra
 
 Implementation Guidelines
  1. Analyze the component structure and identify all required dependencies
- 2. Review the component's argumens and state
+ 2. Review the component's arguments and state
  3. Identify any required context providers or hooks and install them
  4. Questions to Ask
  - What data/props will be passed to this component?

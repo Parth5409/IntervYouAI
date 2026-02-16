@@ -13,8 +13,8 @@ const TrustSignals = () => {
     <div className="grid grid-cols-2 gap-px bg-slate-800 border border-slate-800 mt-8">
       {trustFeatures.map((feature, index) => (
         <div key={index} className="bg-slate-900/50 p-4 flex flex-col items-center justify-center group hover:bg-slate-900 transition-colors">
-          <Icon name={feature.icon} size={14} className="text-emerald-500 mb-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-          <span className="text-[8px] font-mono text-slate-400 group-hover:text-slate-300 uppercase tracking-[0.2em]">{feature.title}</span>
+          <Icon name={feature.icon} size={16} className="text-emerald-500 mb-2 opacity-50 group-hover:opacity-100 transition-opacity" />
+          <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-300 uppercase tracking-[0.2em]">{feature.title}</span>
         </div>
       ))}
     </div>

@@ -53,17 +53,17 @@ public class PlacementDriveServiceTest {
 
         // Student 1: Eligible
         User s1User = User.builder().id(UUID.randomUUID()).organization(org).build();
-        StudentProfile s1 = StudentProfile.builder().user(s1User).currentCgpa(8.0).build();
+        StudentProfile s1 = StudentProfile.builder().user(s1User).currentCgpa(java.math.BigDecimal.valueOf(8.0)).build();
 
         // Student 2: Not Eligible (Low CGPA)
         User s2User = User.builder().id(UUID.randomUUID()).organization(org).build();
-        StudentProfile s2 = StudentProfile.builder().user(s2User).currentCgpa(6.0).build();
+        StudentProfile s2 = StudentProfile.builder().user(s2User).currentCgpa(java.math.BigDecimal.valueOf(6.0)).build();
 
         // Student 3: Different Org (Should be filtered out by logic if repository returned all, 
         // but in unit test we mock the return. Let's assume repo returns same org students)
         
         when(placementDriveRepository.findById(driveId)).thenReturn(Optional.of(drive));
-        when(studentProfileRepository.findAll()).thenReturn(List.of(s1, s2));
+        when(studentProfileRepository.findEligibleStudents(eq(orgId), any(java.math.BigDecimal.class))).thenReturn(List.of(s1));
 
         placementDriveService.assignDriveToStudents(tpoId, driveId);
 

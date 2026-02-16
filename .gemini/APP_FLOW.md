@@ -54,12 +54,16 @@ ROOT (/)
 │   ├── History & Reports [/results]
 │   │   └── Detailed Analysis [/results/:id]
 │   └── Live Interview Portal [/interview/:id]
-└── TPO PORTAL [/tpo] [Auth Required: Role=Faculty]
-    ├── Drive Management [/tpo/drives]
-    │   └── Create Drive Modal
-    ├── Student Directory [/tpo/students]
-    │   └── Individual Student History [/tpo/students/:id]
-    └── Settings / Profile
+├── TPO PORTAL [/tpo] [Auth Required: Role=TPO]
+│   ├── TPO Dashboard [/dashboard/tpo]
+│   ├── Drive Management [/tpo/drives]
+│   │   └── Create Drive Sheet
+│   └── Student Directory [/tpo/students]
+│       └── Bulk Import Sheet
+└── ADMIN PORTAL [/admin] [Auth Required: Role=ORG_ADMIN]
+    ├── Admin Dashboard [/dashboard/admin]
+    ├── TPO Management [/admin/tpo]
+    └── System Configuration [/admin/system]
 ```
 
 ## 4. SCREEN INVENTORY
@@ -68,9 +72,15 @@ ROOT (/)
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Landing | `/` | Public | Hero, Demo Video, CTA | Go to Login | Loaded |
 | Dashboard | `/dashboard` | Student | Task cards, Recent Scores | Start Drive | Empty, Loading |
+| Student Dashboard| `/student/dashboard`| Student | Overview, History | Start Drive | Data/No Data |
 | Interview | `/interview/:id` | Student | Waveform, Mic Button, End | Speak, Exit | Connecting, Active |
 | Reports | `/results/:id` | Both | Skill charts, Transcript | Download PDF | Generating, Ready |
-| TPO Dashboard | `/tpo` | Faculty | Global Stats, Drive Table | Create, Delete | Data/No Data |
+| TPO Dashboard | `/tpo/dashboard`| TPO | Global Stats, Drive Table | Create, Import | Data/No Data |
+| Student Directory| `/tpo/students`| TPO | Student Table, Import Button | Bulk Import | Data/No Data |
+| Drive Manager | `/tpo/drives` | TPO | Drive Cards, Create Button | Create, Assign | Data/No Data |
+| Admin Dashboard | `/admin/dashboard`| Admin | System Stats, Health | Manage TPOs | Data/No Data |
+| TPO Management | `/admin/tpo` | Admin | TPO Table, Add Button | Create TPO | Data/No Data |
+| System Config | `/admin/system` | Admin | Settings Form, Save Button | Update Org | Loaded |
 
 ## 5. DECISION POINTS
 

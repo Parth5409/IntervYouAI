@@ -17,11 +17,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
-    @Autowired
     private JwtUtils jwtUtils;
 
-    @Autowired
     private UserDetailsServiceImpl userDetailsService;
+
+    public AuthTokenFilter(JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService) {
+        this.jwtUtils = jwtUtils;
+        this.userDetailsService = userDetailsService;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
@@ -33,7 +36,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (jwt != null) {
                 if (jwtUtils.validateJwtToken(jwt)) {
                     String email = jwtUtils.getEmailFromJwtToken(jwt);
-                    logger.info("Authenticated user: {}", email);
+                    logger.debug("Authenticated user email (PII): {}", email);
 
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                     UsernamePasswordAuthenticationToken authentication =

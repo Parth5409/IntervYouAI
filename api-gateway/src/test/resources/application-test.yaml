@@ -3,4 +3,4 @@ spring:
     gateway:
       mvc:
         http-client:
-          type: rest-template
+          type: AUTODETECT

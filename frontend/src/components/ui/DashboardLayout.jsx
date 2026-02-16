@@ -12,21 +12,21 @@ const DashboardLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const studentMenu = [
-    { label: 'OVERVIEW', path: '/dashboard/student', icon: 'LayoutDashboard' },
+    { label: 'OVERVIEW', path: '/student/dashboard', icon: 'LayoutDashboard' },
     { label: 'INTERVIEWS', path: '/interview-setup-wizard', icon: 'Play' },
     { label: 'FEEDBACK', path: '/results', icon: 'FileText' },
     { label: 'SETTINGS', path: '/settings', icon: 'Settings' },
   ];
 
   const tpoMenu = [
-    { label: 'ANALYTICS', path: '/dashboard/tpo', icon: 'BarChart' },
+    { label: 'ANALYTICS', path: '/tpo/dashboard', icon: 'BarChart' },
     { label: 'DRIVE_MGMT', path: '/tpo/drives', icon: 'Briefcase' },
     { label: 'STUDENTS', path: '/tpo/students', icon: 'Users' },
     { label: 'REPORTS', path: '/tpo/reports', icon: 'Clipboard' },
   ];
 
   const adminMenu = [
-    { label: 'ORG_STATS', path: '/dashboard/admin', icon: 'Building' },
+    { label: 'ORG_STATS', path: '/admin/dashboard', icon: 'Building' },
     { label: 'TPO_MGMT', path: '/admin/tpo', icon: 'UserPlus' },
     { label: 'SYSTEM', path: '/admin/system', icon: 'Cpu' },
   ];

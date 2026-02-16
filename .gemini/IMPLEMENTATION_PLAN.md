@@ -22,6 +22,7 @@
   npm create vite@latest frontend -- --template react-ts
   # Python AI Engine
   mkdir ai-engine && cd ai-engine && python -m venv venv && pip install fastapi uvicorn
+  ```
 #### Success Criteria:
 - [ ] All three sub-directories (`/frontend`, `/backend-core`, `/ai-engine`) exist.
 - [ ] Hello World endpoints are accessible for both backends.

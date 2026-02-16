@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -16,6 +17,6 @@ public class BulkStudentDTO {
     @NotBlank
     private String prn;
     private String branch;
-    private Double currentCgpa;
+    private BigDecimal currentCgpa;
     private Integer passingYear;
 }

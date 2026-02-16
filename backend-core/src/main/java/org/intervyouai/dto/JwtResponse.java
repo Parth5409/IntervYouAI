@@ -17,6 +17,7 @@ public class JwtResponse {
     @JsonProperty("refresh_token")
     private String refreshToken;
     
+    @Builder.Default
     private String type = "Bearer";
     private String email;
     private String role;

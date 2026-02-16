@@ -26,7 +26,7 @@ Current campus placement preparation is fragmented and unscalable. Students lack
 ---
 
 ## 4. Success Metrics
-- **Response Latency**: Maintain a sub-2 second round-trip for AI voice interaction (STT -> LLM -> TTS).
+- **Response Latency**: Maintain a sub-2-second round-trip for AI voice interaction (STT -> LLM -> TTS).
 - **Readiness Accuracy**: Achieve a 90% correlation between AI-generated scores and subsequent faculty assessments.
 - **Completion Rate**: 80% of students assigned to a "Drive" complete their mock interview within the deadline.
 - **Operational Savings**: 70% reduction in man-hours spent by faculty on initial mock screening rounds.

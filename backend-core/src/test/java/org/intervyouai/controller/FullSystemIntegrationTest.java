@@ -132,7 +132,7 @@ public class FullSystemIntegrationTest {
         profileRequest.setPrn("12345678");
         profileRequest.setBranch("Computer Science");
         profileRequest.setCurrentSemester("8");
-        profileRequest.setCurrentCgpa(9.2);
+        profileRequest.setCurrentCgpa(java.math.BigDecimal.valueOf(9.2));
         profileRequest.setPassingYear(2026);
         profileRequest.setSkills(Set.of("Java", "Spring Boot", "React"));
 

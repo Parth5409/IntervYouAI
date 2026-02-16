@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../../components/ui/DashboardLayout';
 import Icon from '../../components/AppIcon';
@@ -6,16 +6,34 @@ import Button from '../../components/ui/Button';
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
+import api from '../../utils/api';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [dashboardStats, setStats] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await api.get('/analytics/admin-overview');
+        setStats(res.data.data);
+      } catch (error) {
+        console.error("Failed to fetch admin stats", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const stats = [
-    { label: 'ACTIVE_TPO_NODES', value: '12', icon: 'UserPlus', color: 'text-sky-500' },
-    { label: 'TOTAL_ORGANIZATION_DATA', value: '4.2GB', icon: 'Database', color: 'text-emerald-500' },
-    { label: 'SYSTEM_UPTIME', value: '99.9%', icon: 'Cpu', color: 'text-amber-500' },
-    { label: 'ACTIVE_LICENSES', value: '2,500', icon: 'ShieldCheck', color: 'text-purple-500' },
+    { label: 'ACTIVE_TPO_NODES', value: dashboardStats?.activeTpos || '0', icon: 'UserPlus', color: 'text-sky-500' },
+    { label: 'TOTAL_ORGANIZATION_DATA', value: dashboardStats?.totalData || '0GB', icon: 'Database', color: 'text-emerald-500' },
+    { label: 'SYSTEM_UPTIME', value: dashboardStats?.uptime || '0%', icon: 'Cpu', color: 'text-amber-500' },
+    { label: 'ACTIVE_LICENSES', value: dashboardStats?.activeLicenses || '0', icon: 'ShieldCheck', color: 'text-purple-500' },
   ];
 
   return (

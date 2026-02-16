@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.is;
@@ -54,10 +55,10 @@ public class OrgAdminSignupTest {
         mockMvc.perform(post("/api/core/v1/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         // Verify organization was created
-        assert(organizationRepository.findByCode("NEWU").isPresent());
+        assertTrue(organizationRepository.findByCode("NEWU").isPresent(), "Organization should be created");
 
         // Verify login works
         LoginRequest loginRequest = new LoginRequest();

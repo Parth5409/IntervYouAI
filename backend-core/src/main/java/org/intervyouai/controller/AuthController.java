@@ -25,6 +25,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
         authService.registerUser(signUpRequest);
-        return ResponseEntity.ok("User registered successfully!");
+        return ResponseEntity.status(org.springframework.http.HttpStatus.CREATED)
+                .body(new org.intervyouai.dto.MessageResponse("User registered successfully!"));
     }
 }

@@ -45,10 +45,7 @@ public class PlacementDriveService {
 
         // Find all students in the same organization meeting the CGPA criteria
         UUID orgId = drive.getTpo().getOrganization().getId();
-        List<org.intervyouai.model.StudentProfile> eligibleStudents = studentProfileRepository.findAll().stream()
-                .filter(s -> s.getUser().getOrganization().getId().equals(orgId))
-                .filter(s -> s.getCurrentCgpa() != null && BigDecimal.valueOf(s.getCurrentCgpa()).compareTo(drive.getMinCgpa()) >= 0)
-                .collect(Collectors.toList());
+        List<org.intervyouai.model.StudentProfile> eligibleStudents = studentProfileRepository.findEligibleStudents(orgId, drive.getMinCgpa());
 
         for (org.intervyouai.model.StudentProfile student : eligibleStudents) {
             kafkaProducerService.publishDriveAssignedEvent(
@@ -74,6 +71,7 @@ public class PlacementDriveService {
                 .jobDescription(request.getJobDescription())
                 .minCgpa(request.getMinCgpa())
                 .skillsRequired(skills)
+                .status(PlacementDrive.DriveStatus.ACTIVE)
                 .build();
 
         drive = placementDriveRepository.save(drive);
@@ -85,8 +83,7 @@ public class PlacementDriveService {
         User tpo = userRepository.findById(tpoId)
                 .orElseThrow(() -> new RuntimeException("TPO not found"));
         
-        return placementDriveRepository.findAll().stream() // Ideally filter by TPO or Organization
-                .filter(drive -> drive.getTpo().getId().equals(tpoId))
+        return placementDriveRepository.findByTpoId(tpoId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -96,8 +93,7 @@ public class PlacementDriveService {
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         
         // Return drives created by TPOs of the SAME Organization
-        return placementDriveRepository.findAll().stream()
-                .filter(drive -> drive.getTpo().getOrganization().getId().equals(student.getOrganization().getId()))
+        return placementDriveRepository.findByTpoOrganizationId(student.getOrganization().getId()).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -110,6 +106,7 @@ public class PlacementDriveService {
                 .minCgpa(drive.getMinCgpa())
                 .tpoName(drive.getTpo().getFullName())
                 .createdAt(drive.getCreatedAt())
+                .status(drive.getStatus() != null ? drive.getStatus().name() : null)
                 .build();
     }
 }

@@ -19,8 +19,10 @@ import OnboardingScreen from './pages/onboarding';
 
 import TpoManagementPage from './pages/admin/tpo-management';
 import SystemConfigPage from './pages/admin/system-config';
+import StudentDirectoryPage from './pages/tpo/students';
+import DriveManagementPage from './pages/tpo/drives';
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -30,6 +32,10 @@ const ProtectedRoute = ({ children }) => {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Check if user needs onboarding (Student role only for now)
@@ -42,9 +48,9 @@ const ProtectedRoute = ({ children }) => {
 
   // Role-based dashboard redirection logic
   if (location.pathname === '/dashboard') {
-    if (user.role === 'ROLE_STUDENT') return <Navigate to="/dashboard/student" replace />;
-    if (user.role === 'ROLE_TPO') return <Navigate to="/dashboard/tpo" replace />;
-    if (user.role === 'ROLE_ORG_ADMIN') return <Navigate to="/dashboard/admin" replace />;
+    if (user.role === 'ROLE_STUDENT') return <Navigate to="/student/dashboard" replace />;
+    if (user.role === 'ROLE_TPO') return <Navigate to="/tpo/dashboard" replace />;
+    if (user.role === 'ROLE_ORG_ADMIN') return <Navigate to="/admin/dashboard" replace />;
   }
 
   return children;
@@ -84,27 +90,27 @@ const AppRoutes = () => {
         />
 
         <Route
-          path="/dashboard/student"
+          path="/student/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['ROLE_STUDENT']}>
               <StudentDashboard />
             </ProtectedRoute>
           }
         />
 
         <Route
-          path="/dashboard/tpo"
+          path="/tpo/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['ROLE_TPO']}>
               <TpoDashboard /> 
             </ProtectedRoute>
           }
         />
 
         <Route
-          path="/dashboard/admin"
+          path="/admin/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['ROLE_ORG_ADMIN']}>
               <AdminDashboard />
             </ProtectedRoute>
           }
@@ -152,7 +158,7 @@ const AppRoutes = () => {
         <Route
           path="/admin/tpo"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['ROLE_ORG_ADMIN']}>
               <TpoManagementPage />
             </ProtectedRoute>
           }
@@ -161,8 +167,27 @@ const AppRoutes = () => {
         <Route
           path="/admin/system"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['ROLE_ORG_ADMIN']}>
               <SystemConfigPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* TPO Specific Routes */}
+        <Route
+          path="/tpo/students"
+          element={
+            <ProtectedRoute allowedRoles={['ROLE_TPO']}>
+              <StudentDirectoryPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tpo/drives"
+          element={
+            <ProtectedRoute allowedRoles={['ROLE_TPO']}>
+              <DriveManagementPage />
             </ProtectedRoute>
           }
         />

@@ -20,15 +20,15 @@ public class TPOController {
 
     @PostMapping
     @PreAuthorize("hasRole('TPO')")
-    public ResponseEntity<TPOProfile> createProfile(
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<TPOProfile>> createProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody TPOProfileRequest request) {
-        return ResponseEntity.ok(tpoService.createProfile(userDetails.getId(), request));
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(tpoService.createProfile(userDetails.getId(), request)));
     }
 
     @GetMapping
     @PreAuthorize("hasRole('TPO')")
-    public ResponseEntity<TPOProfile> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return ResponseEntity.ok(tpoService.getProfile(userDetails.getId()));
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<TPOProfile>> getProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(tpoService.getProfile(userDetails.getId())));
     }
 }

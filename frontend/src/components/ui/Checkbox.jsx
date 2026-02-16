@@ -6,11 +6,11 @@ import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const Checkbox = React.forwardRef(({ className, label, id, checked, onChange, name, ...props }, ref) => {
-  const checkboxId = id || React.useId();
+  const generatedId = React.useId();
+  const checkboxId = id || generatedId;
 
   const handleCheckedChange = (value) => {
     if (onChange) {
-      // Simulate a standard event object for compatibility with handleInputChange
       onChange({
         target: {
           name: name,
@@ -56,4 +56,3 @@ const Checkbox = React.forwardRef(({ className, label, id, checked, onChange, na
 Checkbox.displayName = CheckboxPrimitive.Root.displayName
 
 export { Checkbox }
-export default Checkbox;

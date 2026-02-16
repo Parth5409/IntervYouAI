@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../../components/ui/DashboardLayout';
 import Icon from '../../components/AppIcon';
@@ -6,22 +6,40 @@ import Button from '../../components/ui/Button';
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
+import api from '../../utils/api';
 
 const TpoDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [dashboardStats, setStats] = useState(null);
+  const [recentDrives, setDrives] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [statsRes, drivesRes] = await Promise.all([
+          api.get('/analytics/tpo-overview'),
+          api.get('/drives/all')
+        ]);
+        
+        setStats(statsRes.data.data);
+        setDrives(drivesRes.data.data || drivesRes.data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const stats = [
-    { label: 'TOTAL_STUDENTS', value: '1,240', icon: 'Users', color: 'text-sky-500' },
-    { label: 'PLACED_PERCENTAGE', value: '62%', icon: 'Trophy', color: 'text-emerald-500' },
-    { label: 'ACTIVE_DRIVES', value: '08', icon: 'Briefcase', color: 'text-amber-500' },
-    { label: 'READINESS_INDEX', value: '7.8', icon: 'Activity', color: 'text-purple-500' },
-  ];
-
-  const recentDrives = [
-    { id: 1, company: 'MICROSOFT', status: 'ACTIVE', assignments: 450, avgScore: '82%' },
-    { id: 2, company: 'AMAZON', status: 'DRAFT', assignments: 0, avgScore: 'N/A' },
-    { id: 3, company: 'INFOSYS', status: 'COMPLETED', assignments: 1200, avgScore: '74%' },
+    { label: 'TOTAL_STUDENTS', value: dashboardStats?.totalStudents || '0', icon: 'Users', color: 'text-sky-500' },
+    { label: 'PLACED_PERCENTAGE', value: dashboardStats?.placedPercentage || '0%', icon: 'Trophy', color: 'text-emerald-500' },
+    { label: 'ACTIVE_DRIVES', value: dashboardStats?.activeDrives || '0', icon: 'Briefcase', color: 'text-amber-500' },
+    { label: 'READINESS_INDEX', value: dashboardStats?.readinessIndex || '0.0', icon: 'Activity', color: 'text-purple-500' },
   ];
 
   return (
@@ -87,28 +105,36 @@ const TpoDashboard = () => {
                   <tr className="border-b border-slate-800 bg-slate-950/50">
                     <th className="px-6 py-4 text-slate-500 uppercase tracking-tighter">Corporation</th>
                     <th className="px-6 py-4 text-slate-500 uppercase tracking-tighter">Status</th>
-                    <th className="px-6 py-4 text-slate-500 uppercase tracking-tighter">Candidates</th>
-                    <th className="px-6 py-4 text-slate-500 uppercase tracking-tighter text-right">Avg_Readiness</th>
+                    <th className="px-6 py-4 text-slate-500 uppercase tracking-tighter">Eligibility</th>
+                    <th className="px-6 py-4 text-slate-500 uppercase tracking-tighter text-right">Created_At</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/50">
-                  {recentDrives.map((drive) => (
-                    <tr key={drive.id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="px-6 py-4 font-bold text-slate-200">{drive.company}</td>
-                      <td className="px-6 py-4">
-                        <span className={cn(
-                          "px-2 py-0.5 border text-[10px] font-bold",
-                          drive.status === 'ACTIVE' ? "border-emerald-500/50 text-emerald-500 bg-emerald-500/5" :
-                          drive.status === 'DRAFT' ? "border-amber-500/50 text-amber-500 bg-amber-500/5" :
-                          "border-slate-700 text-slate-500 bg-slate-800/50"
-                        )}>
-                          {drive.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-slate-400">{drive.assignments} units</td>
-                      <td className="px-6 py-4 text-right font-bold text-sky-400">{drive.avgScore}</td>
-                    </tr>
-                  ))}
+                  {isLoading ? (
+                    <tr><td colSpan="4" className="px-6 py-8 text-center text-slate-500 animate-pulse">SYNCING_REGISTRY...</td></tr>
+                  ) : recentDrives.length === 0 ? (
+                    <tr><td colSpan="4" className="px-6 py-8 text-center text-slate-500">NO_ACTIVE_DRIVES</td></tr>
+                  ) : (
+                    recentDrives.slice(0, 5).map((drive) => (
+                      <tr key={drive.id} className="hover:bg-slate-800/30 transition-colors">
+                        <td className="px-6 py-4 font-bold text-slate-200">{drive.companyName}</td>
+                        <td className="px-6 py-4">
+                          <span className={cn(
+                            "px-2 py-0.5 border text-[10px] font-bold uppercase",
+                            drive.status === 'ACTIVE' ? "border-emerald-500/50 text-emerald-500 bg-emerald-500/5" :
+                            drive.status === 'DRAFT' ? "border-amber-500/50 text-amber-500 bg-amber-500/5" :
+                            "border-slate-700 text-slate-500 bg-slate-800/50"
+                          )}>
+                            {drive.status || 'ACTIVE'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-400">{drive.minCgpa} MIN_CGPA</td>
+                        <td className="px-6 py-4 text-right font-bold text-sky-400">
+                          {new Date(drive.createdAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

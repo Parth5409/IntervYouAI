@@ -37,7 +37,7 @@ public class AiIntegrationServiceTest {
         mockResponse.setSkills(Set.of("Java", "Spring Boot"));
 
         // Mock the call to ai-engine
-        this.server.expect(requestTo("http://localhost:8000/api/analysis/extract-skills"))
+        this.server.expect(requestTo("http://localhost:8000/api/engine/analysis/extract-skills"))
                 .andExpect(jsonPath("$.job_description").value(jd))
                 .andRespond(withSuccess(objectMapper.writeValueAsString(mockResponse), MediaType.APPLICATION_JSON));
 

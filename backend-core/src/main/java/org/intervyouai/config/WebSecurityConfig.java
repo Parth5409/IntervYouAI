@@ -26,9 +26,12 @@ public class WebSecurityConfig {
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
+    @Autowired
+    private org.intervyouai.security.JwtUtils jwtUtils;
+
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
+        return new AuthTokenFilter(jwtUtils, userDetailsService);
     }
 
     @Bean
@@ -60,9 +63,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/api/core/v1/auth/**").permitAll()
-                                .requestMatchers("/api/core/v1/test/**").permitAll()
                                 .requestMatchers("/api/core/v1/organizations/me").authenticated()
-                                .requestMatchers("/api/core/v1/organizations").permitAll()
                                 .anyRequest().authenticated()
                 );
 

@@ -41,6 +41,7 @@ public class User {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @NotBlank
     @Column(name = "password_hash", nullable = false)
     private String password;

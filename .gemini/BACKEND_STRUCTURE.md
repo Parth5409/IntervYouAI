@@ -64,6 +64,7 @@
   "email": "student@university.edu",
   "password": "securePassword123"
 }
+```
 - **Success (200)**: Returns `accessToken` and `refreshToken`.
 
 ---
