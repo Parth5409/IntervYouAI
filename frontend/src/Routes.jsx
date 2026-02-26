@@ -8,6 +8,7 @@ import StudentProfilePage from './pages/student/StudentProfilePage';
 import TpoDashboard from './pages/dashboard/TpoDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import InterviewSetupWizard from './pages/interview/setup';
+import MissionBrief from './pages/interview/setup/MissionBrief';
 import InterviewRoom from './pages/interview/room';
 import GDRoom from './pages/gd/room';
 import NotFound from './pages/NotFound';
@@ -139,6 +140,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <InterviewSetupWizard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/interview/mission/:driveId"
+          element={
+            <ProtectedRoute allowedRoles={['ROLE_STUDENT']}>
+              <MissionBrief />
             </ProtectedRoute>
           }
         />

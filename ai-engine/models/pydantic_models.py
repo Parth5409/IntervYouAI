@@ -13,6 +13,7 @@ class SessionType(str, Enum):
     HR = "HR"
     GD = "GD"
     SALARY = "SALARY"
+    HR_SALARY = "HR_SALARY"
 
 class DifficultyLevel(str, Enum):
     EASY = "Easy"
@@ -23,6 +24,16 @@ class InterviewSessionCreate(BaseModel):
     session_type: SessionType
     difficulty: DifficultyLevel = DifficultyLevel.MEDIUM
     max_questions: int = Field(default=5, ge=3, le=15)
+
+class MissionSessionCreate(InterviewSessionCreate):
+    drive_id: str
+    company_name: str
+    job_role: str
+    jd_text: str
+    min_lpa: Optional[float] = None
+    max_lpa: Optional[float] = None
+    round_type: str # TECHNICAL, HR_SALARY, GD
+    negotiation_style: Optional[str] = "collaborative"
 
 class TechnicalInterviewCreate(InterviewSessionCreate):
     company_name: str

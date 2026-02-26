@@ -39,6 +39,22 @@ public class PlacementDrive {
     @Column(name = "min_cgpa", precision = 3, scale = 2)
     private BigDecimal minCgpa;
 
+    @Column(name = "min_lpa", precision = 5, scale = 2)
+    private BigDecimal minLpa;
+
+    @Column(name = "max_lpa", precision = 5, scale = 2)
+    private BigDecimal maxLpa;
+
+    @ElementCollection(targetClass = RoundType.class)
+    @CollectionTable(name = "drive_active_modules", joinColumns = @JoinColumn(name = "drive_id"))
+    @Column(name = "module")
+    @Enumerated(EnumType.STRING)
+    private Set<RoundType> activeModules;
+
+    @Column(name = "config_json", columnDefinition = "jsonb")
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    private String configJson;
+
     @ElementCollection
     @CollectionTable(name = "drive_skills", joinColumns = @JoinColumn(name = "drive_id"))
     @Column(name = "skill")

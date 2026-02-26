@@ -70,6 +70,10 @@ public class PlacementDriveService {
                 .companyName(request.getCompanyName())
                 .jobDescription(request.getJobDescription())
                 .minCgpa(request.getMinCgpa())
+                .minLpa(request.getMinLpa())
+                .maxLpa(request.getMaxLpa())
+                .activeModules(request.getActiveModules())
+                .configJson(request.getConfigJson())
                 .skillsRequired(skills)
                 .status(PlacementDrive.DriveStatus.ACTIVE)
                 .build();
@@ -98,12 +102,22 @@ public class PlacementDriveService {
                 .collect(Collectors.toList());
     }
 
+    public PlacementDriveResponse getDriveById(UUID driveId) {
+        PlacementDrive drive = placementDriveRepository.findById(driveId)
+                .orElseThrow(() -> new RuntimeException("Drive not found"));
+        return mapToResponse(drive);
+    }
+
     private PlacementDriveResponse mapToResponse(PlacementDrive drive) {
         return PlacementDriveResponse.builder()
                 .id(drive.getId())
                 .companyName(drive.getCompanyName())
                 .jobDescription(drive.getJobDescription())
                 .minCgpa(drive.getMinCgpa())
+                .minLpa(drive.getMinLpa())
+                .maxLpa(drive.getMaxLpa())
+                .activeModules(drive.getActiveModules())
+                .configJson(drive.getConfigJson())
                 .tpoName(drive.getTpo().getFullName())
                 .createdAt(drive.getCreatedAt())
                 .status(drive.getStatus() != null ? drive.getStatus().name() : null)

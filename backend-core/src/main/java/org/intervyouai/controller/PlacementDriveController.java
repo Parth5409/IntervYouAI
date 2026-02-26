@@ -52,4 +52,18 @@ public class PlacementDriveController {
             return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.getAvailableDrivesForStudent(userDetails.getId())));
         }
     }
+
+    @GetMapping("/student")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<List<PlacementDriveResponse>>> getStudentDrives(
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.getAvailableDrivesForStudent(userDetails.getId())));
+    }
+
+    @GetMapping("/{id}/details")
+    @PreAuthorize("hasAnyRole('TPO', 'STUDENT')")
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<PlacementDriveResponse>> getDriveDetails(
+            @PathVariable UUID id) {
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.getDriveById(id)));
+    }
 }

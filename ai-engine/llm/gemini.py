@@ -54,6 +54,9 @@ class GeminiLLM:
             - Role: {session_context.get('job_role', 'the position')}
             - Difficulty: {session_context.get('difficulty', 'Medium')}
 
+            **Job Description (JD) Context:**
+            {rag_context.get('jd_context', 'No specific JD context provided.')}
+
             **Candidate Resume Context:**
             {rag_context.get('resume_context', ['No resume information available.'])}
             
@@ -72,20 +75,22 @@ class GeminiLLM:
             logger.error(f"Error generating initial greeting: {e}")
             return f"Hello! Welcome to your {session_type.lower()} interview. To start, can you please tell me a little bit about yourself?"
 
-    async def generate_interview_question(self, session_type: str, session_context: Dict[str, Any], chat_history: List[BaseMessage], rag_context: Dict[str, Any], last_user_message: str) -> str:
+    async def generate_interview_question(self, session_type: str, session_context: Dict[str, Any], chat_history: List[BaseMessage], rag_context: Dict[str, Any], last_user_message: str, stage: str = "questioning") -> str:
         """Generates the next interview question based on history and RAG context."""
         try:
-            system_msg = self._get_system_message(session_type, "questioning", session_context)
+            system_msg = self._get_system_message(session_type, stage, session_context)
 
             rag_str = ""
+            if rag_context.get('jd_context'):
+                rag_str += "\n\n--- Job Description (JD) ---\n" + rag_context['jd_context']
             if rag_context.get('resume_context'):
-                rag_str += "\n\n--- Relevant Resume Snippets ---" + "\n".join(rag_context['resume_context'])
+                rag_str += "\n\n--- Relevant Resume Snippets ---\n" + "\n".join(rag_context['resume_context'])
             if rag_context.get('company_context'):
-                rag_str += "\n\n--- Relevant Company & Role Knowledge ---" + "\n".join(rag_context['company_context'])
+                rag_str += "\n\n--- Relevant Company & Role Knowledge ---\n" + "\n".join(rag_context['company_context'])
 
             prompt = f"""The user's previous answer was: '{last_user_message}'.
 
-            Here is the context for the interview. Use it and the user's introduction to formulate your next question.
+            Here is the context for the interview. Use the Job Description and Resume to formulate your next question.
             {rag_str}
 
             Your task is to act as the interviewer and ask the *next* single question. 
@@ -100,12 +105,15 @@ class GeminiLLM:
             logger.error(f"Error generating interview question: {e}")
             return "Thank you. Can you tell me more about your background and experience?"
 
-    async def generate_feedback(self, session_type: str, chat_history: List[BaseMessage], session_context: Dict[str, Any]) -> Dict[str, Any]:
-        """Generates comprehensive interview feedback from the chat history."""
+    async def generate_feedback(self, session_type: str, chat_history: List[BaseMessage], session_context: Dict[str, Any], rag_context: Dict[str, Any]) -> Dict[str, Any]:
+        """Generates comprehensive interview feedback from the chat history and context."""
         try:
             system_msg = self._get_system_message(session_type, "feedback", session_context)
 
             transcript_text = "\n".join([f"assistant: {msg.content}" if isinstance(msg, AIMessage) else f"user: {msg.content}" for msg in chat_history])
+
+            jd_text = rag_context.get('jd_context', 'No JD provided')
+            resume_text = "\n".join(rag_context.get('resume_context', ['No resume info']))
 
             prompt = f"""
             **Interview Context:**
@@ -113,10 +121,16 @@ class GeminiLLM:
             - Role: {session_context.get('job_role', 'General')}
             - Difficulty: {session_context.get('difficulty', 'Medium')}
             
+            **Job Description (JD):**
+            {jd_text}
+
+            **Candidate Background (Resume):**
+            {resume_text}
+
             **Full Transcript:**
             {transcript_text}
             
-            Please provide feedback in a valid JSON format.
+            Please provide feedback in a valid JSON format. Evaluate the candidate's performance against the Job Description.
             {{ 
                 "overall_score": <int, 0-100>,
                 "technical_score": <int, 0-100, or null if not applicable>,
@@ -174,6 +188,8 @@ class GeminiLLM:
         negotiation_style = context.get('negotiation_style', 'collaborative')
 
         salary_range = context.get('salary_range', 'not specified')
+        min_lpa = context.get('min_lpa', '10')
+        max_lpa = context.get('max_lpa', '15')
 
         if session_type == "TECHNICAL":
             if stage == "greeting":
@@ -197,6 +213,23 @@ class GeminiLLM:
                 - Be aware that the user's response is coming from a speech-to-text service and may contain transcription errors (e.g., 'bcrypt' might be transcribed as 'decrypt'). If a technical term seems slightly off, infer the correct term based on the context.
                 """
         
+        elif session_type == "HR_SALARY":
+            if stage == "greeting":
+                return f"You are a friendly and professional HR Manager at {company_name}, starting a final selection interview for a {job_role} role. This session will cover behavioral fit and then transition to compensation discussion."
+            elif stage == "behavioral":
+                return f"""You are an HR Manager at {company_name}. Conduct a behavioral interview for {job_role}.
+                Focus on STAR method questions, cultural fit, and motivation.
+                The difficulty is '{difficulty}'. 
+                Ask only one, concise, single-part question at a time."""
+            elif stage == "negotiation":
+                return f"""You are now the Hiring Manager at {company_name}. Transition the conversation to compensation.
+                The approved salary range for this role is {min_lpa} LPA to {max_lpa} LPA.
+                Congratulate the candidate on their performance so far.
+                Your goal is to reach a mutually agreeable package within the {min_lpa}-{max_lpa} range.
+                Adopt a {negotiation_style} negotiation style."""
+            elif stage == "feedback":
+                return "Analyze this combined HR and Salary negotiation session. Provide scores for behavioral fit and negotiation skills."
+
         elif session_type == "HR":
             if stage == "greeting":
                 return f"You are a friendly and professional HR Manager at {company_name}, starting an interview for a {job_role} role."

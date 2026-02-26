@@ -16,6 +16,10 @@ public class PlacementDriveResponse {
     private String companyName;
     private String jobDescription;
     private BigDecimal minCgpa;
+    private BigDecimal minLpa;
+    private BigDecimal maxLpa;
+    private java.util.Set<org.intervyouai.model.RoundType> activeModules;
+    private String configJson;
     private String tpoName;
     private LocalDateTime createdAt;
     private String status;

@@ -8,18 +8,53 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from models.pydantic_models import (InterviewSessionCreate, 
+                                  MissionSessionCreate,
                                   TechnicalInterviewCreate, 
                                   HRInterviewCreate, 
                                   SalaryNegotiationCreate, 
                                   GroupDiscussionCreate,
                                   InterviewSessionResponse, 
                                   APIResponse, SessionType)
-from utils.database import get_db, InterviewSession, User, get_session_by_id
+from utils.database import get_db, InterviewSession, User, get_session_by_id, get_user_by_id
 from utils.auth import get_current_user
 from orchestrator.rag_utils import DocumentProcessor, get_vector_store_manager
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+@router.post("/mission", response_model=APIResponse)
+async def create_mission_session(
+    mission_request: MissionSessionCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        from utils.database import get_user_by_id
+        user_record = await get_user_by_id(db, current_user.id)
+        
+        context = mission_request.dict()
+        if user_record and hasattr(user_record, 'resume_url') and user_record.resume_url:
+            context["resume_info"] = {"status": "linked", "url": user_record.resume_url}
+        
+        new_session = InterviewSession(
+            student_id=current_user.id,
+            session_type=mission_request.round_type,
+            difficulty=mission_request.difficulty.value,
+            context=context
+        )
+        db.add(new_session)
+        await db.commit()
+        await db.refresh(new_session)
+
+        return APIResponse(
+            success=True,
+            message=f"Mission session ({mission_request.round_type}) created successfully",
+            data=InterviewSessionResponse.from_orm(new_session)
+        )
+    except Exception as e:
+        logger.error(f"Mission session creation error: {e}")
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Mission session creation failed: {str(e)}")
 
 @router.post("/", response_model=APIResponse)
 async def create_session(

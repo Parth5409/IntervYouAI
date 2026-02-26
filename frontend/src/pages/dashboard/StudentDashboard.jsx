@@ -35,7 +35,7 @@ const StudentDashboard = () => {
   ];
 
   const handleInitializeMock = (driveId) => {
-    navigate('/interview/setup', { state: { driveId } });
+    navigate(`/interview/mission/${driveId}`, { state: { driveId } });
   };
 
   return (

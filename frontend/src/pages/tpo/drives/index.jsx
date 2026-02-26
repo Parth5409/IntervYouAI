@@ -15,7 +15,14 @@ const DriveManagementPage = () => {
   const [formData, setFormData] = useState({
     companyName: '',
     jobDescription: '',
-    minCgpa: ''
+    minCgpa: '',
+    minLpa: '',
+    maxLpa: '',
+    activeModules: ['TECHNICAL'],
+    configJson: JSON.stringify({
+      technical: { difficulty: 'MEDIUM', questions: 8 },
+      hr_salary: { difficulty: 'MEDIUM', questions: 10, negotiation_style: 'ASSERTIVE' }
+    }, null, 2)
   });
   const [error, setError] = useState('');
 
@@ -40,6 +47,15 @@ const DriveManagementPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleModuleToggle = (module) => {
+    setFormData(prev => {
+      const active = prev.activeModules.includes(module)
+        ? prev.activeModules.filter(m => m !== module)
+        : [...prev.activeModules, module];
+      return { ...prev, activeModules: active };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -48,13 +64,27 @@ const DriveManagementPage = () => {
       
       const payload = {
         ...formData,
-        minCgpa: parseFloat(formData.minCgpa) || 0
+        minCgpa: parseFloat(formData.minCgpa) || 0,
+        minLpa: parseFloat(formData.minLpa) || 0,
+        maxLpa: parseFloat(formData.maxLpa) || 0,
+        activeModules: formData.activeModules
       };
 
       await api.post('/drives', payload);
       setIsSheetOpen(false);
       fetchDrives();
-      setFormData({ companyName: '', jobDescription: '', minCgpa: '' });
+      setFormData({ 
+        companyName: '', 
+        jobDescription: '', 
+        minCgpa: '',
+        minLpa: '',
+        maxLpa: '',
+        activeModules: ['TECHNICAL'],
+        configJson: JSON.stringify({
+          technical: { difficulty: 'MEDIUM', questions: 8 },
+          hr_salary: { difficulty: 'MEDIUM', questions: 10, negotiation_style: 'ASSERTIVE' }
+        }, null, 2)
+      });
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to create placement drive.');
     } finally {
@@ -135,6 +165,63 @@ const DriveManagementPage = () => {
                   onChange={handleInputChange}
                   required
                 />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Min LPA"
+                    name="minLpa"
+                    type="number"
+                    step="0.1"
+                    placeholder="e.g. 10.0"
+                    value={formData.minLpa}
+                    onChange={handleInputChange}
+                  />
+                  <Input
+                    label="Max LPA"
+                    name="maxLpa"
+                    type="number"
+                    step="0.1"
+                    placeholder="e.g. 15.0"
+                    value={formData.maxLpa}
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
+                    Active_Pipeline_Modules
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    {['TECHNICAL', 'HR_SALARY', 'GD'].map(module => (
+                      <button
+                        key={module}
+                        type="button"
+                        onClick={() => handleModuleToggle(module)}
+                        className={cn(
+                          "px-4 py-2 font-mono text-[10px] border transition-colors",
+                          formData.activeModules.includes(module)
+                            ? "bg-emerald-500/10 border-emerald-500 text-emerald-500"
+                            : "border-slate-800 text-slate-500 hover:border-slate-700"
+                        )}
+                      >
+                        {module.replace('_', ' ')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
+                    Mission_Configuration (JSON)
+                  </label>
+                  <textarea
+                    name="configJson"
+                    rows={6}
+                    className="w-full bg-slate-900 border border-slate-800 p-4 font-mono text-[10px] text-sky-500/80 focus:ring-1 focus:ring-sky-500 outline-none"
+                    value={formData.configJson}
+                    onChange={handleInputChange}
+                  />
+                </div>
 
                 {error && (
                   <div className="p-3 bg-red-500/10 border border-red-500/20">

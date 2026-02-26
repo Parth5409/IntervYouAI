@@ -19,4 +19,12 @@ public class PlacementDriveRequest {
     private String jobDescription;
 
     private BigDecimal minCgpa;
+
+    private BigDecimal minLpa;
+
+    private BigDecimal maxLpa;
+
+    private java.util.Set<org.intervyouai.model.RoundType> activeModules;
+
+    private String configJson;
 }

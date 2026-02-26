@@ -23,6 +23,8 @@ class InterviewState(Enum):
     """Interview session states"""
     CREATED = "created"
     ACTIVE = "active"
+    BEHAVIORAL = "behavioral"
+    NEGOTIATION = "negotiation"
     COMPLETED = "completed"
     FAILED = "failed"
 
@@ -60,7 +62,7 @@ class InterviewOrchestrator:
         context = {}
         try:
             # Use standardized resume store name based on student ID
-            resume_store_name = f"resume_user_{db_session.user_id}"
+            resume_store_name = f"resume_user_{db_session.student_id}"
             try:
                 resume_results = await self.vector_store_manager.similarity_search(
                     store_name=resume_store_name,
@@ -69,7 +71,7 @@ class InterviewOrchestrator:
                 )
                 context['resume_context'] = [doc.page_content for doc in resume_results]
             except Exception as e:
-                logger.debug(f"Resume vector store not found for user {db_session.user_id}: {e}")
+                logger.debug(f"Resume vector store not found for user {db_session.student_id}: {e}")
 
             # Use raw JD text from context if available (more efficient for short JDs)
             jd_text = db_session.context.get("jd_text") or db_session.context.get("job_description")
@@ -165,7 +167,11 @@ class InterviewOrchestrator:
         try:
             db_session = session_state['db_session']
             chat_history = self._build_chat_history(final_transcript)
-            feedback = await self._generate_session_feedback(db_session, chat_history)
+            
+            # Fetch context one last time for grounded feedback
+            rag_context = await self._get_rag_context(db_session, "Overall interview performance")
+            
+            feedback = await self._generate_session_feedback(db_session, chat_history, rag_context)
             
             if db_session.session_type == "TECHNICAL" and db_session.context.get("company_vs_id"):
                 store_name = db_session.context.get("company_vs_id")
@@ -187,10 +193,31 @@ class InterviewOrchestrator:
         try:
             rag_context = await self._get_rag_context(db_session, "Introduction and background")
             
+            # Extract mission-specific config if available
+            mission_config = db_session.context.get("configJson")
+            if isinstance(mission_config, str):
+                try:
+                    mission_config = json.loads(mission_config)
+                except:
+                    mission_config = {}
+            elif not isinstance(mission_config, dict):
+                mission_config = {}
+
+            round_type_key = db_session.session_type.lower()
+            round_config = mission_config.get(round_type_key, {})
+
+            difficulty = round_config.get("difficulty") or db_session.difficulty
+            db_session.context['difficulty'] = difficulty
+
             # Inject candidate name into context for personalization
             if db_session.user and db_session.user.full_name:
                 db_session.context['candidate_name'] = db_session.user.full_name
             
+            # Inject financial data if available for HR_SALARY
+            if db_session.session_type == "HR_SALARY" or db_session.session_type == "SALARY":
+                db_session.context['min_lpa'] = db_session.context.get('min_lpa', '10')
+                db_session.context['max_lpa'] = db_session.context.get('max_lpa', '15')
+
             return await self.gemini_llm.generate_initial_greeting(
                 session_type=db_session.session_type,
                 session_context=db_session.context,
@@ -205,7 +232,24 @@ class InterviewOrchestrator:
         try:
             db_session = session_state['db_session']
             question_count = session_state.get('question_count', 0)
-            max_questions = db_session.context.get("max_questions", 8)
+            
+            # Extract mission-specific config if available
+            mission_config = db_session.context.get("configJson")
+            if isinstance(mission_config, str):
+                try:
+                    mission_config = json.loads(mission_config)
+                except:
+                    mission_config = {}
+            elif not isinstance(mission_config, dict):
+                mission_config = {}
+
+            round_type_key = db_session.session_type.lower()
+            round_config = mission_config.get(round_type_key, {})
+
+            max_questions = round_config.get("questions") or db_session.context.get("max_questions", 8)
+            difficulty = round_config.get("difficulty") or db_session.difficulty
+
+            current_state = session_state.get("state", InterviewState.ACTIVE)
 
             user_message_lower = user_message.lower()
             is_short_message = len(user_message.split()) < 6
@@ -220,12 +264,30 @@ class InterviewOrchestrator:
                 chat_history = self._build_chat_history(session_state['transcript'])
                 rag_context = await self._get_rag_context(db_session, user_message)
                 
+                # State logic for HR_SALARY
+                stage = "questioning"
+                if db_session.session_type == "HR_SALARY":
+                    # Transition to negotiation around 70% mark
+                    if question_count >= int(max_questions * 0.7) and current_state != InterviewState.NEGOTIATION:
+                        session_state["state"] = InterviewState.NEGOTIATION
+                        stage = "negotiation"
+                        logger.info(f"Transitioning session {db_session.id} to NEGOTIATION state")
+                    elif current_state == InterviewState.NEGOTIATION:
+                        stage = "negotiation"
+                    else:
+                        session_state["state"] = InterviewState.BEHAVIORAL
+                        stage = "behavioral"
+
+                # Update context for LLM if round config is available
+                db_session.context['difficulty'] = difficulty
+
                 response = await self.gemini_llm.generate_interview_question(
                     session_type=db_session.session_type,
                     session_context=db_session.context,
                     chat_history=chat_history,
                     rag_context=rag_context,
-                    last_user_message=user_message
+                    last_user_message=user_message,
+                    stage=stage
                 )
                 message_type = "question"
                 session_state['question_count'] = question_count + 1
@@ -248,13 +310,14 @@ class InterviewOrchestrator:
         else:
             return "Thank you for the interview! I'll now prepare your feedback."
 
-    async def _generate_session_feedback(self, session: InterviewSession, chat_history: List[BaseMessage]) -> Dict[str, Any]:
+    async def _generate_session_feedback(self, session: InterviewSession, chat_history: List[BaseMessage], rag_context: Dict[str, Any]) -> Dict[str, Any]:
         """Generate comprehensive feedback for completed session"""
         try:
             feedback_data = await self.gemini_llm.generate_feedback(
                 session_type=session.session_type,
                 chat_history=chat_history,
-                session_context=session.context
+                session_context=session.context,
+                rag_context=rag_context
             )
             feedback_data['session_id'] = session.id
 
