@@ -20,6 +20,6 @@ public interface StudentProfileRepository extends JpaRepository<StudentProfile, 
 
     long countByUserOrganizationId(UUID orgId);
 
-    @Query("SELECT s FROM StudentProfile s WHERE s.user.organization.id = :orgId AND s.currentCgpa >= :minCgpa")
+    @Query("SELECT s FROM StudentProfile s WHERE s.user.organization.id = :orgId AND (:minCgpa IS NULL OR s.currentCgpa >= :minCgpa)")
     List<StudentProfile> findEligibleStudents(@Param("orgId") UUID orgId, @Param("minCgpa") BigDecimal minCgpa);
 }

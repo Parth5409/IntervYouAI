@@ -96,8 +96,13 @@ public class PlacementDriveService {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         
-        // Return drives created by TPOs of the SAME Organization
-        return placementDriveRepository.findByTpoOrganizationId(student.getOrganization().getId()).stream()
+        org.intervyouai.model.StudentProfile profile = studentProfileRepository.findByUser(student)
+                .orElseThrow(() -> new RuntimeException("Student profile not found"));
+
+        BigDecimal cgpa = profile.getCurrentCgpa() != null ? profile.getCurrentCgpa() : BigDecimal.ZERO;
+
+        // Return drives created by TPOs of the SAME Organization that meet the CGPA criteria
+        return placementDriveRepository.findEligibleDrives(student.getOrganization().getId(), cgpa).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

@@ -6,7 +6,7 @@ import os
 import logging
 from contextlib import asynccontextmanager
 from typing import Optional, AsyncGenerator
-from sqlalchemy import Column, String, DateTime, Text, Boolean, Integer, JSON, ForeignKey, select
+from sqlalchemy import Column, String, DateTime, Text, Boolean, Integer, JSON, ForeignKey, select, Numeric
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship, joinedload
@@ -50,7 +50,7 @@ class PlacementDrive(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     company_name = Column(String, nullable=False)
     job_description = Column(Text, nullable=False)
-    min_cgpa = Column(Integer, nullable=True) # Mapped as Decimal in Java, Integer/Float here? Java: BigDecimal.
+    min_cgpa = Column(Numeric(3, 2), nullable=True) # Matches Java BigDecimal(3, 2)
     tpo_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 

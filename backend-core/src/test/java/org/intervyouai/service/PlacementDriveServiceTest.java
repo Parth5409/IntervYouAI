@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -26,6 +27,9 @@ public class PlacementDriveServiceTest {
 
     @Mock
     private StudentProfileRepository studentProfileRepository;
+
+    @Mock
+    private org.intervyouai.repository.UserRepository userRepository;
 
     @Mock
     private KafkaProducerService kafkaProducerService;
@@ -74,6 +78,45 @@ public class PlacementDriveServiceTest {
             event.getDriveId().equals(driveId) &&
             event.getCompanyName().equals("Test Corp")
         ));
+    }
+
+    @Test
+    public void testGetAvailableDrivesForStudent_FiltersByCgpa() {
+        UUID studentId = UUID.randomUUID();
+        UUID orgId = UUID.randomUUID();
+        Organization org = new Organization();
+        org.setId(orgId);
+
+        User studentUser = User.builder().id(studentId).organization(org).build();
+        // Student has 7.0 CGPA
+        StudentProfile profile = StudentProfile.builder()
+                .user(studentUser)
+                .currentCgpa(java.math.BigDecimal.valueOf(7.0))
+                .build();
+
+        // Drive 1: Requires 6.5 (Eligible)
+        PlacementDrive d1 = PlacementDrive.builder()
+                .id(UUID.randomUUID())
+                .minCgpa(java.math.BigDecimal.valueOf(6.5))
+                .tpo(User.builder().fullName("TPO 1").build())
+                .build();
+
+        // Drive 2: Requires 7.5 (Not Eligible)
+        PlacementDrive d2 = PlacementDrive.builder()
+                .id(UUID.randomUUID())
+                .minCgpa(java.math.BigDecimal.valueOf(7.5))
+                .tpo(User.builder().fullName("TPO 2").build())
+                .build();
+
+        when(userRepository.findById(studentId)).thenReturn(Optional.of(studentUser));
+        when(studentProfileRepository.findByUser(studentUser)).thenReturn(Optional.of(profile));
+        when(placementDriveRepository.findEligibleDrives(eq(orgId), any(java.math.BigDecimal.class))).thenReturn(List.of(d1));
+
+        List<org.intervyouai.dto.PlacementDriveResponse> result = placementDriveService.getAvailableDrivesForStudent(studentId);
+
+        // Should only return d1
+        assertEquals(1, result.size());
+        assertEquals(d1.getId(), result.get(0).getId());
     }
 
     @Test
