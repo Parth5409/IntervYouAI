@@ -68,6 +68,9 @@ public class PlacementDrive {
     @Column(name = "status")
     private DriveStatus status;
 
+    @OneToMany(mappedBy = "drive", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<InterviewSession> interviewSessions;
+
     public enum DriveStatus {
         DRAFT, ACTIVE, COMPLETED
     }

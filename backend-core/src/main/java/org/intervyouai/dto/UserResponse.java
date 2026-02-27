@@ -26,6 +26,8 @@ public class UserResponse {
     private String currentSemester;
     private BigDecimal currentCgpa;
     private Integer passingYear;
+    private String resumeUrl;
+    private String resumeFilename;
     private String organizationName;
     private String organizationCode;
 }

@@ -58,17 +58,21 @@ const MissionBrief = () => {
         round_type: selectedRound,
         difficulty: roundConfig.difficulty || 'Medium',
         max_questions: roundConfig.questions || 8,
-        negotiation_style: roundConfig.negotiation_style || 'assertive'
+        negotiation_style: roundConfig.negotiation_style || 'assertive',
+        configJson: drive.configJson
       };
 
       // Use engineApi for cross-service calls to avoid path resolution issues
       const { data } = await engineApi.post('session/mission', payload);
 
       if (data.success) {
-        navigate(`/interview/room/${data.data.id}`, {
+        const sessionId = data.data.id;
+        const roomPath = selectedRound === 'GD' ? `/gd/room/${sessionId}` : `/interview/room/${sessionId}`;
+        
+        navigate(roomPath, {
           state: {
             interviewType: selectedRound.toLowerCase(),
-            sessionId: data.data.id,
+            sessionId: sessionId,
             missionMode: true
           }
         });

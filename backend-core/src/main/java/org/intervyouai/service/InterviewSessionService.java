@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class InterviewSessionService {
@@ -43,25 +45,38 @@ public class InterviewSessionService {
                 .student(student)
                 .drive(drive)
                 .overallScore(0) // Initial score
+                .status("CREATED")
                 .build();
 
         session = sessionRepository.save(session);
 
-        return InterviewSessionResponse.builder()
-                .sessionId(session.getId())
-                .status("CREATED")
-                .companyName(drive.getCompanyName())
-                .build();
+        return mapToResponse(session);
+    }
+
+    public List<InterviewSessionResponse> getStudentHistory(UUID studentId) {
+        return sessionRepository.findByStudentIdOrderByCreatedAtDesc(studentId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     public InterviewSessionResponse getSessionById(UUID sessionId) {
         InterviewSession session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
+        return mapToResponse(session);
+    }
+
+    private InterviewSessionResponse mapToResponse(InterviewSession session) {
         return InterviewSessionResponse.builder()
-                .sessionId(session.getId())
-                .status(session.getStatus() != null ? session.getStatus().name() : "CREATED")
+                .id(session.getId())
+                .status(session.getStatus())
                 .companyName(session.getDrive().getCompanyName())
+                .sessionType(session.getSessionType())
+                .overallScore(session.getOverallScore())
+                .createdAt(session.getCreatedAt())
+                .durationMinutes(session.getDurationMinutes())
+                .driveId(session.getDrive().getId())
+                .context(session.getContext())
                 .build();
     }
 }

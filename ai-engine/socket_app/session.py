@@ -49,14 +49,35 @@ async def start_interview(sid, data):
         if not session_db or str(session_db.student_id) != user_id:
             return await sio.emit('error', {'message': 'Invalid session'}, to=sid)
         
-        if session_db.status != "created":
-            return await sio.emit('error', {'message': 'Session has already been started'}, to=sid)
+        # If session is already completed, error out
+        if session_db.status == "completed":
+            return await sio.emit('error', {'message': 'Session has already been completed'}, to=sid)
 
         try:
+            if not session_db.context:
+                session_db.context = {}
+
+            # Inject candidate name and company name into context for better awareness
+            if session_db.student and session_db.student.full_name:
+                session_db.context['candidate_name'] = session_db.student.full_name
+            
+            if not session_db.context.get('company_name') and session_db.drive and session_db.drive.company_name:
+                session_db.context['company_name'] = session_db.drive.company_name
+
             initial_message, initial_audio = await interview_orchestrator.create_new_session(session_db, sid)
-            session_db.status = "active"
-            session_db.started_at = datetime.now()
-            await db.commit()
+                
+                # Only update status if it's currently 'created'
+                if session_db.status == "created":
+                    session_db.status = "active"
+                    session_db.started_at = datetime.now()
+                    await db.commit()
+            else:
+                # If already active in memory, just update the SID and return the last message
+                session_state = interview_orchestrator.active_sessions[session_id]
+                session_state["client_sid"] = sid
+                last_ai_msg = [m for m in session_state["transcript"] if m["role"] == "assistant"][-1]
+                initial_message = last_ai_msg["content"]
+                initial_audio = await tts_service.text_to_audio(initial_message)
             
             await sio.enter_room(sid, session_id)
 
@@ -175,6 +196,16 @@ async def start_discussion(sid, data):
         if not session_db or str(session_db.student_id) != user_id:
             await sio.emit('error', {'message': 'Invalid session'}, to=sid)
             return
+
+        if not session_db.context:
+            session_db.context = {}
+
+        # Inject candidate name and company name into context for GD
+        if session_db.student and session_db.student.full_name:
+            session_db.context['candidate_name'] = session_db.student.full_name
+        
+        if not session_db.context.get('company_name') and session_db.drive and session_db.drive.company_name:
+            session_db.context['company_name'] = session_db.drive.company_name
 
     session_state = gd_orchestrator.create_new_gd_session(session_id, session_db.context, sid)
     await sio.enter_room(sid, session_id)

@@ -34,14 +34,20 @@ public class StudentService {
     private KafkaProducerService kafkaProducerService;
 
     @Transactional
-    public void uploadResume(UUID userId, String resumeUrl) {
+    public void uploadResume(UUID userId, String resumeUrl, String resumeFilename) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
         StudentProfile profile = studentProfileRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
+                .orElseGet(() -> {
+                    StudentProfile newProfile = StudentProfile.builder()
+                            .user(user)
+                            .build();
+                    return studentProfileRepository.save(newProfile);
+                });
 
         profile.setResumeUrl(resumeUrl);
+        profile.setResumeFilename(resumeFilename);
         studentProfileRepository.save(profile);
 
         // Trigger AI processing
@@ -109,6 +115,7 @@ public class StudentService {
         profile.setPassingYear(request.getPassingYear());
         profile.setSkills(request.getSkills());
         profile.setResumeUrl(request.getResumeUrl());
+        profile.setResumeFilename(request.getResumeFilename());
         profile.setCareerGoal(request.getCareerGoal());
 
         return mapToResponse(studentProfileRepository.save(profile));
@@ -196,6 +203,7 @@ public class StudentService {
                 .passingYear(profile.getPassingYear())
                 .skills(profile.getSkills())
                 .resumeUrl(profile.getResumeUrl())
+                .resumeFilename(profile.getResumeFilename())
                 .careerGoal(profile.getCareerGoal())
                 .build();
     }

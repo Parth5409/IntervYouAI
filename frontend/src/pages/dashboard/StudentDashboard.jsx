@@ -88,10 +88,18 @@ const StudentDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Active Drives Table */}
           <div className="lg:col-span-2 space-y-4">
-            <h2 className="font-mono text-sm font-bold tracking-widest uppercase flex items-center gap-2">
-              <Icon name="Briefcase" size={16} className="text-emerald-500" />
-              Active_Placement_Drives
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="font-mono text-sm font-bold tracking-widest uppercase flex items-center gap-2 text-slate-100">
+                <Icon name="Briefcase" size={16} className="text-emerald-500" />
+                Active_Placement_Drives
+              </h2>
+              <button 
+                onClick={() => navigate('/student/drives')}
+                className="text-[10px] font-mono text-slate-500 hover:text-emerald-500 transition-colors uppercase tracking-widest"
+              >
+                VIEW_ALL_MISSIONS__{'>'}
+              </button>
+            </div>
             <div className="bg-slate-900/50 border border-slate-800 overflow-hidden">
               {isLoading ? (
                 <div className="p-12 text-center font-mono text-xs text-slate-500 animate-pulse uppercase tracking-[0.2em]">

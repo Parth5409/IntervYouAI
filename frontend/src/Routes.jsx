@@ -5,6 +5,7 @@ import RegistrationScreen from './pages/registration-screen';
 import StudentDashboard from './pages/dashboard/StudentDashboard';
 import StudentHistoryPage from './pages/student/StudentHistoryPage';
 import StudentProfilePage from './pages/student/StudentProfilePage';
+import StudentDrivesPage from './pages/student/StudentDrivesPage';
 import TpoDashboard from './pages/dashboard/TpoDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import InterviewSetupWizard from './pages/interview/setup';
@@ -15,7 +16,7 @@ import NotFound from './pages/NotFound';
 import useAuth from './hooks/useAuth';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import InterviewFeedback from './pages/interview/feedback';
-import GDFredback from './pages/gd/feedback';
+import GDFeedback from './pages/gd/feedback';
 import LandingPage from './pages/LandingPage';
 import OnboardingScreen from './pages/onboarding';
 
@@ -114,6 +115,15 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedRoles={['ROLE_STUDENT']}>
               <StudentProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/student/drives"
+          element={
+            <ProtectedRoute allowedRoles={['ROLE_STUDENT']}>
+              <StudentDrivesPage />
             </ProtectedRoute>
           }
         />

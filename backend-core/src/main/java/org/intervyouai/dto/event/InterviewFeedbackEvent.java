@@ -6,14 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class InterviewFeedbackEvent {
-    private UUID sessionId;
+    private String sessionId;
     private Map<String, Object> feedback;
     private Object transcript;
     private Integer overallScore;

@@ -30,7 +30,7 @@ public class StudentController {
     public ResponseEntity<Void> uploadResume(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody ResumeUploadRequest request) {
-        studentService.uploadResume(userDetails.getId(), request.getResumeUrl());
+        studentService.uploadResume(userDetails.getId(), request.getResumeUrl(), request.getResumeFilename());
         return ResponseEntity.ok().build();
     }
 

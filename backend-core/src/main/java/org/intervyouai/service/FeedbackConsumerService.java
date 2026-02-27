@@ -10,6 +10,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,7 +26,8 @@ public class FeedbackConsumerService {
         log.info("Received feedback event for session: {}", event.getSessionId());
         
         try {
-            InterviewSession session = sessionRepository.findById(event.getSessionId())
+            UUID sessionUuid = UUID.fromString(event.getSessionId());
+            InterviewSession session = sessionRepository.findById(sessionUuid)
                     .orElseThrow(() -> new RuntimeException("Session not found: " + event.getSessionId()));
 
             session.setOverallScore(event.getOverallScore());

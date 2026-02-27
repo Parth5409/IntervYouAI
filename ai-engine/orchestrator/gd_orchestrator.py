@@ -70,6 +70,39 @@ class GDOrchestrator:
         """Creates and stores a new GD session."""
         num_bots = 5 # Hardcoded for prototype stage
 
+        # Handle random topic selection if multiple topics are provided
+        mission_config = session_context.get("configJson") or {}
+        if isinstance(mission_config, str):
+            try:
+                import json
+                mission_config = json.loads(mission_config)
+            except Exception as e:
+                logger.error(f"Error parsing configJson in GD session: {e}")
+                mission_config = {}
+        
+        gd_config = mission_config.get("gd") or {}
+        topics_list = gd_config.get("topics", [])
+        
+        logger.info(f"GD Session {session_id} configuration: {gd_config}")
+        
+        if topics_list and isinstance(topics_list, list) and len(topics_list) > 0:
+            selected_topic = random.choice(topics_list)
+            logger.info(f"Selected random topic for GD: {selected_topic}")
+        else:
+            # Fallback to session-level topic or a topic derived from JD
+            selected_topic = session_context.get("topic")
+            if not selected_topic and session_context.get("jd_text"):
+                # Simple heuristic: use company name + job role if no topic
+                company = session_context.get("company_name", "the company")
+                role = session_context.get("job_role", "position")
+                selected_topic = f"The recruitment process and expectations for {role} at {company}"
+            
+            if not selected_topic:
+                selected_topic = "Challenges and opportunities in the current tech industry"
+
+        company_name = session_context.get("company_name", "the company")
+        candidate_name = session_context.get("candidate_name", "the candidate")
+
         available_personalities = list(GDPersonality)
         selected_personalities = random.sample(available_personalities, min(num_bots, len(available_personalities)))
 
@@ -94,7 +127,9 @@ class GDOrchestrator:
         new_session_state = {
             "session_id": session_id,
             "client_sid": client_sid,
-            "topic": session_context.get("topic", "a default topic"),
+            "topic": selected_topic,
+            "company_name": company_name,
+            "candidate_name": candidate_name,
             "participants": all_participants,
             "transcript": [],
             "turn_order": turn_order,
@@ -102,7 +137,7 @@ class GDOrchestrator:
             "state": GDState.ACTIVE
         }
         self.active_sessions[session_id] = new_session_state
-        logger.info(f"Created new GD session {session_id} for client {client_sid} with turn order: {turn_order}")
+        logger.info(f"Created new GD session {session_id} for client {client_sid} with topic: {selected_topic}")
         return new_session_state
 
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
@@ -203,7 +238,10 @@ class GDOrchestrator:
         personality = GDPersonality(bot["personality"])
         personality_info = self.personality_prompts[personality]
 
-        system_prompt = f'{personality_info["prompt"]}\n\nYou are in a group discussion about: "{context.get("topic")}". Your goal is to contribute meaningfully. Keep your responses concise (1-3 sentences) and relevant to the last few messages.'
+        company_name = context.get("company_name", "the company")
+        candidate_name = context.get("candidate_name", "the candidate")
+
+        system_prompt = f'{personality_info["prompt"]}\n\nYou are in a group discussion about: "{context.get("topic")}". This discussion is part of a recruitment process for {company_name}. One of the participants is {candidate_name}. Your goal is to contribute meaningfully. Keep your responses concise (1-3 sentences) and relevant to the last few messages.'
         user_prompt = f'Here is the recent discussion:\n{context_text}\n\nIt is now your turn to speak. Respond as {bot["name"]}. Do not greet or announce yourself.'
 
         response_text = await self.gemini_llm.generate_response(
@@ -226,17 +264,25 @@ class GDOrchestrator:
 
     async def _generate_session_feedback(self, session: InterviewSession) -> Dict[str, Any]:
         """Generate comprehensive feedback for the GD session."""
-        # This is a placeholder. A full implementation would use the LLM to analyze the transcript.
-        return GDFeedback(
-            session_id=session.id,
-            participation_score=random.randint(60, 90),
-            initiative_score=random.randint(60, 90),
-            clarity_score=random.randint(65, 95),
-            collaboration_score=random.randint(60, 95),
-            topic_understanding=random.randint(70, 98),
-            strengths=["Actively contributed to the discussion.", "Listened to others' points."],
-            improvement_suggestions=["Could take more initiative to start new points.", "Try to involve quieter members more."],
-            key_contributions=["Provided a valid point on the topic early on."],
-            overall_feedback="A solid performance with good potential. Focusing on leading the conversation more can yield even better results."
-        ).dict()
+        session_state = self.get_session(str(session.id))
+        if not session_state:
+            logger.warning(f"No active session state found for {session.id} during feedback generation")
+            return self.gemini_llm._get_default_gd_feedback()
+
+        try:
+            feedback_data = await self.gemini_llm.generate_gd_feedback(
+                topic=session_state['topic'],
+                chat_history=session_state['transcript'],
+                session_context=session.context
+            )
+            
+            # Ensure session_id is a string for Pydantic
+            feedback_data['session_id'] = str(session.id)
+            
+            return GDFeedback(**feedback_data).dict()
+        except Exception as e:
+            logger.error(f"Error generating GD feedback for {session.id}: {e}")
+            default_fb = self.gemini_llm._get_default_gd_feedback()
+            default_fb['session_id'] = str(session.id)
+            return default_fb
 

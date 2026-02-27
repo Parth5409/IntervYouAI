@@ -107,8 +107,9 @@ class InterviewOrchestrator:
                 "message_type": "greeting",
             }]
 
-            self.active_sessions[db_session.id] = {
-                "session_id": db_session.id,
+            session_id_str = str(db_session.id)
+            self.active_sessions[session_id_str] = {
+                "session_id": session_id_str,
                 "client_sid": client_sid,
                 "db_session": db_session,
                 "transcript": transcript,
@@ -116,7 +117,7 @@ class InterviewOrchestrator:
                 "state": InterviewState.ACTIVE
             }
 
-            logger.info(f"Created new interview session {db_session.id} for client {client_sid}")
+            logger.info(f"Created new interview session {session_id_str} for client {client_sid}")
             return initial_message, initial_audio
 
         except Exception as e:
@@ -319,7 +320,9 @@ class InterviewOrchestrator:
                 session_context=session.context,
                 rag_context=rag_context
             )
-            feedback_data['session_id'] = session.id
+            
+            # Ensure session_id is a string for Pydantic validation
+            feedback_data['session_id'] = str(session.id)
 
             # Safeguard against null scores from LLM
             feedback_data['overall_score'] = feedback_data.get('overall_score') or 0

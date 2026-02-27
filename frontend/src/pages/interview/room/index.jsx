@@ -31,6 +31,7 @@ const InterviewRoom = () => {
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isAIPlaying, setIsAIPlaying] = useState(false);
+  const lastAudioRef = useRef(null);
 
   // Custom hook for audio recording
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
@@ -60,6 +61,7 @@ const InterviewRoom = () => {
       setIsSessionActive(true);
       setIsAISpeaking(false);
       if (audio) {
+        lastAudioRef.current = audio;
         setIsAIPlaying(true);
         playAudioFromBase64(audio, () => setIsAIPlaying(false));
       }
@@ -89,6 +91,7 @@ const InterviewRoom = () => {
       setConversationHistory((prev) => [...prev, aiMessage]);
       setIsAISpeaking(false);
       if (audio) {
+        lastAudioRef.current = audio;
         setIsAIPlaying(true);
         playAudioFromBase64(audio, () => setIsAIPlaying(false));
       }
@@ -150,6 +153,13 @@ const InterviewRoom = () => {
     }
   };
 
+  const handleReplayLastMessage = () => {
+    if (lastAudioRef.current && !isAIPlaying) {
+      setIsAIPlaying(true);
+      playAudioFromBase64(lastAudioRef.current, () => setIsAIPlaying(false));
+    }
+  };
+
   const handleEndSession = () => {
     if (socketRef.current) {
       setIsSessionActive(false);
@@ -190,7 +200,7 @@ const InterviewRoom = () => {
   }, [sessionDetails]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col relative overflow-hidden">
+    <div className="h-screen bg-slate-950 text-slate-50 flex flex-col relative overflow-hidden">
       {/* Blueprint Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
 
@@ -198,31 +208,36 @@ const InterviewRoom = () => {
       
       <div className="flex-1 flex flex-col lg:flex-row relative z-10 overflow-hidden">
         {/* Left: Main Interaction Zone */}
-        <div className="flex-1 relative flex items-center justify-center p-8">
-          <div className="absolute top-8 left-8 flex items-center gap-3">
+        <div className="flex-1 relative flex flex-col items-center justify-between p-6 sm:p-8 overflow-hidden">
+          <div className="absolute top-8 left-8 flex items-center gap-3 z-20">
             <div className="w-2 h-2 bg-emerald-500 animate-pulse" />
             <span className="font-mono text-[10px] text-emerald-500 uppercase tracking-[0.2em]">MISSION_STATUS: ACTIVE</span>
           </div>
 
-          <div className="flex flex-col items-center justify-center space-y-12 max-w-2xl w-full">
-            <AIAvatar isSpeaking={isAIPlaying} size="xlarge" isActive={isSessionActive && !isAIPlaying} />
+          <div className="flex-1 flex flex-col items-center justify-center space-y-8 sm:space-y-12 max-w-2xl w-full overflow-hidden">
+            <div className="flex-1 flex items-center justify-center min-h-0 w-full">
+              <AIAvatar isSpeaking={isAIPlaying} size="xlarge" isActive={isSessionActive && !isAIPlaying} />
+            </div>
             
-            <div className="w-full flex justify-center pt-8">
+            <div className="shrink-0 w-full flex justify-center py-4 bg-gradient-to-t from-slate-950 via-slate-950 to-transparent">
               <VoiceControls
                 isRecording={isRecording}
                 isMuted={isMuted}
                 onToggleRecording={handleToggleRecording}
                 onToggleMute={() => setIsMuted(!isMuted)}
-                disabled={isAISpeaking || isTranscribing || isAIPlaying}
+                onReplayLastMessage={handleReplayLastMessage}
+                disabled={isAISpeaking || isTranscribing}
+                isAIPlaying={isAIPlaying}
                 isTranscribing={isTranscribing}
+                conversationHistory={conversationHistory}
               />
             </div>
           </div>
         </div>
 
         {/* Right: Tactical Sidebar */}
-        <div className="hidden lg:flex lg:w-[400px] flex-col border-l border-slate-800 bg-slate-900/50 backdrop-blur-xl">
-          <div className="p-6 border-b border-slate-800">
+        <div className="hidden lg:flex lg:w-[380px] xl:w-[450px] flex-col border-l border-slate-800 bg-slate-900/50 backdrop-blur-xl shrink-0 h-full">
+          <div className="p-6 border-b border-slate-800 bg-slate-950/20">
             <SessionProgress
               currentPhase={sessionTitle.toUpperCase()}
               sessionTime={sessionTime}
@@ -236,8 +251,11 @@ const InterviewRoom = () => {
               <span className="font-mono text-[9px] text-slate-500 uppercase tracking-widest">TRANSMISSION_LOG</span>
               <span className="font-mono text-[9px] text-emerald-500 uppercase">SYNCED</span>
             </div>
-            <div className="flex-1 relative">
-              <ConversationTranscript transcript={conversationHistory} isLoading={isAISpeaking || isTranscribing} />
+            <div className="flex-1 relative overflow-hidden">
+              <ConversationTranscript 
+                transcript={conversationHistory} 
+                isLoading={isAISpeaking || isTranscribing} 
+              />
             </div>
           </div>
         </div>

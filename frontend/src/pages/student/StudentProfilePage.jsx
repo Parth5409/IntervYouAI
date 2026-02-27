@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DashboardLayout from '../../components/ui/DashboardLayout';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
@@ -11,14 +11,21 @@ const StudentProfilePage = () => {
   const { user, setUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     fullName: '',
     careerGoal: '',
     phone: '',
-    skills: []
+    skills: [],
+    prn: '',
+    branch: '',
+    currentSemester: '',
+    currentCgpa: '',
+    passingYear: ''
   });
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [resumeInfo, setResumeInfo] = useState(null);
+  const [isUploadingResume, setIsUploadingResume] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -26,7 +33,12 @@ const StudentProfilePage = () => {
         fullName: user.fullName || '',
         careerGoal: user.careerGoal || '',
         phone: user.phone || '',
-        skills: user.skills || []
+        skills: user.skills || [],
+        prn: user.prn || '',
+        branch: user.branch || '',
+        currentSemester: user.currentSemester || '',
+        currentCgpa: user.currentCgpa || '',
+        passingYear: user.passingYear || ''
       });
       setProfileImageUrl(user.profileImageUrl || '');
       if (user.resumeUrl) {
@@ -43,6 +55,49 @@ const StudentProfilePage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      alert('ERR_INVALID_FORMAT: ONLY_PDF_ALLOWED');
+      return;
+    }
+
+    setIsUploadingResume(true);
+    try {
+      // 1. Upload to Cloudinary
+      const cloudinaryRes = await uploadToCloudinary(file);
+      const resumeUrl = cloudinaryRes.secure_url;
+      const resumeFilename = file.name;
+
+      // 2. Update Backend
+      await api.post('students/resume', { resumeUrl, resumeFilename });
+
+      // 3. Update local state
+      setResumeInfo({
+        name: resumeFilename,
+        url: resumeUrl
+      });
+      
+      // Update user context if necessary
+      if (setUser && user) {
+        setUser({
+          ...user,
+          resumeUrl,
+          resumeFilename
+        });
+      }
+
+      console.log('Resume processed successfully');
+    } catch (error) {
+      console.error('Failed to upload resume:', error);
+      alert('ERR_UPLOAD_FAILED: RESUME_LINK_FAILURE');
+    } finally {
+      setIsUploadingResume(false);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -51,6 +106,11 @@ const StudentProfilePage = () => {
         careerGoal: formData.careerGoal,
         phone: formData.phone,
         skills: formData.skills,
+        prn: formData.prn,
+        branch: formData.branch,
+        currentSemester: formData.currentSemester,
+        currentCgpa: formData.currentCgpa ? parseFloat(formData.currentCgpa) : null,
+        passingYear: formData.passingYear ? parseInt(formData.passingYear) : null,
         profileImageUrl,
         resumeUrl: resumeInfo?.url,
         resumeFilename: resumeInfo?.name
@@ -179,6 +239,70 @@ const StudentProfilePage = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
+                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">PRN (Registration_No)</label>
+                    <input 
+                      name="prn"
+                      value={formData.prn}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      placeholder="e.g. 2021000123"
+                      className="w-full bg-slate-950 border border-slate-800 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Branch / Dept</label>
+                    <input 
+                      name="branch"
+                      value={formData.branch}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      placeholder="e.g. Computer Science"
+                      className="w-full bg-slate-950 border border-slate-800 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Semester</label>
+                    <input 
+                      name="currentSemester"
+                      value={formData.currentSemester}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      placeholder="e.g. 6th"
+                      className="w-full bg-slate-950 border border-slate-800 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Current_CGPA</label>
+                    <input 
+                      name="currentCgpa"
+                      type="number"
+                      step="0.01"
+                      value={formData.currentCgpa}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      placeholder="e.g. 8.5"
+                      className="w-full bg-slate-950 border border-slate-800 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Passing_Year</label>
+                    <input 
+                      name="passingYear"
+                      type="number"
+                      value={formData.passingYear}
+                      onChange={handleInputChange}
+                      disabled={!isEditing}
+                      placeholder="e.g. 2025"
+                      className="w-full bg-slate-950 border border-slate-800 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Email_Endpoint</label>
                     <input 
                       value={user?.email}
@@ -219,17 +343,39 @@ const StudentProfilePage = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button className="h-8 px-3 text-[10px] font-mono bg-slate-800 hover:bg-slate-700">VIEW</Button>
-                    {isEditing && <Button className="h-8 px-3 text-[10px] font-mono bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20">REPLACE</Button>}
+                    <Button className="h-8 px-3 text-[10px] font-mono bg-slate-800 hover:bg-slate-700" onClick={() => window.open(resumeInfo.url, '_blank')}>VIEW</Button>
+                    {isEditing && (
+                      <Button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="h-8 px-3 text-[10px] font-mono bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20"
+                        loading={isUploadingResume}
+                      >
+                        REPLACE
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (
                 <div className="border-2 border-dashed border-slate-800 p-12 text-center space-y-4">
                   <Icon name="UploadCloud" size={40} className="mx-auto text-slate-700" />
                   <p className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">No assets detected // Upload required</p>
-                  <Button className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500/20 font-mono text-[10px] tracking-widest uppercase">INITIALIZE_UPLOAD</Button>
+                  <Button 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500/20 font-mono text-[10px] tracking-widest uppercase"
+                    loading={isUploadingResume}
+                  >
+                    {isUploadingResume ? 'UPLOADING...' : 'INITIALIZE_UPLOAD'}
+                  </Button>
                 </div>
               )}
+              
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept=".pdf" 
+                onChange={handleResumeUpload} 
+              />
             </div>
           </div>
         </div>

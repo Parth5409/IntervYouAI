@@ -44,6 +44,8 @@ public class StudentProfile {
 
     private String resumeUrl;
 
+    private String resumeFilename;
+
     @Column(columnDefinition = "TEXT")
     private String careerGoal;
 }

@@ -34,7 +34,8 @@ const DriveManagementPage = () => {
     activeModules: ['TECHNICAL'],
     config: {
       technical: { difficulty: 'MEDIUM', questions: 8 },
-      hr_salary: { difficulty: 'MEDIUM', questions: 10, negotiation_style: 'ASSERTIVE' }
+      hr_salary: { difficulty: 'MEDIUM', questions: 10, negotiation_style: 'ASSERTIVE' },
+      gd: { topics: [''] }
     }
   });
   const [error, setError] = useState('');
@@ -94,19 +95,64 @@ const DriveManagementPage = () => {
     }));
   };
 
+  const handleGDTopicChange = (index, value) => {
+    setFormData(prev => {
+      const newTopics = [...prev.config.gd.topics];
+      newTopics[index] = value;
+      return {
+        ...prev,
+        config: {
+          ...prev.config,
+          gd: { ...prev.config.gd, topics: newTopics }
+        }
+      };
+    });
+  };
+
+  const handleAddGDTopic = () => {
+    setFormData(prev => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        gd: { ...prev.config.gd, topics: [...prev.config.gd.topics, ''] }
+      }
+    }));
+  };
+
+  const handleRemoveGDTopic = (index) => {
+    setFormData(prev => {
+      const newTopics = prev.config.gd.topics.filter((_, i) => i !== index);
+      // Ensure there's always at least one input if possible, or leave empty
+      return {
+        ...prev,
+        config: {
+          ...prev.config,
+          gd: { ...prev.config.gd, topics: newTopics.length > 0 ? newTopics : [''] }
+        }
+      };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setIsImporting(true);
       setError('');
       
+      const configForPayload = { ...formData.config };
+      if (formData.activeModules.includes('GD')) {
+        configForPayload.gd.topics = configForPayload.gd.topics
+          .map(t => t.trim())
+          .filter(Boolean);
+      }
+
       const payload = {
         ...formData,
         minCgpa: parseFloat(formData.minCgpa) || 0,
         minLpa: parseFloat(formData.minLpa) || 0,
         maxLpa: parseFloat(formData.maxLpa) || 0,
         activeModules: formData.activeModules,
-        configJson: JSON.stringify(formData.config)
+        configJson: JSON.stringify(configForPayload)
       };
 
       await api.post('drives', payload);
@@ -121,7 +167,8 @@ const DriveManagementPage = () => {
         activeModules: ['TECHNICAL'],
         config: {
           technical: { difficulty: 'MEDIUM', questions: 8 },
-          hr_salary: { difficulty: 'MEDIUM', questions: 10, negotiation_style: 'ASSERTIVE' }
+          hr_salary: { difficulty: 'MEDIUM', questions: 10, negotiation_style: 'ASSERTIVE' },
+          gd: { topics: [''] }
         }
       });
     } catch (error) {
@@ -308,6 +355,54 @@ const DriveManagementPage = () => {
                       value={formData.config.hr_salary.questions}
                       onChange={(e) => handleConfigChange('hr_salary', 'questions', parseInt(e.target.value))}
                     />
+                  </div>
+                )}
+
+                {/* GD Module Settings */}
+                {formData.activeModules.includes('GD') && (
+                  <div className="p-4 border border-slate-800 bg-slate-900/30 space-y-4">
+                    <h3 className="text-xs font-mono font-bold text-amber-500 uppercase tracking-widest">
+                      [GD_MODULE_CONFIG]
+                    </h3>
+                    <div className="space-y-3">
+                      <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
+                        DISCUSSION_TOPIC_POOL
+                      </label>
+                      
+                      {formData.config.gd.topics.map((topic, index) => (
+                        <div key={index} className="flex gap-2">
+                          <div className="relative flex-1">
+                            <input
+                              className="w-full bg-slate-950 border border-slate-800 p-2 font-mono text-xs text-slate-200 focus:border-amber-500 outline-none transition-colors"
+                              placeholder={`Enter topic ${index + 1}...`}
+                              value={topic}
+                              onChange={(e) => handleGDTopicChange(index, e.target.value)}
+                            />
+                            <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/20" />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveGDTopic(index)}
+                            className="p-2 border border-slate-800 text-slate-500 hover:text-red-400 hover:border-red-500/30 transition-colors"
+                          >
+                            <Icon name="X" size={14} />
+                          </button>
+                        </div>
+                      ))}
+
+                      <button
+                        type="button"
+                        onClick={handleAddGDTopic}
+                        className="w-full py-2 border border-dashed border-slate-800 text-[10px] font-mono text-slate-500 hover:text-emerald-500 hover:border-emerald-500/30 transition-all uppercase tracking-widest flex items-center justify-center gap-2"
+                      >
+                        <Icon name="Plus" size={12} />
+                        ADD_NEW_TOPIC_NODE
+                      </button>
+
+                      <p className="text-[8px] font-mono text-slate-500 uppercase tracking-tighter">
+                        * ONE_TOPIC_WILL_BE_SELECTED_RANDOMLY_FOR_EACH_SESSION
+                      </p>
+                    </div>
                   </div>
                 )}
 

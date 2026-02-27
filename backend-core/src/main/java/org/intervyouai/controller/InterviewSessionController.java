@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -26,6 +27,12 @@ public class InterviewSessionController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CreateSessionRequest request) {
         return ResponseEntity.ok(sessionService.createSession(userDetails.getId(), request));
+    }
+
+    @GetMapping("/history")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<InterviewSessionResponse>> getHistory(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(sessionService.getStudentHistory(userDetails.getId()));
     }
 
     @GetMapping("/{id}")

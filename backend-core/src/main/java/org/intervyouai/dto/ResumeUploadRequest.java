@@ -7,4 +7,6 @@ import lombok.Data;
 public class ResumeUploadRequest {
     @NotBlank
     private String resumeUrl;
+    
+    private String resumeFilename;
 }

@@ -114,9 +114,14 @@ class GeminiLLM:
 
             jd_text = rag_context.get('jd_context', 'No JD provided')
             resume_text = "\n".join(rag_context.get('resume_context', ['No resume info']))
+            
+            candidate_name = session_context.get('candidate_name', 'the candidate')
+            company_name = session_context.get('company_name', 'the company')
 
             prompt = f"""
             **Interview Context:**
+            - Candidate Name: {candidate_name}
+            - Company: {company_name}
             - Type: {session_type}
             - Role: {session_context.get('job_role', 'General')}
             - Difficulty: {session_context.get('difficulty', 'Medium')}
@@ -130,7 +135,7 @@ class GeminiLLM:
             **Full Transcript:**
             {transcript_text}
             
-            Please provide feedback in a valid JSON format. Evaluate the candidate's performance against the Job Description.
+            Please provide feedback for {candidate_name} in a valid JSON format. Evaluate their performance against the Job Description for {company_name}.
             {{ 
                 "overall_score": <int, 0-100>,
                 "technical_score": <int, 0-100, or null if not applicable>,
@@ -147,15 +152,92 @@ class GeminiLLM:
             response = await self.llm.ainvoke(messages)
             
             try:
-                clean_response = response.content.strip().replace("```json", "").replace("```", "")
-                return json.loads(clean_response)
-            except json.JSONDecodeError as je:
-                logger.error(f"Failed to parse JSON feedback: {je}\nRaw response: {response.content}")
-                return self._get_default_feedback(detail=f"Could not parse AI response: {response.content}")
+                content = response.content.strip()
+                # Find the first '{' and last '}' to extract the JSON object
+                start_idx = content.find('{')
+                end_idx = content.rfind('}')
+                if start_idx != -1 and end_idx != -1:
+                    json_str = content[start_idx:end_idx+1]
+                    feedback_dict = json.loads(json_str)
+                    
+                    # Ensure all required fields for InterviewFeedback exist
+                    required_fields = {
+                        "overall_score": 0,
+                        "technical_score": None,
+                        "communication_score": 0,
+                        "confidence_score": 0,
+                        "strengths": [],
+                        "improvement_areas": [],
+                        "detailed_feedback": f"Feedback generated for {candidate_name}.",
+                        "recommendations": []
+                    }
+                    for field, default in required_fields.items():
+                        if field not in feedback_dict:
+                            feedback_dict[field] = default
+                    
+                    return feedback_dict
+                else:
+                    raise ValueError("No JSON object found in response")
+            except Exception as je:
+                logger.error(f"Failed to parse feedback: {je}\nRaw response: {response.content}")
+                return self._get_default_feedback(detail="Failed to parse evaluator response.")
 
         except Exception as e:
             logger.error(f"Error generating feedback: {e}")
             return self._get_default_feedback(detail=str(e))
+
+    async def generate_gd_feedback(self, topic: str, chat_history: List[Dict[str, Any]], session_context: Dict[str, Any]) -> Dict[str, Any]:
+        """Generates comprehensive GD feedback from the discussion transcript."""
+        try:
+            system_msg = self._get_system_message("GD", "feedback", session_context)
+
+            transcript_text = "\n".join([f"{msg['speaker_name']}: {msg['message']}" for msg in chat_history])
+            
+            candidate_name = session_context.get('candidate_name', 'the candidate')
+            company_name = session_context.get('company_name', 'the company')
+
+            prompt = f"""
+            **Group Discussion Context:**
+            - Topic: {topic}
+            - Company: {company_name}
+            - Candidate Name: {candidate_name}
+            
+            **Full Transcript:**
+            {transcript_text}
+            
+            Please provide feedback for the candidate named '{candidate_name}' in a valid JSON format. Evaluate their performance in the context of a recruitment process for {company_name}.
+            {{ 
+                "participation_score": <int, 0-100>,
+                "initiative_score": <int, 0-100>,
+                "clarity_score": <int, 0-100>,
+                "collaboration_score": <int, 0-100>,
+                "topic_understanding": <int, 0-100>,
+                "strengths": ["<string>"],
+                "improvement_suggestions": ["<string>"],
+                "key_contributions": ["<string>"],
+                "overall_feedback": "<string>"
+            }}
+            """
+            
+            messages = [SystemMessage(content=system_msg), HumanMessage(content=prompt)]
+            response = await self.llm.ainvoke(messages)
+            
+            try:
+                content = response.content.strip()
+                start_idx = content.find('{')
+                end_idx = content.rfind('}')
+                if start_idx != -1 and end_idx != -1:
+                    json_str = content[start_idx:end_idx+1]
+                    return json.loads(json_str)
+                else:
+                    raise ValueError("No JSON object found in response")
+            except Exception as je:
+                logger.error(f"Failed to parse GD feedback: {je}\nRaw response: {response.content}")
+                return self._get_default_gd_feedback()
+
+        except Exception as e:
+            logger.error(f"Error generating GD feedback: {e}")
+            return self._get_default_gd_feedback()
 
     async def generate_response(self, prompt: str, system_message: str, temperature: float = 0.7) -> str:
         """Generates a generic response based on a prompt and system message."""
@@ -280,8 +362,26 @@ class GeminiLLM:
                 - You can ask questions to understand their expectations better (e.g., "What are your salary expectations?", "How did you arrive at that number?").
                 - Be prepared to justify the company's offer.
                 """
+        
+        elif session_type == "GD":
+            if stage == "feedback":
+                return "You are an expert GD evaluator. Analyze the multi-party group discussion transcript. Evaluate the candidate's participation, initiative, clarity, collaboration, and understanding of the topic. Provide detailed, constructive feedback in JSON format."
 
         return "You are a professional interviewer."
+
+    def _get_default_gd_feedback(self) -> Dict[str, Any]:
+        """Default GD feedback structure in case of an error."""
+        return {
+            "participation_score": 0,
+            "initiative_score": 0,
+            "clarity_score": 0,
+            "collaboration_score": 0,
+            "topic_understanding": 0,
+            "strengths": [],
+            "improvement_suggestions": ["Feedback generation failed"],
+            "key_contributions": [],
+            "overall_feedback": "Could not generate feedback due to an error."
+        }
 
     def _get_default_feedback(self, detail: str = "An unexpected error occurred.") -> Dict[str, Any]:
         """Default feedback structure in case of an error."""

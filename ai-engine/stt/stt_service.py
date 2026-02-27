@@ -18,12 +18,13 @@ class STTService:
     def __init__(self):
         """Loads the Whisper model into memory."""
         try:
-            # Fallback to CPU to avoid CUDA OOM errors, especially with large models
-            device = os.getenv("STT_DEVICE", "cpu")
-            compute_type = "int8"
+            # Prefer CUDA for speed, fallback to CPU
+            device = os.getenv("STT_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
+            compute_type = "float16" if device == "cuda" else "int8"
             
             logger.info(f"Loading Faster-Whisper STT model on device: {device} with compute type: {compute_type}")
             
+            # Using distil-large-v3 for performance/quality balance
             self.model = WhisperModel("distil-large-v3", device=device, compute_type=compute_type)
             logger.info("Faster-Whisper with Distil-Large-v3 loaded successfully.")
         except Exception as e:

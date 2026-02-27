@@ -18,5 +18,6 @@ public class StudentProfileRequest {
     private Integer passingYear;
     private Set<String> skills;
     private String resumeUrl;
+    private String resumeFilename;
     private String careerGoal;
 }

@@ -13,7 +13,7 @@ const DashboardLayout = ({ children }) => {
 
   const studentMenu = [
     { label: 'OVERVIEW', path: '/student/dashboard', icon: 'LayoutDashboard' },
-    { label: 'INTERVIEWS', path: '/interview/setup', icon: 'Play' },
+    { label: 'INTERVIEWS', path: '/student/drives', icon: 'Play' },
     { label: 'HISTORY', path: '/student/history', icon: 'History' },
     { label: 'PROFILE', path: '/student/profile', icon: 'User' },
   ];
@@ -44,14 +44,14 @@ const DashboardLayout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500 selection:text-slate-950 flex overflow-hidden">
+    <div className="h-screen bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500 selection:text-slate-950 flex overflow-hidden">
       {/* Blueprint Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
 
       {/* Sidebar */}
       <aside 
         className={cn(
-          "relative z-20 border-r border-slate-800 bg-slate-950/80 backdrop-blur-xl transition-all duration-300 flex flex-col",
+          "h-full relative z-20 border-r border-slate-800 bg-slate-950/80 backdrop-blur-xl transition-all duration-300 flex flex-col shrink-0",
           isSidebarOpen ? "w-64" : "w-20"
         )}
       >
@@ -130,7 +130,19 @@ const DashboardLayout = ({ children }) => {
             >
               <Icon name={isSidebarOpen ? "ChevronLeft" : "Menu"} size={20} />
             </button>
+            
             <div className="h-4 w-px bg-slate-800 mx-2" />
+            
+            <button 
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 px-3 py-1.5 border border-slate-800 bg-slate-900/50 text-slate-400 hover:text-emerald-500 hover:border-emerald-500/30 transition-all font-mono text-[10px] tracking-widest uppercase"
+            >
+              <Icon name="ArrowLeft" size={14} />
+              BACK
+            </button>
+
+            <div className="h-4 w-px bg-slate-800 mx-2" />
+            
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-[10px] font-mono text-emerald-500/80 uppercase tracking-widest">System_Live // Node_01</span>

@@ -48,6 +48,7 @@ class MissionSessionCreate(InterviewSessionCreate):
     max_lpa: Optional[float] = None
     round_type: str # TECHNICAL, HR_SALARY, GD
     negotiation_style: Optional[str] = "collaborative"
+    configJson: Optional[Union[str, Dict[str, Any]]] = None
 
 class TechnicalInterviewCreate(InterviewSessionCreate):
     company_name: str
@@ -75,6 +76,7 @@ class GroupDiscussionCreate(InterviewSessionCreate):
 
 class InterviewSessionResponse(BaseModel):
     id: Union[str, UUID]
+    drive_id: Optional[Union[str, UUID]] = None
     session_type: SessionType
     status: Literal["created", "active", "completed", "failed"]
     created_at: datetime

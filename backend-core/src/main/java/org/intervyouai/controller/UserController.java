@@ -48,6 +48,8 @@ public class UserController {
                 builder.currentSemester(p.getCurrentSemester());
                 builder.currentCgpa(p.getCurrentCgpa());
                 builder.passingYear(p.getPassingYear());
+                builder.resumeUrl(p.getResumeUrl());
+                builder.resumeFilename(p.getResumeFilename());
             });
         }
 
