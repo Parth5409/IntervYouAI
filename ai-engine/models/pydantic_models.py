@@ -3,7 +3,8 @@ Pydantic models for request/response validation
 """
 
 from datetime import datetime
-from typing import Optional, List, Dict, Any, Literal
+from typing import Optional, List, Dict, Any, Literal, Union
+from uuid import UUID
 from pydantic import BaseModel, Field
 from enum import Enum
 
@@ -19,9 +20,22 @@ class DifficultyLevel(str, Enum):
     EASY = "Easy"
     MEDIUM = "Medium"
     HARD = "Hard"
+    
+    # Adding Uppercase variants for frontend compatibility
+    EASY_UPPER = "EASY"
+    MEDIUM_UPPER = "MEDIUM"
+    HARD_UPPER = "HARD"
+
+    @classmethod
+    def _missing_(cls, value):
+        if isinstance(value, str):
+            for member in cls:
+                if member.value.upper() == value.upper():
+                    return member
+        return None
 
 class InterviewSessionCreate(BaseModel):
-    session_type: SessionType
+    session_type: Optional[SessionType] = None
     difficulty: DifficultyLevel = DifficultyLevel.MEDIUM
     max_questions: int = Field(default=5, ge=3, le=15)
 
@@ -60,7 +74,7 @@ class GroupDiscussionCreate(InterviewSessionCreate):
     duration_minutes: int
 
 class InterviewSessionResponse(BaseModel):
-    id: str
+    id: Union[str, UUID]
     session_type: SessionType
     status: Literal["created", "active", "completed", "failed"]
     created_at: datetime
@@ -188,6 +202,9 @@ class APIResponse(BaseModel):
     message: str
     data: Optional[Any] = None
     error_code: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 class PaginatedResponse(BaseModel):
     items: List[Any]

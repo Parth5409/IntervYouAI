@@ -10,7 +10,7 @@ import DiscussionTopic from './components/DiscussionTopic';
 import GDTranscript from './components/GDTranscript';
 import Icon from '../../../components/AppIcon';
 import VoiceControls from '../../interview/room/components/VoiceControls';
-import api from '../../../utils/api';
+import api, { engineApi, getAiEngineDirectURL } from '../../../utils/api';
 
 import { playAudioFromBase64 } from '../../../utils/audioPlayer';
 
@@ -49,7 +49,10 @@ const GDRoom = () => {
   useEffect(() => {
     if (!user?.id) return;
 
-    socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:8000', { path: '/socket.io' });
+    socketRef.current = io(getAiEngineDirectURL(), { 
+      path: '/api/engine/socket.io',
+      transports: ['websocket']
+    });
     const socket = socketRef.current;
 
     const handleNewMessage = (message) => {

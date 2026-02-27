@@ -10,10 +10,12 @@ spring:
       mvc:
         routes:
           - id: ai_engine
-            uri: ${AI_ENGINE_URL:http://localhost:${AI_ENGINE_PORT:8000}/}
+            uri: ${AI_ENGINE_URL:http://localhost:8000}
             predicates:
               - Path=/api/engine/**
             filters:
+              - RemoveRequestHeader=Upgrade
+              - RemoveRequestHeader=HTTP2-Settings
               - AddRequestHeader=Host, ${AI_ENGINE_HOST:localhost:8000}
           - id: backend_core
             uri: ${CORE_BACKEND_URL:http://localhost:${CORE_BACKEND_PORT:8081}/}

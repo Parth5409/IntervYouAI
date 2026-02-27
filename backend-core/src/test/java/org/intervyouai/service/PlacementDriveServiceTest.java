@@ -120,6 +120,39 @@ public class PlacementDriveServiceTest {
     }
 
     @Test
+    public void testDeleteDrive_Success() {
+        UUID tpoId = UUID.randomUUID();
+        UUID driveId = UUID.randomUUID();
+
+        User tpo = User.builder().id(tpoId).build();
+        PlacementDrive drive = PlacementDrive.builder().id(driveId).tpo(tpo).build();
+
+        when(placementDriveRepository.findById(driveId)).thenReturn(Optional.of(drive));
+
+        placementDriveService.deleteDrive(tpoId, driveId);
+
+        verify(placementDriveRepository, times(1)).delete(drive);
+    }
+
+    @Test
+    public void testDeleteDrive_Unauthorized() {
+        UUID tpoId = UUID.randomUUID();
+        UUID otherTpoId = UUID.randomUUID();
+        UUID driveId = UUID.randomUUID();
+
+        User tpo = User.builder().id(tpoId).build();
+        PlacementDrive drive = PlacementDrive.builder().id(driveId).tpo(tpo).build();
+
+        when(placementDriveRepository.findById(driveId)).thenReturn(Optional.of(drive));
+
+        assertThrows(RuntimeException.class, () -> {
+            placementDriveService.deleteDrive(otherTpoId, driveId);
+        });
+
+        verify(placementDriveRepository, never()).delete(any());
+    }
+
+    @Test
     public void testAssignDriveToStudents_Unauthorized() {
         UUID tpoId = UUID.randomUUID();
         UUID otherTpoId = UUID.randomUUID();

@@ -16,7 +16,7 @@ const TpoManagementPage = () => {
   const fetchTPOs = async () => {
     try {
       setIsLoading(true);
-      const res = await api.get('/admin/tpo');
+      const res = await api.get('admin/tpo');
       setTpos(res.data.data || res.data); // Handle GenericResponse wrapper if present
     } catch (error) {
       console.error("Failed to fetch TPOs", error);
@@ -37,7 +37,7 @@ const TpoManagementPage = () => {
     e.preventDefault();
     setSubmitError('');
     try {
-      await api.post('/admin/tpo/create', { ...formData, role: 'TPO' });
+      await api.post('admin/tpo/create', { ...formData, role: 'TPO' });
       setIsSheetOpen(false);
       fetchTPOs();
       setFormData({ fullName: '', email: '', password: '' });

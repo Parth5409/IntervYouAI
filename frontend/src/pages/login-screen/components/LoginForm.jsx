@@ -6,6 +6,7 @@ import { Checkbox } from '../../../components/ui/Checkbox';
 import Icon from '../../../components/AppIcon';
 import api from '../../../utils/api';
 import useAuth from '../../../hooks/useAuth';
+import { toast } from 'sonner';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const LoginForm = () => {
     setIsLoading(true);
     
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('auth/login', {
         email: formData.email,
         password: formData.password
       });
@@ -135,7 +136,7 @@ const LoginForm = () => {
         
         <button
           type="button"
-          onClick={() => alert('Recovery process initialized.')}
+          onClick={() => toast.info('Recovery process initialized.')}
           className="text-xs font-mono text-slate-300 hover:text-emerald-500 transition-colors uppercase tracking-tight"
           disabled={isLoading}
         >
@@ -165,7 +166,7 @@ const LoginForm = () => {
         <Button
           type="button"
           variant="outline"
-          onClick={() => alert('Google authentication module not loaded.')}
+          onClick={() => toast.info('Google authentication module not loaded.')}
           disabled={isLoading}
           className="h-10 text-xs text-slate-200 hover:text-emerald-500"
         >
@@ -175,7 +176,7 @@ const LoginForm = () => {
         <Button
           type="button"
           variant="outline"
-          onClick={() => alert('LinkedIn authentication module not loaded.')}
+          onClick={() => toast.info('LinkedIn authentication module not loaded.')}
           disabled={isLoading}
           className="h-10 text-xs text-slate-200 hover:text-emerald-500"
         >

@@ -53,4 +53,15 @@ public class InterviewSessionService {
                 .companyName(drive.getCompanyName())
                 .build();
     }
+
+    public InterviewSessionResponse getSessionById(UUID sessionId) {
+        InterviewSession session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        return InterviewSessionResponse.builder()
+                .sessionId(session.getId())
+                .status(session.getStatus() != null ? session.getStatus().name() : "CREATED")
+                .companyName(session.getDrive().getCompanyName())
+                .build();
+    }
 }

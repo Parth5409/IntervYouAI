@@ -210,8 +210,8 @@ class InterviewOrchestrator:
             db_session.context['difficulty'] = difficulty
 
             # Inject candidate name into context for personalization
-            if db_session.user and db_session.user.full_name:
-                db_session.context['candidate_name'] = db_session.user.full_name
+            if db_session.student and db_session.student.full_name:
+                db_session.context['candidate_name'] = db_session.student.full_name
             
             # Inject financial data if available for HR_SALARY
             if db_session.session_type == "HR_SALARY" or db_session.session_type == "SALARY":

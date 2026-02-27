@@ -20,8 +20,8 @@ const TpoDashboard = () => {
       try {
         setIsLoading(true);
         const [statsRes, drivesRes] = await Promise.all([
-          api.get('/analytics/tpo-overview'),
-          api.get('/drives/all')
+          api.get('analytics/tpo-overview'),
+          api.get('drives/all')
         ]);
         
         setStats(statsRes.data.data);

@@ -3,6 +3,7 @@ Authentication utilities for JWT handling (Stateless Version for AI Engine)
 """
 
 import os
+import base64
 from jose import JWTError, jwt
 import logging
 from typing import Optional, Dict, Any, List
@@ -12,9 +13,20 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 
 # Use the same secret key as backend-core
-SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
-    raise RuntimeError("SECRET_KEY environment variable is required")
+RAW_SECRET = os.getenv("SECRET_KEY") or os.getenv("JWT_SECRET")
+if not RAW_SECRET:
+    raise RuntimeError("SECRET_KEY or JWT_SECRET environment variable is required")
+
+try:
+    # Match backend-core logic: attempt Base64 decode first
+    SECRET_KEY = base64.b64decode(RAW_SECRET)
+    # Verify if it was actually base64 or just random bytes that decoded
+    # backend-core uses Decoders.BASE64.decode(jwtSecret)
+    logger.info("JWT Secret initialized using Base64 decoding")
+except Exception:
+    SECRET_KEY = RAW_SECRET.encode()
+    logger.warning("JWT Secret initialized using raw bytes (Base64 decode failed)")
+
 ALGORITHM = "HS256"
 
 class CurrentUser(BaseModel):

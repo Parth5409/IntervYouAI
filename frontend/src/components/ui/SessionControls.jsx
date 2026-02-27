@@ -3,6 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
 import { cn } from '../../utils/cn';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./alert-dialog";
 
 const SessionControls = ({
   isRecording = false,
@@ -18,7 +29,6 @@ const SessionControls = ({
   className
 }) => {
   const navigate = useNavigate();
-  const [showEndConfirm, setShowEndConfirm] = useState(false);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -79,59 +89,38 @@ const SessionControls = ({
           )}
 
           {/* Termination Segment */}
-          <button
-            onClick={() => setShowEndConfirm(true)}
-            className="ml-2 bg-slate-900 border border-slate-800 hover:border-red-500/50 hover:text-red-500 text-slate-500 font-mono text-[10px] font-bold tracking-widest uppercase h-10 px-4 transition-all"
-          >
-            Terminate
-          </button>
-        </div>
-      </div>
-
-      {/* End Session Confirmation Modal - Industrial Style */}
-      {showEndConfirm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="fixed inset-0 bg-slate-950/80" onClick={() => setShowEndConfirm(false)} />
-          <div className="bg-slate-900 border border-slate-800 p-8 w-full max-w-md relative animate-in zoom-in-95 duration-200">
-            {/* Corner Accents */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-red-500/30" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-red-500/30" />
-
-            <div className="text-center space-y-6">
-              <div className="w-12 h-12 border border-red-500/30 bg-red-500/5 flex items-center justify-center mx-auto">
-                <Icon name="AlertTriangle" size={24} className="text-red-500" />
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-mono font-bold text-slate-100 uppercase tracking-widest">
-                  TERMINATE_MISSION_LOG?
-                </h3>
-                <p className="text-slate-500 font-mono text-[10px] uppercase leading-relaxed">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                className="ml-2 bg-slate-900 border border-slate-800 hover:border-red-500/50 hover:text-red-500 text-slate-500 font-mono text-[10px] font-bold tracking-widest uppercase h-10 px-4 transition-all"
+              >
+                Terminate
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="border-red-500/20">
+              <AlertDialogHeader>
+                <div className="w-12 h-12 border border-red-500/30 bg-red-500/5 flex items-center justify-center mx-auto mb-4">
+                  <Icon name="AlertTriangle" size={24} className="text-red-500" />
+                </div>
+                <AlertDialogTitle className="text-center">TERMINATE_MISSION_LOG?</AlertDialogTitle>
+                <AlertDialogDescription className="text-center uppercase leading-relaxed text-[10px]">
                   Confirmation required to end current simulation. 
                   All captured data will be processed for analysis.
-                </p>
-              </div>
-              
-              <div className="flex gap-4 pt-4">
-                <button
-                  onClick={() => setShowEndConfirm(false)}
-                  className="flex-1 bg-slate-800 text-slate-300 font-mono text-[10px] font-bold py-3 uppercase tracking-widest hover:bg-slate-750 transition-colors"
-                >
-                  Aborted
-                </button>
-                <button
-                  onClick={onEndSession}
-                  className="flex-1 bg-red-500 text-slate-950 font-mono text-[10px] font-bold py-3 uppercase tracking-widest hover:bg-red-400 transition-colors"
-                >
-                  Confirm_End
-                </button>
-              </div>
-            </div>
-          </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="sm:justify-center gap-4">
+                <AlertDialogCancel className="flex-1">ABORTED</AlertDialogCancel>
+                <AlertDialogAction onClick={onEndSession} className="flex-1 bg-red-500 hover:bg-red-400 text-slate-950">
+                  CONFIRM_END
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
-      )}
+      </div>
     </>
   );
 };
+
 
 export default SessionControls;

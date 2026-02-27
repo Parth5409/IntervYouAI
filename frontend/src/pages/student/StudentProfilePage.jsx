@@ -56,7 +56,7 @@ const StudentProfilePage = () => {
         resumeFilename: resumeInfo?.name
       };
 
-      const { data } = await api.post('/students/profile', updatePayload);
+      const { data } = await api.post('students/profile', updatePayload);
       setUser({ ...user, ...data.data });
       setIsEditing(false);
     } catch (error) {

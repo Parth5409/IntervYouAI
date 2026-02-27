@@ -113,6 +113,18 @@ public class PlacementDriveService {
         return mapToResponse(drive);
     }
 
+    @Transactional
+    public void deleteDrive(UUID tpoId, UUID driveId) {
+        PlacementDrive drive = placementDriveRepository.findById(driveId)
+                .orElseThrow(() -> new RuntimeException("Drive not found"));
+
+        if (!drive.getTpo().getId().equals(tpoId)) {
+            throw new RuntimeException("Unauthorized: You did not create this drive");
+        }
+
+        placementDriveRepository.delete(drive);
+    }
+
     private PlacementDriveResponse mapToResponse(PlacementDrive drive) {
         return PlacementDriveResponse.builder()
                 .id(drive.getId())

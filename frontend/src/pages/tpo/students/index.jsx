@@ -4,9 +4,21 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../../../components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../../../components/ui/alert-dialog";
 import { Checkbox } from '../../../components/ui/Checkbox';
 import api from '../../../utils/api';
 import { cn } from '../../../utils/cn';
+import { toast } from 'sonner';
 
 const StudentDirectoryPage = () => {
   const [students, setStudents] = useState([]);
@@ -24,7 +36,7 @@ const StudentDirectoryPage = () => {
   const fetchStudents = async () => {
     try {
       setIsLoading(true);
-      const res = await api.get('/students/all');
+      const res = await api.get('students/all');
       setStudents(res.data.data || res.data);
       setSelectedStudents([]); // Reset selection on refresh
     } catch (error) {
@@ -55,22 +67,22 @@ const StudentDirectoryPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this student record? This action cannot be undone.')) return;
     try {
       await api.delete(`/students/${id}`);
+      toast.success('STUDENT_RECORD_DELETED');
       fetchStudents();
     } catch (error) {
-      alert('Delete failed: ' + (error.response?.data?.message || error.message));
+      toast.error('DELETE_FAILED: ' + (error.response?.data?.message || error.message));
     }
   };
 
   const handleBulkDelete = async () => {
-    if (!window.confirm(`Are you sure you want to delete ${selectedStudents.length} selected records?`)) return;
     try {
       await api.delete('/students/bulk-delete', { data: selectedStudents });
+      toast.success(`${selectedStudents.length}_RECORDS_PURGED`);
       fetchStudents();
     } catch (error) {
-      alert('Bulk delete failed: ' + (error.response?.data?.message || error.message));
+      toast.error('BULK_DELETE_FAILED: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -96,10 +108,11 @@ const StudentDirectoryPage = () => {
         careerGoal: editingStudent.careerGoal
       };
       await api.put(`/students/${editingStudent.id}`, payload);
+      toast.success('STUDENT_DATA_SYNCED');
       setIsEditSheetOpen(false);
       fetchStudents();
     } catch (error) {
-      alert('Update failed: ' + (error.response?.data?.message || error.message));
+      toast.error('UPDATE_FAILED: ' + (error.response?.data?.message || error.message));
     } finally {
       setIsUpdating(false);
     }
@@ -157,7 +170,7 @@ const StudentDirectoryPage = () => {
         throw new Error(`Missing required headers: ${missingHeaders.join(', ')}`);
       }
 
-      await api.post('/students/bulk-import', parsedData);
+      await api.post('students/bulk-import', parsedData);
       setIsSheetOpen(false);
       fetchStudents();
       setCsvData('');
@@ -183,13 +196,31 @@ const StudentDirectoryPage = () => {
 
           <div className="flex gap-3">
             {selectedStudents.length > 0 && (
-              <Button
-                onClick={handleBulkDelete}
-                className="bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white"
-              >
-                <Icon name="Trash2" size={16} className="mr-2" />
-                DELETE_SELECTED ({selectedStudents.length})
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    className="bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white"
+                  >
+                    <Icon name="Trash2" size={16} className="mr-2" />
+                    DELETE_SELECTED ({selectedStudents.length})
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Bulk Delete Confirmation</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete {selectedStudents.length} selected student records?
+                      This action will permanently remove these candidates from the institutional registry.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>CANCEL</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleBulkDelete}>
+                      PURGE_RECORDS
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
 
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
@@ -316,13 +347,31 @@ const StudentDirectoryPage = () => {
                           >
                             <Icon name="Pencil" size={14} />
                           </button>
-                          <button
-                            onClick={() => handleDelete(student.id)}
-                            className="p-1.5 text-slate-500 hover:text-red-500 transition-colors"
-                            title="Delete Student"
-                          >
-                            <Icon name="Trash2" size={14} />
-                          </button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <button
+                                className="p-1.5 text-slate-500 hover:text-red-500 transition-colors"
+                                title="Delete Student"
+                              >
+                                <Icon name="Trash2" size={14} />
+                              </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Student Record?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete the record for {student.fullName}?
+                                  This operation is irreversible and will remove all session history.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>ABORT</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(student.id)}>
+                                  CONFIRM_DELETE
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </td>
                     </tr>

@@ -11,8 +11,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/api/core/v1/sessions")
+@RequestMapping("/api/core/v1/session")
 public class InterviewSessionController {
 
     @Autowired
@@ -24,5 +26,11 @@ public class InterviewSessionController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CreateSessionRequest request) {
         return ResponseEntity.ok(sessionService.createSession(userDetails.getId(), request));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<InterviewSessionResponse> getSession(@PathVariable UUID id) {
+        return ResponseEntity.ok(sessionService.getSessionById(id));
     }
 }

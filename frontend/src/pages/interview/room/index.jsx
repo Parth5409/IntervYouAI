@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
-import { useAudioRecorder } from '../../../hooks/useAudioRecorder';
 import useAuth from '../../../hooks/useAuth';
-import api from '../../../utils/api';
+import { useAudioRecorder } from '../../../hooks/useAudioRecorder';
+import api, { engineApi, getAiEngineDirectURL } from '../../../utils/api';
 
 import { playAudioFromBase64 } from '../../../utils/audioPlayer';
 
@@ -40,7 +40,10 @@ const InterviewRoom = () => {
   useEffect(() => {
     if (!sessionId || !user?.id) return;
 
-    socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:8000', { path: '/socket.io' });
+    socketRef.current = io(getAiEngineDirectURL(), { 
+      path: '/api/engine/socket.io',
+      transports: ['websocket']
+    });
     const socket = socketRef.current;
 
     const handleSessionStarted = (data) => {
@@ -96,13 +99,13 @@ const InterviewRoom = () => {
     };
 
     socket.on('connect', () => {
-      api.get(`/session/${sessionId}`)
+      engineApi.get(`session/${sessionId}`)
         .then((res) => {
           setSessionDetails(res.data.data);
           socket.emit('start_interview', { session_id: sessionId, user_id: user.id });
         })
         .catch((err) => {
-          console.error('Failed to get session details:', err);
+          console.error('Failed to get session details from engine:', err);
           navigate('/dashboard');
         });
     });

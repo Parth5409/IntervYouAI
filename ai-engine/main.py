@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from socket_app.session import sio
@@ -81,37 +83,62 @@ fastapi_app = FastAPI(
     lifespan=lifespan
 )
 
+@fastapi_app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    # Try to get the body safely. If it's already been consumed by FastAPI,
+    # it's stored in request._body.
+    body = b""
+    try:
+        body = await request.body()
+    except Exception:
+        body = getattr(request, "_body", b"<already consumed or unavailable>")
+        
+    logger.error(f"Validation error for {request.method} {request.url.path}: {exc.errors()}")
+    logger.error(f"Request body: {body}")
+    return JSONResponse(
+        status_code=400,
+        content={"success": False, "message": "Validation Error", "details": exc.errors(), "body_received": str(body)},
+    )
+
 @fastapi_app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.time()
+    # Log headers specifically for socket.io requests
+    if "socket.io" in request.url.path:
+        logger.info(f"Socket.IO Request: {request.method} {request.url.path}")
+        logger.info(f"Headers: {dict(request.headers)}")
+    else:
+        logger.info(f"Incoming Request: {request.method} {request.url.path}")
+    
     response = await call_next(request)
+    
     process_time = (time.time() - start_time) * 1000
     formatted_process_time = "{0:.2f}".format(process_time)
-    logger.info(f"Request: {request.method} {request.url.path} - Status: {response.status_code} - Time: {formatted_process_time}ms")
+    logger.info(f"Response: {response.status_code} - Time: {formatted_process_time}ms")
     return response
 
-# CORS middleware
-fastapi_app.add_middleware(
-    CORSMiddleware,
-    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:4028").split(","),
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS middleware - Disabled to prevent double headers when proxied by Gateway.
+# Socket.IO's internal cors_allowed_origins handles the direct WebSocket handshake.
+# fastapi_app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://localhost:3000", "http://localhost:4028", "http://localhost:5173"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
-# Include routers
-fastapi_app.include_router(data.router, prefix="/api/engine", tags=["Data"])
+# Include routers - Use /api/engine prefix since Gateway is no longer stripping it
+fastapi_app.include_router(data.router, prefix="/api/engine/data", tags=["Data"])
 fastapi_app.include_router(session.router, prefix="/api/engine/session", tags=["Session"])
 fastapi_app.include_router(analysis.router, prefix="/api/engine/analysis", tags=["Analysis"])
-
-# Create the combined ASGI app
-# This ensures uvicorn serves BOTH Socket.IO and FastAPI
-# Mount Socket.IO under /api/engine prefix
-app = socketio.ASGIApp(sio, other_asgi_app=fastapi_app, socketio_path="/api/engine/socket.io")
 
 # Static files
 os.makedirs("uploads", exist_ok=True)
 fastapi_app.mount("/api/engine/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+# Create the combined ASGI app
+# Wrapping is often more reliable for Socket.IO than mounting
+app = socketio.ASGIApp(sio, other_asgi_app=fastapi_app, socketio_path="/api/engine/socket.io")
 
 @fastapi_app.get("/api/engine/")
 async def root():

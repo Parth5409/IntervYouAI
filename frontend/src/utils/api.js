@@ -1,22 +1,52 @@
 import axios from 'axios';
 
 // Create an Axios instance
+export const getGatewayURL = () => {
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  // Strip common suffixes if they exist to get the root gateway URL
+  return url.replace(/\/api\/core\/v1\/?$/, '').replace(/\/api\/engine\/?$/, '').replace(/\/$/, '');
+};
+
+export const getAiEngineDirectURL = () => {
+  // In dev, it's usually on port 8000. In prod, this would be a specific subdomain.
+  return 'http://localhost:8000';
+};
+
 const getBaseURL = () => {
-  const envUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-  if (envUrl.includes('/api/core/v1')) return envUrl;
-  return `${envUrl.replace(/\/$/, '')}/api/core/v1`;
+  return `${getGatewayURL()}/api/core/v1/`;
 };
 
 const axiosInstance = axios.create({
-  // Pointing to the API Gateway
+  // Pointing to the API Gateway with Core V1 prefix by default
   baseURL: getBaseURL(),
-  withCredentials: true, // For handling cookies if used, but we'll primarily use headers for JWT
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add the JWT token to every request
+// Instance for AI Engine (different prefix)
+export const engineApi = axios.create({
+  baseURL: `${getGatewayURL()}/api/engine/`,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Interceptor for engineApi
+engineApi.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Request interceptor for default instance
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');

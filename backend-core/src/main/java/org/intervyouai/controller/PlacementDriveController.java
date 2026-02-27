@@ -66,4 +66,13 @@ public class PlacementDriveController {
             @PathVariable UUID id) {
         return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.getDriveById(id)));
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('TPO')")
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<Void>> deleteDrive(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable UUID id) {
+        placementDriveService.deleteDrive(userDetails.getId(), id);
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(null));
+    }
 }

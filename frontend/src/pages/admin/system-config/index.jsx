@@ -23,7 +23,7 @@ const SystemConfigPage = () => {
 
   const fetchOrgDetails = async () => {
     try {
-      const res = await api.get('/organizations/me');
+      const res = await api.get('organizations/me');
       setOrgData(res.data.data || res.data);
       setIsLoading(false);
     } catch (error) {

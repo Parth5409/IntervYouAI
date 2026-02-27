@@ -34,14 +34,22 @@ const buttonVariants = cva(
 )
 
 const Button = React.forwardRef(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, loading, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size, className }), loading && "opacity-70 pointer-events-none")}
         ref={ref}
+        disabled={loading || props.disabled}
         {...props}
-      />
+      >
+        {loading ? (
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            {children}
+          </div>
+        ) : children}
+      </Comp>
     )
   },
 )

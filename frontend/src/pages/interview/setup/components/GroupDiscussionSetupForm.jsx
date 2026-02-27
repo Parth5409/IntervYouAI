@@ -26,7 +26,7 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
         ];
         
         // We could use an actual endpoint here if available
-        // const response = await api.get('/setup/gd-topics');
+        // const response = await api.get('setup/gd-topics');
         // setTopics(response.data.data || mockTopics);
         setTopics(mockTopics);
       } catch (error) {

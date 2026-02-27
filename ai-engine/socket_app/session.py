@@ -46,7 +46,7 @@ async def start_interview(sid, data):
 
     async with db_session_context() as db:
         session_db = await get_session_by_id(db, session_id)
-        if not session_db or str(session_db.user_id) != user_id:
+        if not session_db or str(session_db.student_id) != user_id:
             return await sio.emit('error', {'message': 'Invalid session'}, to=sid)
         
         if session_db.status != "created":
@@ -172,7 +172,7 @@ async def start_discussion(sid, data):
     
     async with db_session_context() as db:
         session_db = await get_session_by_id(db, session_id)
-        if not session_db or str(session_db.user_id) != user_id:
+        if not session_db or str(session_db.student_id) != user_id:
             await sio.emit('error', {'message': 'Invalid session'}, to=sid)
             return
 

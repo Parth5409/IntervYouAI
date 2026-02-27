@@ -109,7 +109,7 @@ const OnboardingForm = () => {
         resumeUrl: resumeUrl
       };
 
-      await api.post('/students/profile', profilePayload);
+      await api.post('students/profile', profilePayload);
 
       // 3. Refresh user state and navigate
       await refetchUser();

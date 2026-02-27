@@ -3,9 +3,22 @@ import DashboardLayout from '../../../components/ui/DashboardLayout';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
+import Select from '../../../components/ui/Select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../../../components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../../../components/ui/alert-dialog";
 import api from '../../../utils/api';
 import { cn } from '../../../utils/cn';
+import { toast } from 'sonner';
 
 const DriveManagementPage = () => {
   const [drives, setDrives] = useState([]);
@@ -19,17 +32,29 @@ const DriveManagementPage = () => {
     minLpa: '',
     maxLpa: '',
     activeModules: ['TECHNICAL'],
-    configJson: JSON.stringify({
+    config: {
       technical: { difficulty: 'MEDIUM', questions: 8 },
       hr_salary: { difficulty: 'MEDIUM', questions: 10, negotiation_style: 'ASSERTIVE' }
-    }, null, 2)
+    }
   });
   const [error, setError] = useState('');
+
+  const difficultyOptions = [
+    { label: 'EASY', value: 'EASY' },
+    { label: 'MEDIUM', value: 'MEDIUM' },
+    { label: 'HARD', value: 'HARD' },
+  ];
+
+  const negotiationOptions = [
+    { label: 'ASSERTIVE', value: 'ASSERTIVE' },
+    { label: 'FLEXIBLE', value: 'FLEXIBLE' },
+    { label: 'COLLABORATIVE', value: 'COLLABORATIVE' },
+  ];
 
   const fetchDrives = async () => {
     try {
       setIsLoading(true);
-      const res = await api.get('/drives/all');
+      const res = await api.get('drives/all');
       setDrives(res.data.data || res.data);
     } catch (error) {
       console.error("Failed to fetch drives", error);
@@ -56,6 +81,19 @@ const DriveManagementPage = () => {
     });
   };
 
+  const handleConfigChange = (module, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      config: {
+        ...prev.config,
+        [module]: {
+          ...prev.config[module],
+          [field]: value
+        }
+      }
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -67,10 +105,11 @@ const DriveManagementPage = () => {
         minCgpa: parseFloat(formData.minCgpa) || 0,
         minLpa: parseFloat(formData.minLpa) || 0,
         maxLpa: parseFloat(formData.maxLpa) || 0,
-        activeModules: formData.activeModules
+        activeModules: formData.activeModules,
+        configJson: JSON.stringify(formData.config)
       };
 
-      await api.post('/drives', payload);
+      await api.post('drives', payload);
       setIsSheetOpen(false);
       fetchDrives();
       setFormData({ 
@@ -80,10 +119,10 @@ const DriveManagementPage = () => {
         minLpa: '',
         maxLpa: '',
         activeModules: ['TECHNICAL'],
-        configJson: JSON.stringify({
+        config: {
           technical: { difficulty: 'MEDIUM', questions: 8 },
           hr_salary: { difficulty: 'MEDIUM', questions: 10, negotiation_style: 'ASSERTIVE' }
-        }, null, 2)
+        }
       });
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to create placement drive.');
@@ -95,11 +134,21 @@ const DriveManagementPage = () => {
   const handleAssign = async (driveId) => {
     try {
       await api.post(`/drives/${driveId}/assign`);
-      // Update status or show success toast
-      alert('DRIVE_ASSIGNED_TO_ELIGIBLE_CANDIDATES');
+      toast.success('DRIVE_ASSIGNED_TO_ELIGIBLE_CANDIDATES');
     } catch (error) {
       console.error("Failed to assign drive", error);
-      alert('ASSIGNMENT_FAILED');
+      toast.error('ASSIGNMENT_FAILED');
+    }
+  };
+
+  const handleDelete = async (driveId) => {
+    try {
+      await api.delete(`/drives/${driveId}`);
+      toast.success('PLACEMENT_DRIVE_DELETED_SUCCESSFULLY');
+      fetchDrives();
+    } catch (error) {
+      console.error("Failed to delete drive", error);
+      toast.error('DELETION_FAILED');
     }
   };
 
@@ -123,14 +172,14 @@ const DriveManagementPage = () => {
                 INITIALIZE_NEW_DRIVE
               </Button>
             </SheetTrigger>
-            <SheetContent className="bg-slate-950 border-l border-slate-800 text-slate-50 w-full sm:max-w-xl">
+            <SheetContent className="bg-slate-950 border-l border-slate-800 text-slate-50 w-full sm:max-w-xl overflow-y-auto">
               <SheetHeader>
                 <SheetTitle className="text-slate-100 font-mono text-xl uppercase tracking-tighter">
                   Define_Placement_Parameters
                 </SheetTitle>
               </SheetHeader>
               
-              <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+              <form onSubmit={handleSubmit} className="mt-8 space-y-6 pb-12">
                 <Input
                   label="Corporation Name"
                   name="companyName"
@@ -210,18 +259,57 @@ const DriveManagementPage = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
-                    Mission_Configuration (JSON)
-                  </label>
-                  <textarea
-                    name="configJson"
-                    rows={6}
-                    className="w-full bg-slate-900 border border-slate-800 p-4 font-mono text-[10px] text-sky-500/80 focus:ring-1 focus:ring-sky-500 outline-none"
-                    value={formData.configJson}
-                    onChange={handleInputChange}
-                  />
-                </div>
+                {/* Technical Module Settings */}
+                {formData.activeModules.includes('TECHNICAL') && (
+                  <div className="p-4 border border-slate-800 bg-slate-900/30 space-y-4">
+                    <h3 className="text-xs font-mono font-bold text-emerald-500 uppercase tracking-widest">
+                      [TECHNICAL_MODULE_CONFIG]
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Select
+                        label="Complexity Level"
+                        value={formData.config.technical.difficulty}
+                        onChange={(val) => handleConfigChange('technical', 'difficulty', val)}
+                        options={difficultyOptions}
+                      />
+                      <Input
+                        label="Question Count"
+                        type="number"
+                        value={formData.config.technical.questions}
+                        onChange={(e) => handleConfigChange('technical', 'questions', parseInt(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* HR & Salary Module Settings */}
+                {formData.activeModules.includes('HR_SALARY') && (
+                  <div className="p-4 border border-slate-800 bg-slate-900/30 space-y-4">
+                    <h3 className="text-xs font-mono font-bold text-sky-500 uppercase tracking-widest">
+                      [HR_SALARY_MODULE_CONFIG]
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Select
+                        label="Interviewer Persona"
+                        value={formData.config.hr_salary.difficulty}
+                        onChange={(val) => handleConfigChange('hr_salary', 'difficulty', val)}
+                        options={difficultyOptions}
+                      />
+                      <Select
+                        label="Negotiation Style"
+                        value={formData.config.hr_salary.negotiation_style}
+                        onChange={(val) => handleConfigChange('hr_salary', 'negotiation_style', val)}
+                        options={negotiationOptions}
+                      />
+                    </div>
+                    <Input
+                      label="Max Round Questions"
+                      type="number"
+                      value={formData.config.hr_salary.questions}
+                      onChange={(e) => handleConfigChange('hr_salary', 'questions', parseInt(e.target.value))}
+                    />
+                  </div>
+                )}
 
                 {error && (
                   <div className="p-3 bg-red-500/10 border border-red-500/20">
@@ -300,12 +388,31 @@ const DriveManagementPage = () => {
                   >
                     ASSIGN_TO_STUDENTS <Icon name="Users" size={12} className="ml-2" />
                   </Button>
-                  <Button 
-                    variant="ghost"
-                    className="text-[10px] text-slate-500 hover:text-red-400"
-                  >
-                    <Icon name="Trash2" size={14} />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button 
+                        variant="ghost"
+                        className="text-[10px] text-slate-500 hover:text-red-400"
+                      >
+                        <Icon name="Trash2" size={14} />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently delete the placement drive
+                          for {drive.companyName} and remove all associated candidate data from the registry.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>CANCEL_OPERATION</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(drive.id)}>
+                          CONFIRM_DELETION
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             ))

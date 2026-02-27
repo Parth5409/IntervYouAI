@@ -41,7 +41,7 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
     const fetchCompanies = async () => {
       setLoadingCompanies(true);
       try {
-        const response = await api.get('/drives/all');
+        const response = await api.get('drives/all');
         const uniqueCompanies = Array.from(new Set(response.data.data.map(d => d.companyName)))
           .map(name => ({ value: name, label: name.toUpperCase() }));
         setCompanies(uniqueCompanies);

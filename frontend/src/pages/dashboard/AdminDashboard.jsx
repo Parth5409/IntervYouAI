@@ -18,7 +18,7 @@ const AdminDashboard = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const res = await api.get('/analytics/admin-overview');
+        const res = await api.get('analytics/admin-overview');
         setStats(res.data.data);
       } catch (error) {
         console.error("Failed to fetch admin stats", error);

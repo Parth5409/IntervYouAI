@@ -16,7 +16,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     const fetchDrives = async () => {
       try {
-        const { data } = await api.get('/drives/all');
+        const { data } = await api.get('drives/all');
         setActiveDrives(data.data || []);
       } catch (error) {
         console.error('Failed to fetch drives:', error);

@@ -9,7 +9,7 @@ import GroupDiscussionSetupForm from './components/GroupDiscussionSetupForm';
 import SalaryNegotiationSetupForm from './components/SalaryNegotiationSetupForm';
 import SessionSummary from './components/SessionSummary';
 import Icon from '../../../components/AppIcon';
-import api from '../../../utils/api';
+import api, { engineApi } from '../../../utils/api';
 import { cn } from '../../../utils/cn';
 
 const InterviewSetupWizard = () => {
@@ -227,7 +227,7 @@ const InterviewSetupWizard = () => {
         sessionPayload.duration_minutes = parseInt(formData.duration, 10) || 20;
       }
 
-      const { data } = await api.post('/../../engine/session/', sessionPayload);
+      const { data } = await engineApi.post('session/', sessionPayload);
 
       if (data.success) {
         const sessionId = data.data.id;

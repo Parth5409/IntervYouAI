@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
-import api from '../../../utils/api';
+import api, { engineApi } from '../../../utils/api';
 import { cn } from '../../../utils/cn';
 
 const MissionBrief = () => {
@@ -61,7 +61,8 @@ const MissionBrief = () => {
         negotiation_style: roundConfig.negotiation_style || 'assertive'
       };
 
-      const { data } = await api.post('../../engine/session/mission', payload);
+      // Use engineApi for cross-service calls to avoid path resolution issues
+      const { data } = await engineApi.post('session/mission', payload);
 
       if (data.success) {
         navigate(`/interview/room/${data.data.id}`, {

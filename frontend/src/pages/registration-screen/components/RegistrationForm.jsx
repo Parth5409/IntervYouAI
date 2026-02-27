@@ -79,7 +79,7 @@ const RegistrationForm = () => {
         organizationName: role === 'ROLE_ORG_ADMIN' ? formData.organizationName : undefined,
         careerGoal: role === 'ROLE_STUDENT' ? formData.careerGoal : undefined
       };
-      await api.post('/auth/signup', payload);
+      await api.post('auth/signup', payload);
       navigate('/login');
     } catch (error) {
       setErrors({ submit: error.response?.data?.message || 'Registration failed. Please try again.' });

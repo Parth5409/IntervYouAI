@@ -29,6 +29,18 @@ AsyncSessionLocal = sessionmaker(
 
 Base = declarative_base()
 
+class Organization(Base):
+    __tablename__ = "organizations"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String, unique=True, nullable=False)
+    code = Column(String, unique=True, nullable=False)
+    address = Column(Text, nullable=True)
+    contact_email = Column(String, nullable=True)
+    website_url = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class User(Base):
     __tablename__ = "users"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -44,6 +56,22 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     # Relationships
     sessions = relationship("InterviewSession", back_populates="student")
+    profile = relationship("StudentProfile", back_populates="user", uselist=False)
+
+class StudentProfile(Base):
+    __tablename__ = "student_profiles"
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), unique=True, nullable=False)
+    prn = Column(String, nullable=False)
+    branch = Column(String, nullable=True)
+    current_semester = Column(String, nullable=True)
+    current_cgpa = Column(Numeric(3, 2), nullable=True)
+    passing_year = Column(Integer, nullable=True)
+    resume_url = Column(String, nullable=True)
+    career_goal = Column(Text, nullable=True)
+    
+    # Relationships
+    user = relationship("User", back_populates="profile")
 
 class PlacementDrive(Base):
     __tablename__ = "placement_drives"
@@ -51,6 +79,8 @@ class PlacementDrive(Base):
     company_name = Column(String, nullable=False)
     job_description = Column(Text, nullable=False)
     min_cgpa = Column(Numeric(3, 2), nullable=True) # Matches Java BigDecimal(3, 2)
+    min_lpa = Column(Numeric(5, 2), nullable=True)
+    max_lpa = Column(Numeric(5, 2), nullable=True)
     tpo_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -110,7 +140,7 @@ async def get_session_by_id(db: AsyncSession, session_id: str) -> Optional[Inter
             session_id = uuid.UUID(session_id)
         result = await db.execute(
             select(InterviewSession)
-            .options(joinedload(InterviewSession.student))
+            .options(joinedload(InterviewSession.student), joinedload(InterviewSession.drive))
             .where(InterviewSession.id == session_id)
         )
         return result.scalars().first()
