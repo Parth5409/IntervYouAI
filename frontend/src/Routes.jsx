@@ -189,7 +189,7 @@ const AppRoutes = () => {
           path="/gd/feedback/:sessionId"
           element={
             <ProtectedRoute>
-              <GDFredback />
+              <GDFeedback />
             </ProtectedRoute>
           }
         />

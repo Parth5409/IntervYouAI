@@ -254,6 +254,31 @@ async def end_discussion(sid, data):
             flag_modified(session_db, "feedback")
             flag_modified(session_db, "transcript")
             await db.commit()
+
+            # Publish to Kafka for Backend Core to consume
+            try:
+                # Calculate a representative overall score for GD
+                overall_score = int((
+                    feedback.get("participation_score", 0) + 
+                    feedback.get("initiative_score", 0) + 
+                    feedback.get("clarity_score", 0) + 
+                    feedback.get("collaboration_score", 0) + 
+                    feedback.get("topic_understanding", 0)
+                ) / 5)
+
+                await kafka_producer.publish_event(
+                    topic="interview-feedback",
+                    key=str(session_id),
+                    value={
+                        "sessionId": str(session_id),
+                        "feedback": feedback,
+                        "transcript": session_db.transcript,
+                        "overallScore": overall_score
+                    }
+                )
+            except Exception as kf_err:
+                logger.error(f"Failed to publish GD feedback to Kafka: {kf_err}")
+
             await sio.emit('discussion_ended', {'feedback': feedback, 'session_id': session_id}, to=sid)
 
     gd_orchestrator.remove_session(session_id)
