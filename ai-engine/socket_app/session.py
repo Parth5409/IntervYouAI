@@ -64,7 +64,8 @@ async def start_interview(sid, data):
             if not session_db.context.get('company_name') and session_db.drive and session_db.drive.company_name:
                 session_db.context['company_name'] = session_db.drive.company_name
 
-            initial_message, initial_audio = await interview_orchestrator.create_new_session(session_db, sid)
+            if session_id not in interview_orchestrator.active_sessions:
+                initial_message, initial_audio = await interview_orchestrator.create_new_session(session_db, sid)
                 
                 # Only update status if it's currently 'created'
                 if session_db.status == "created":

@@ -97,7 +97,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     logger.error(f"Request body: {body}")
     return JSONResponse(
         status_code=400,
-        content={"success": False, "message": "Validation Error", "details": exc.errors(), "body_received": str(body)},
+        content={"success": False, "message": "Validation Error", "details": exc.errors()},
     )
 
 @fastapi_app.middleware("http")

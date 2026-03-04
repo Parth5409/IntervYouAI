@@ -8,7 +8,7 @@ import FeedbackSections from './components/FeedbackSections';
 import SocialSharing from './components/SocialSharing';
 import useAuth from '../../../hooks/useAuth';
 import Recommendations from './components/Recommendations';
-import api from '../../../utils/api';
+import api, { engineApi } from '../../../utils/api';
 import { cn } from '../../../utils/cn';
 
 const InterviewFeedback = () => {
@@ -32,7 +32,7 @@ const InterviewFeedback = () => {
         return;
       }
       try {
-        const { data } = await api.get(`../../engine/session/${sessionId}`);
+        const { data } = await engineApi.get(`session/${sessionId}`);
         if (data.success) {
           setSessionData(data.data);
         }

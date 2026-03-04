@@ -52,7 +52,7 @@ const TpoDashboard = () => {
               <span className="text-slate-500">{'>'}</span> TPO_MANAGEMENT_CONSOLE
             </h1>
             <p className="text-slate-400 font-mono text-xs mt-2 uppercase tracking-widest">
-              Institutional Access // {user?.organizationName} // Secure Node 01
+              Institutional Access {'//'} {user?.organizationName} {'//'} Secure Node 01
             </p>
           </div>
           <div className="flex gap-3">
@@ -130,7 +130,7 @@ const TpoDashboard = () => {
                         </td>
                         <td className="px-6 py-4 text-slate-400">{drive.minCgpa} MIN_CGPA</td>
                         <td className="px-6 py-4 text-right font-bold text-sky-400">
-                          {new Date(drive.createdAt).toLocaleDateString()}
+                          {drive.createdAt ? new Date(drive.createdAt).toLocaleDateString() : 'N/A'}
                         </td>
                       </tr>
                     ))

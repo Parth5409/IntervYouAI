@@ -37,6 +37,7 @@ const EmergencyExit = ({
       <div className={cn("fixed top-4 right-4 z-50", className)}>
         <button
           onClick={() => setShowConfirmation(true)}
+          aria-label="Exit interview"
           className="w-10 h-10 border border-slate-800 bg-slate-950/80 backdrop-blur-md text-slate-500 hover:text-red-500 hover:border-red-500/50 transition-all flex items-center justify-center group"
         >
           <Icon name="X" size={20} className="group-hover:rotate-90 transition-transform duration-300" />

@@ -150,12 +150,22 @@ const GDRoom = () => {
   }, [isRecording, isInterruptionWindow]);
 
   useEffect(() => {
-    if (audioBlob && socketRef.current) {
+    if (audioBlob && socketRef.current?.connected) {
       setIsTranscribing(true);
-      socketRef.current.emit('gd_audio_chunk', {
-        session_id: sessionId,
-        audio_blob: audioBlob,
-      });
+      try {
+        socketRef.current.emit('gd_audio_chunk', {
+          session_id: sessionId,
+          audio_blob: audioBlob,
+        });
+        resetAudio();
+      } catch (error) {
+        console.error('Error emitting audio chunk:', error);
+        setIsTranscribing(false);
+        // Optionally keep audioBlob for retry, but for now we follow CodeRabbit suggestion
+      }
+    } else if (audioBlob && socketRef.current && !socketRef.current.connected) {
+      console.warn('Socket disconnected, cannot send audio chunk');
+      setIsTranscribing(false);
       resetAudio();
     }
   }, [audioBlob, sessionId, resetAudio]);
@@ -201,7 +211,7 @@ const GDRoom = () => {
             <Icon name="Users" size={20} className="text-slate-950" />
           </div>
           <span className="font-mono font-bold tracking-tighter text-lg uppercase truncate max-w-[200px] sm:max-w-none">
-            INTERVYOU.AI // COLLECTIVE_NODE
+            INTERVYOU.AI {'//'} COLLECTIVE_NODE
           </span>
         </div>
         <div className="flex items-center gap-6">

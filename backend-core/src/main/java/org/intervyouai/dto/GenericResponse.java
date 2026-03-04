@@ -23,4 +23,11 @@ public class GenericResponse<T> {
                 .message("Operation successful")
                 .build();
     }
+
+    public static <T> GenericResponse<T> error(String message) {
+        return GenericResponse.<T>builder()
+                .success(false)
+                .message(message)
+                .build();
+    }
 }

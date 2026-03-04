@@ -25,7 +25,7 @@ const GDFredback = () => {
     const fetchSessionData = async () => {
       setIsLoading(true);
       try {
-        const { data } = await api.get(`../../engine/session/${sessionId}`);
+        const { data } = await engineApi.get(`session/${sessionId}`);
         if (data.success) {
           setSessionData(data.data);
         }
@@ -56,7 +56,7 @@ const GDFredback = () => {
     );
   }
 
-  if (!sessionData || !sessionData.feedback) {
+  if (!sessionData || !sessionData.feedback || !sessionData.context) {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center py-20 gap-6 border-2 border-dashed border-slate-800">
@@ -105,7 +105,7 @@ const GDFredback = () => {
           <div className="relative z-10 flex flex-col items-center text-center space-y-4">
             <span className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.3em]">DISCUSSION_TOPIC_VECTOR</span>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tighter uppercase max-w-3xl leading-tight">
-              {context.topic}
+              {context?.topic || 'N/A'}
             </h2>
           </div>
         </div>
@@ -121,9 +121,9 @@ const GDFredback = () => {
                 <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">KEY_CONTRIBUTIONS_LOG</h3>
               </div>
               <div className="grid gap-4">
-                {feedback.key_contributions.map((item, i) => (
+                {(feedback.key_contributions || []).map((item, i) => (
                   <div key={i} className="flex items-start gap-4 bg-slate-900/50 border border-slate-800 p-4 hover:border-sky-500/30 transition-colors group">
-                    <span className="text-sky-500/50 text-[10px] mt-0.5">0{i + 1}</span>
+                    <span className="text-sky-500/50 text-[10px] mt-0.5">{String(i + 1).padStart(2, '0')}</span>
                     <p className="text-[11px] text-slate-300 uppercase leading-relaxed tracking-tight group-hover:text-slate-100 transition-colors">{item}</p>
                   </div>
                 ))}
@@ -139,7 +139,7 @@ const GDFredback = () => {
                 <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">TACTICAL_STRENGTHS</h3>
               </div>
               <div className="space-y-3">
-                {feedback.strengths.map((item, i) => (
+                {(feedback.strengths || []).map((item, i) => (
                   <div key={i} className="flex items-start gap-3 bg-emerald-500/5 border border-emerald-500/20 p-3">
                     <div className="w-1 h-1 bg-emerald-500 mt-1.5 shrink-0" />
                     <p className="text-[10px] text-emerald-100/80 uppercase leading-relaxed tracking-tighter">{item}</p>
@@ -154,7 +154,7 @@ const GDFredback = () => {
                 <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">OPTIMIZATION_TARGETS</h3>
               </div>
               <div className="space-y-3">
-                {feedback.improvement_suggestions.map((item, i) => (
+                {(feedback.improvement_suggestions || []).map((item, i) => (
                   <div key={i} className="flex items-start gap-3 bg-amber-500/5 border border-amber-500/20 p-3">
                     <div className="w-1 h-1 bg-amber-500 mt-1.5 shrink-0" />
                     <p className="text-[10px] text-amber-100/80 uppercase leading-relaxed tracking-tighter">{item}</p>

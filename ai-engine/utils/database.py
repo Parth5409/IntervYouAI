@@ -129,20 +129,22 @@ async def get_user_by_id(db: AsyncSession, user_id: str) -> Optional[User]:
     try:
         if isinstance(user_id, str):
             user_id = uuid.UUID(user_id)
-        result = await db.execute(select(User).where(User.id == user_id))
-        return result.scalars().first()
-    except Exception:
+    except ValueError:
         return None
+
+    result = await db.execute(select(User).where(User.id == user_id))
+    return result.scalars().first()
 
 async def get_session_by_id(db: AsyncSession, session_id: str) -> Optional[InterviewSession]:
     try:
         if isinstance(session_id, str):
             session_id = uuid.UUID(session_id)
-        result = await db.execute(
-            select(InterviewSession)
-            .options(joinedload(InterviewSession.student), joinedload(InterviewSession.drive))
-            .where(InterviewSession.id == session_id)
-        )
-        return result.scalars().first()
-    except Exception:
+    except ValueError:
         return None
+
+    result = await db.execute(
+        select(InterviewSession)
+        .options(joinedload(InterviewSession.student), joinedload(InterviewSession.drive))
+        .where(InterviewSession.id == session_id)
+    )
+    return result.scalars().first()

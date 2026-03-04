@@ -80,7 +80,7 @@ const FeedbackSections = ({
                       <div className="space-y-3">
                         {strengths.map((strength, index) => (
                           <div key={index} className="flex items-start gap-3 bg-slate-950/50 border border-slate-800 p-3">
-                            <span className="text-emerald-500/50 text-[9px] mt-0.5">0{index + 1}</span>
+                            <span className="text-emerald-500/50 text-[9px] mt-0.5">{String(index + 1).padStart(2, '0')}</span>
                             <p className="text-[11px] text-slate-300 leading-relaxed uppercase tracking-tight">{strength}</p>
                           </div>
                         ))}
@@ -96,7 +96,7 @@ const FeedbackSections = ({
                       <div className="space-y-3">
                         {improvements.map((improvement, index) => (
                           <div key={index} className="flex items-start gap-3 bg-slate-950/50 border border-slate-800 p-3">
-                            <span className="text-amber-500/50 text-[9px] mt-0.5">0{index + 1}</span>
+                            <span className="text-amber-500/50 text-[9px] mt-0.5">{String(index + 1).padStart(2, '0')}</span>
                             <p className="text-[11px] text-slate-300 leading-relaxed uppercase tracking-tight">{improvement}</p>
                           </div>
                         ))}

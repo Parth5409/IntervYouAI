@@ -116,13 +116,14 @@ public class PlacementDriveService {
     @Transactional
     public void deleteDrive(UUID tpoId, UUID driveId) {
         PlacementDrive drive = placementDriveRepository.findById(driveId)
-                .orElseThrow(() -> new RuntimeException("Drive not found"));
+                .orElseThrow(() -> new org.intervyouai.exception.ResourceNotFoundException("Drive not found"));
 
         if (!drive.getTpo().getId().equals(tpoId)) {
-            throw new RuntimeException("Unauthorized: You did not create this drive");
+            throw new org.springframework.security.access.AccessDeniedException("Unauthorized: You did not create this drive");
         }
 
-        placementDriveRepository.delete(drive);
+        drive.setStatus(PlacementDrive.DriveStatus.ARCHIVED);
+        placementDriveRepository.save(drive);
     }
 
     private PlacementDriveResponse mapToResponse(PlacementDrive drive) {

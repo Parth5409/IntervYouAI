@@ -47,6 +47,6 @@ async def extract_skills(request: JDExtractionRequest):
         return JDExtractionResponse(skills=skills)
         
     except Exception as e:
-        logger.error(f"Error extracting skills: {e}")
+        logger.exception("Error extracting skills")
         # Fallback or error
-        raise HTTPException(status_code=500, detail="Failed to extract skills")
+        raise HTTPException(status_code=500, detail="Failed to extract skills") from e

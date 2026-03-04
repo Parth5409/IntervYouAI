@@ -58,9 +58,9 @@ class KafkaConsumerService:
                         logger.warning(f"Unknown event format: {event}")
                         
                 except Exception as e:
-                    logger.error(f"Error processing message: {e}")
+                    logger.exception("Error processing message")
                     
         except asyncio.CancelledError:
             pass
         except Exception as e:
-            logger.error(f"Kafka consumer crashed: {e}")
+            logger.exception("Kafka consumer crashed")

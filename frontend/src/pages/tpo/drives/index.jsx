@@ -24,7 +24,7 @@ const DriveManagementPage = () => {
   const [drives, setDrives] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [isSubmitting, setIsImporting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
     jobDescription: '',
@@ -136,7 +136,7 @@ const DriveManagementPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setIsImporting(true);
+      setIsSubmitting(true);
       setError('');
       
       const configForPayload = { ...formData.config };
@@ -174,7 +174,7 @@ const DriveManagementPage = () => {
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to create placement drive.');
     } finally {
-      setIsImporting(false);
+      setIsSubmitting(false);
     }
   };
 

@@ -10,12 +10,21 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Repository
 public interface PlacementDriveRepository extends JpaRepository<PlacementDrive, UUID> {
-    List<PlacementDrive> findByTpoId(UUID tpoId);
-    List<PlacementDrive> findByTpoOrganizationId(UUID organizationId);
-    long countByTpoOrganizationId(UUID organizationId);
+    
+    @Query("SELECT d FROM PlacementDrive d WHERE d.tpo.id = :tpoId AND d.status <> 'ARCHIVED'")
+    List<PlacementDrive> findByTpoId(@Param("tpoId") UUID tpoId);
 
-    @Query("SELECT d FROM PlacementDrive d WHERE d.tpo.organization.id = :orgId AND (d.minCgpa IS NULL OR d.minCgpa <= :cgpa)")
+    @Query("SELECT d FROM PlacementDrive d WHERE d.tpo.organization.id = :organizationId AND d.status <> 'ARCHIVED'")
+    List<PlacementDrive> findByTpoOrganizationId(@Param("organizationId") UUID organizationId);
+
+    @Query("SELECT COUNT(d) FROM PlacementDrive d WHERE d.tpo.organization.id = :organizationId AND d.status <> 'ARCHIVED'")
+    long countByTpoOrganizationId(@Param("organizationId") UUID organizationId);
+
+    @Query("SELECT d FROM PlacementDrive d WHERE d.tpo.organization.id = :orgId AND (d.minCgpa IS NULL OR d.minCgpa <= :cgpa) AND d.status <> 'ARCHIVED'")
     List<PlacementDrive> findEligibleDrives(@Param("orgId") UUID orgId, @Param("cgpa") BigDecimal cgpa);
 }

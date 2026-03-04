@@ -54,6 +54,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     if (user.role === 'ROLE_STUDENT') return <Navigate to="/student/dashboard" replace />;
     if (user.role === 'ROLE_TPO') return <Navigate to="/tpo/dashboard" replace />;
     if (user.role === 'ROLE_ORG_ADMIN') return <Navigate to="/admin/dashboard" replace />;
+    
+    // Fallback for unrecognized roles
+    return <Navigate to="/login" replace />;
   }
 
   return children;

@@ -59,24 +59,6 @@ public class OrganizationController {
         return ResponseEntity.ok(GenericResponse.success(convertToResponse(updated)));
     }
 
-    @PostMapping
-    @PreAuthorize("hasRole('ORG_ADMIN')")
-    @org.springframework.transaction.annotation.Transactional
-    public ResponseEntity<GenericResponse<OrganizationResponse>> createOrganization(@Valid @RequestBody org.intervyouai.dto.OrganizationRequest request) {
-        Organization created = organizationService.createOrganization(request);
-        return ResponseEntity.ok(GenericResponse.success(convertToResponse(created)));
-    }
-
-    @GetMapping
-    @PreAuthorize("hasRole('ORG_ADMIN')")
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
-    public ResponseEntity<GenericResponse<java.util.List<OrganizationResponse>>> getAllOrganizations() {
-        java.util.List<OrganizationResponse> response = organizationService.getAllOrganizations().stream()
-                .map(this::convertToResponse)
-                .collect(java.util.stream.Collectors.toList());
-        return ResponseEntity.ok(GenericResponse.success(response));
-    }
-
     private OrganizationResponse convertToResponse(Organization org) {
         if (org == null) return null;
         return OrganizationResponse.builder()

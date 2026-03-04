@@ -3,7 +3,6 @@ import Icon from '../../../../components/AppIcon';
 import { cn } from '../../../../utils/cn';
 
 const InterviewTypeCard = ({ 
-  type, 
   title, 
   description, 
   icon, 
@@ -11,11 +10,22 @@ const InterviewTypeCard = ({
   onClick,
   features = []
 }) => {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
+
   return (
     <div
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
       className={cn(
-        "relative p-8 border cursor-pointer transition-all duration-300 group overflow-hidden",
+        "relative p-8 border cursor-pointer transition-all duration-300 group overflow-hidden focus:outline-none focus:ring-1 focus:ring-emerald-500",
         isSelected
           ? "border-emerald-500 bg-emerald-500/5"
           : "border-slate-800 bg-slate-900/50 hover:border-slate-700 hover:bg-slate-900"
