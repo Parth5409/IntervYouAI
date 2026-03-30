@@ -75,7 +75,7 @@ Finally, run the backend server:
 
 ```bash
 # Run the FastAPI application
-uvicorn main:application --reload --port 8000
+uvicorn main:app --host 127.0.0.1 --port 8000 --http h11 --ws websockets --proxy-headers
 ```
 
 The backend will be available at `http://localhost:8000`.

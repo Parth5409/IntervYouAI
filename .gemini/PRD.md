@@ -2,50 +2,49 @@
 
 ## 1. Product Overview
 - **Project Title**: IntervYou.AI 2.0
-- **Version**: 2.0
-- **Last Updated**: February 6, 2026
+- **Version**: 2.1 (Drive-Centric ERP)
+- **Last Updated**: March 5, 2026
 - **Owner**: Product Management Team
 
 ---
 
 ## 2. Problem Statement
-Current campus placement preparation is fragmented and unscalable. Students lack realistic, company-specific interview practice, while Training & Placement Officers (TPOs) lack data-driven visibility into student readiness. Manual mock interviews are time-consuming, and generic AI tools fail to align with specific Job Descriptions (JD) provided by visiting recruiters.
+Current campus placement preparation is fragmented and unscalable. Students lack realistic, company-specific interview practice, while Training & Placement Officers (TPOs) lack data-driven visibility into student readiness. Generic AI tools fail to align with specific Job Descriptions (JD) and the institutional "Mission" of placement drives.
 
 ---
 
 ## 3. Goals & Objectives
 
 ### Business Goals
-- **Scalability**: Successfully support 500+ concurrent interview sessions without system degradation via microservices.
-- **Institutional Adoption**: Transition from a B2C tool to a robust B2B platform for educational institutions.
+- **Institutional Scale**: Transition from a B2C tool to a robust B2B ERP platform for universities.
+- **Mission-Based Evaluation**: Shift focus from generic practice to "Placement Drives" that simulate the entire recruitment pipeline.
 
 ### User Goals
-- **For Students**: Practice interviews tailored to specific company JDs with low-latency voice interaction.
-- **For TPOs**: Automate the assignment of mock drives and track "Placement Readiness" metrics across departments.
+- **For Students**: Navigate assigned "Missions" (Drives) tailored to specific JDs with high-fidelity voice and group interaction.
+- **For TPOs**: Architect the placement pipeline, set financial brackets (LPA), and track readiness metrics via automated feedback.
+- **For Org Admins**: Manage institutional identity and faculty (TPO) access.
 
 ---
 
 ## 4. Success Metrics
-- **Response Latency**: Maintain a sub-2-second round-trip for AI voice interaction (STT -> LLM -> TTS).
-- **Readiness Accuracy**: Achieve a 90% correlation between AI-generated scores and subsequent faculty assessments.
-- **Completion Rate**: 80% of students assigned to a "Drive" complete their mock interview within the deadline.
-- **Operational Savings**: 70% reduction in man-hours spent by faculty on initial mock screening rounds.
+- **Response Latency**: Sub-2-second round-trip for AI voice interaction using local CUDA-optimized STT/TTS.
+- **GD Participation**: Successful multi-agent Group Discussions with at least 3 AI participants and 1 student.
+- **Institutional Adoption**: 80% reduction in manual mock screening hours for faculty.
 
 ---
 
 ## 5. Target Users & Personas
 
 ### Primary Persona: Prof. Sharma (The TPO)
-- **Demographics**: 45-55 years old, University Placement Head.
-- **Pain Points**: Overwhelmed by volume (1,000+ students); lacks objective data to identify "at-risk" students.
-- **Goals**: Increase overall campus placement percentage and automate repetitive screening.
-- **Technical Proficiency**: Moderate.
+- **Pain Points**: Lacks objective data for 1,000+ students; manual mock drives are unmanageable.
+- **Goals**: Automate the "TCS Ninja" or "Amazon SDE" mission assignment and evaluation.
 
 ### Secondary Persona: Rahul (The Student)
-- **Demographics**: 21 years old, Final year Engineering student.
-- **Pain Points**: High anxiety; receives no feedback from generic online practice; needs role-specific prep (e.g., "Google SDE" vs "TCS Ninja").
-- **Goals**: Gain confidence and clear the first round of actual campus interviews.
-- **Technical Proficiency**: High.
+- **Pain Points**: Anxiety about specific rounds (Technical, HR/Salary, GD).
+- **Goals**: Clear institutional "Missions" and receive actionable, JD-aligned feedback.
+
+### Tertiary Persona: University Dean (The Org Admin)
+- **Goals**: Monitor placement health across departments and manage TPO accounts.
 
 ---
 
@@ -53,49 +52,40 @@ Current campus placement preparation is fragmented and unscalable. Students lack
 
 ### Must-Have Features (P0)
 
-1. **AI Voice Interview Engine**
-   - **Description**: Real-time conversational AI utilizing Whisper (STT), Gemini (LLM), and Kokoro (TTS).
-   - **User Story**: As a student, I want to speak my answers naturally so that the experience feels like a real human interaction.
+1. **AI Voice Interview Engine (Mission-Based)**
+   - **Description**: Real-time conversational AI utilizing Whisper (STT), Gemini (LLM), and Kokoro (TTS) running locally on CUDA.
    - **Acceptance Criteria**:
-     - [ ] System handles audio streaming via WebSockets.
-     - [ ] AI generates follow-up questions based on previous answers and the JD.
-     - [ ] AI response includes both synchronized audio and text transcripts.
-   - **Success Metric**: Latency < 2000ms.
+     - [ ] Handles "HR_SALARY" rounds with automatic transition to negotiation.
+     - [ ] Uses student resumes and JD context via RAG (local embeddings).
 
-2. **TPO Command Center (Drive Management)**
-   - **Description**: Portal for faculty to upload JDs and bulk-assign interviews to students based on criteria.
-   - **User Story**: As a TPO, I want to create a "TCS Digital" drive so that I can prepare all students with 7.5+ CGPA.
+2. **Group Discussion (GD) Multi-Agent System**
+   - **Description**: Student interacts with multiple AI bots in a moderated discussion.
    - **Acceptance Criteria**:
-     - [ ] Support for PDF/Docx JD uploads.
-     - [ ] Filtering logic for student bulk-assignment (CGPA, Branch, Skills).
-   - **Success Metric**: Drive setup completed in < 5 minutes.
+     - [ ] Dynamic topic selection from a TPO-provided pool.
+     - [ ] Multi-agent participation (bots aware of each other and the student).
+     - [ ] Specialized GD evaluation report.
+
+3. **TPO Command Center (Mission Architect)**
+   - **Description**: Configure Drives with LPA brackets, specific rounds, and eligibility criteria.
+   - **Acceptance Criteria**:
+     - [ ] Bulk Student Import (CSV) with auto-credential generation.
+     - [ ] "Mission" assignment tracking and analytics.
 
 ### Should-Have Features (P1)
 
-1. **Event-Driven Feedback Reports**
-   - **Description**: Detailed performance analysis generated asynchronously via Kafka after the session ends.
-   - **User Story**: As a student, I want a categorized score report (Technical, Communication, Confidence) so I know where to improve.
-   - **Acceptance Criteria**:
-     - [ ] Report generation must not block the main application UI.
-     - [ ] Feedback includes specific "Better Answer" suggestions for failed questions.
-   - **Success Metric**: Feedback delivered within 60 seconds of interview completion.
-
-### Nice-to-Have Features (P2)
-
-1. **Student Growth Graph**
-   - **Description**: A visual dashboard showing a student’s progress over multiple interview attempts.
-   - **Success Metric**: 50% increase in repeat users month-over-month.
+1. **Event-Driven Feedback Archive**
+   - **Description**: Mission history grouped by Drive, generated asynchronously via Kafka.
+   - **Success Metric**: Feedback delivered < 60s after session end.
 
 ---
 
 ## 7. Explicitly OUT OF SCOPE
-- **Video/Proctoring**: No webcam monitoring or eye-tracking in this version.
-- **Resume Editor**: The system parses resumes but does not provide tools to edit or format them.
-- **B2C Payments**: V2.0 focuses on institutional licensing; individual student billing is out of scope.
-- **Mobile Native Apps**: This is a web-only responsive release.
-- **Direct Recruiter Access**: Recruiters cannot log in; only TPOs and Students have accounts.
+- **Video Proctoring (MVP)**: Snapshots are planned (P2), but full video is out of scope.
+- **Direct Recruiter Access**: System is for institutional prep only.
+- **Mobile Native Apps**: Fully responsive web-only release.
 
 ---
+
 
 ## 8. User Scenarios
 
