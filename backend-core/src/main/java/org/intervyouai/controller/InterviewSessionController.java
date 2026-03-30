@@ -1,0 +1,43 @@
+package org.intervyouai.controller;
+
+import jakarta.validation.Valid;
+import org.intervyouai.dto.CreateSessionRequest;
+import org.intervyouai.dto.InterviewSessionResponse;
+import org.intervyouai.security.UserDetailsImpl;
+import org.intervyouai.service.InterviewSessionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/core/v1/session")
+public class InterviewSessionController {
+
+    @Autowired
+    private InterviewSessionService sessionService;
+
+    @PostMapping
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<InterviewSessionResponse> createSession(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody CreateSessionRequest request) {
+        return ResponseEntity.ok(sessionService.createSession(userDetails.getId(), request));
+    }
+
+    @GetMapping("/history")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<InterviewSessionResponse>> getHistory(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseEntity.ok(sessionService.getStudentHistory(userDetails.getId()));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<InterviewSessionResponse> getSession(@PathVariable UUID id) {
+        return ResponseEntity.ok(sessionService.getSessionById(id));
+    }
+}

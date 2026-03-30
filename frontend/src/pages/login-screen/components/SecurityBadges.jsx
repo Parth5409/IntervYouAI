@@ -5,28 +5,28 @@ const SecurityBadges = () => {
   const securityFeatures = [
     {
       icon: 'Shield',
-      text: 'SSL Secured'
+      text: 'SECURE_SSL'
     },
     {
       icon: 'Lock',
-      text: 'Data Protected'
+      text: 'DATA_ENCRYPTED'
     },
     {
       icon: 'CheckCircle',
-      text: 'Verified Platform'
+      text: 'PLATFORM_VERIFIED'
     }
   ];
 
   return (
-    <div className="flex items-center justify-center space-x-6 py-4">
+    <div className="flex flex-wrap items-center justify-center gap-6 py-6 border-t border-slate-800 mt-8">
       {securityFeatures?.map((feature, index) => (
-        <div key={index} className="flex items-center space-x-2">
+        <div key={index} className="flex items-center space-x-2 grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all cursor-default">
           <Icon 
             name={feature?.icon} 
-            size={16} 
-            color="var(--color-success)" 
+            size={12} 
+            color="var(--color-primary)" 
           />
-          <span className="text-xs text-muted-foreground font-medium">
+          <span className="text-[9px] font-mono text-slate-300 uppercase tracking-widest">
             {feature?.text}
           </span>
         </div>

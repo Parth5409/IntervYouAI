@@ -32,7 +32,7 @@ const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }
     localStorage.removeItem('authToken');
     // Optionally, make an API call to invalidate the token on the backend
     // try {
-    //   await api.post('/auth/logout');
+    //   await api.post('auth/logout');
     // } catch (error) {
     //   console.error('Error logging out on backend:', error);
     // }

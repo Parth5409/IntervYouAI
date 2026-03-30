@@ -17,17 +17,21 @@ const LoginScreen = () => {
   }, [user, loading, navigate]);
 
   if (loading) {
-    return <div>Loading...</div>; // Or a spinner component
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="font-mono text-emerald-500 animate-pulse uppercase tracking-[0.3em] text-xs">
+          Loading_System_Resources...
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
-      <AuthLayout>
-        <WelcomeHeader />
-        <LoginForm />
-        <SecurityBadges />
-      </AuthLayout>
-    </div>
+    <AuthLayout title="User_Login" subtitle="Identification required for access">
+      <WelcomeHeader />
+      <LoginForm />
+      <SecurityBadges />
+    </AuthLayout>
   );
 };
 

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntervYouAI Architecture & Backend Deep Dive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #FAF7F2;
+            --color-bg-warm: #F5F0E8;
+            --color-bg-code: #1E1E2E;
+            --color-text: #2C2A28;
+            --color-text-secondary: #6B6560;
+            --color-border: #E5DFD6;
+            --color-accent: #D94F30;
+            --color-accent-light: #FDEEE9;
+            --color-success: #2D8B55;
+            --color-success-light: #E8F5EE;
+            --color-error: #C93B3B;
+            --color-error-light: #FDE8E8;
+            --color-actor-1: #D94F30; /* Gateway */
+            --color-actor-2: #2A7B9B; /* Java Core */
+            --color-actor-3: #7B6DAA; /* Python AI */
+            --color-actor-4: #2D8B55; /* Kafka */
+            
+            --font-display: 'Bricolage Grotesque', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --space-2: 0.5rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-md: 0 4px 12px rgba(44, 42, 40, 0.08);
+            --shadow-lg: 0 8px 24px rgba(44, 42, 40, 0.1);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        header {
+            padding: var(--space-16) var(--space-8);
+            text-align: center;
+            background: var(--color-bg-warm);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        h1 { font-family: var(--font-display); font-size: 3rem; margin: 0; color: var(--color-text); }
+        .subtitle { font-size: 1.2rem; color: var(--color-text-secondary); max-width: 600px; margin: var(--space-4) auto 0; }
+
+        .module {
+            max-width: 1000px;
+            margin: var(--space-12) auto;
+            padding: var(--space-12);
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Alternating Backgrounds */
+        .module:nth-child(even) {
+            background: var(--color-bg-warm);
+        }
+
+        .module-header { border-bottom: 2px solid var(--color-border); padding-bottom: var(--space-4); margin-bottom: var(--space-8); position: relative;}
+        .module-number { font-family: var(--font-display); font-size: 4.5rem; color: var(--color-accent); opacity: 0.1; position: absolute; top: -3rem; left: -1rem; font-weight: 800;}
+        .module-title { font-family: var(--font-display); font-size: 2.25rem; margin: 0; position: relative; font-weight: 700;}
+
+        .screen { margin-bottom: var(--space-12); }
+        h2 { font-family: var(--font-display); color: var(--color-accent); font-size: 1.5rem; border-bottom: 2px solid var(--color-accent-light); display: inline-block; padding-bottom: 4px; margin-bottom: var(--space-6);}
+
+        p { font-size: 1.1rem; color: var(--color-text); }
+
+        /* Translation Blocks */
+        .translation-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            margin: var(--space-8) 0;
+        }
+
+        .translation-code { 
+            background: var(--color-bg-code); 
+            color: #CDD6F4; 
+            padding: var(--space-6); 
+            font-family: var(--font-mono); 
+            font-size: 0.9rem; 
+            overflow-x: auto;
+        }
+        
+        .translation-english { 
+            padding: var(--space-6); 
+            background: white; 
+            font-size: 1rem; 
+            border-left: 4px solid var(--color-accent); 
+        }
+        pre { margin: 0; white-space: pre-wrap; word-break: break-word;}
+
+        /* Callouts */
+        .callout {
+            padding: var(--space-6);
+            border-left: 4px solid var(--color-accent);
+            background: var(--color-accent-light);
+            margin: var(--space-8) 0;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            display: flex;
+            gap: var(--space-4);
+            align-items: flex-start;
+        }
+        .callout.interview {
+            border-left-color: var(--color-actor-2);
+            background: #E4F2F7;
+        }
+        .callout-icon { font-size: 1.5rem; }
+        .callout-content p { margin: 0; }
+        .callout-title { display: block; font-weight: bold; margin-bottom: var(--space-2); color: var(--color-text); font-family: var(--font-display);}
+
+        /* Tooltips */
+        .term { border-bottom: 1.5px dashed var(--color-accent); cursor: pointer; font-weight: 500; position: relative; color: var(--color-text); }
+        .term:hover::after {
+            content: attr(data-definition);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-bg-code);
+            color: white;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            width: max-content;
+            max-width: 300px;
+            z-index: 100;
+            font-size: 0.9rem;
+            font-family: var(--font-body);
+            font-weight: normal;
+            box-shadow: var(--shadow-lg);
+            pointer-events: none;
+        }
+        .term:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--color-bg-code);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Quizzes */
+        .quiz {
+            background: white;
+            padding: var(--space-8);
+            border-radius: var(--radius-md);
+            border: 2px solid var(--color-border);
+            margin-top: var(--space-12);
+        }
+
+        .quiz h3 { font-family: var(--font-display); margin-top: 0; }
+
+        .option {
+            display: block;
+            padding: var(--space-4);
+            background: var(--color-bg-warm);
+            margin: var(--space-4) 0;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        .option:hover { border-color: var(--color-accent); background: var(--color-accent-light); }
+        .option.correct { border-color: var(--color-success); background: var(--color-success-light); }
+        .option.wrong { border-color: var(--color-error); background: var(--color-error-light); }
+
+        .explanation { display: none; margin-top: var(--space-4); padding: var(--space-4); border-radius: var(--radius-sm); background: var(--color-bg-warm); font-size: 0.95rem; }
+
+        /* Chat Animation */
+        .chat-window {
+            background: var(--color-bg-warm);
+            padding: var(--space-6);
+            border-radius: var(--radius-md);
+            margin: var(--space-8) 0;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            border: 1px solid var(--color-border);
+        }
+        .bubble {
+            padding: var(--space-4);
+            border-radius: 18px;
+            max-width: 80%;
+            font-size: 0.95rem;
+            position: relative;
+        }
+        .bubble.java { background: var(--color-actor-2); color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .bubble.python { background: var(--color-actor-3); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .bubble.kafka { background: var(--color-actor-4); color: white; align-self: center; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase;}
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            background: var(--color-bg-code);
+            color: #CBA6F7;
+        }
+
+        /* Syntax Highlighting */
+        .k { color: #CBA6F7; } /* keyword */
+        .s { color: #A6E3A1; } /* string */
+        .a { color: #F9E2AF; } /* annotation */
+        .t { color: #89B4FA; } /* type */
+
+        @media (max-width: 768px) {
+            .translation-block { grid-template-columns: 1fr; }
+            .translation-english { border-left: none; border-top: 4px solid var(--color-accent); }
+            .module { padding: var(--space-6); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>The IntervYouAI Backend</h1>
+    <p class="subtitle">An Interactive Course for Java Spring Boot Developers. Prepare for your system design and Spring Boot interview questions by mastering the architecture you built.</p>
+</header>
+
+<div class="module">
+    <div class="module-header">
+        <span class="module-number">01</span>
+        <h1 class="module-title">The "Drive-Centric" Architecture</h1>
+    </div>
+    
+    <div class="screen">
+        <h2>Why Microservices?</h2>
+        <p>IntervYouAI handles two very different workloads. First, it manages TPO (Training and Placement Officer) data, student profiles, and JWT authentication. Second, it runs heavy LLM processing, vector searches (FAISS), and speech-to-text for AI interviews.</p>
+        
+        <p>Instead of a massive <span class="term" data-definition="A single, tightly coupled application where all logic runs in the same process. Hard to scale specific parts.">Monolith</span>, we split it:</p>
+        <ul>
+            <li><strong>Java (Spring Boot)</strong> handles the "Institutional ERP" (Management, Auth, Drives) because Java is strictly typed, robust, and industry-standard for business logic.</li>
+            <li><strong>Python (FastAPI)</strong> handles the "AI Execution" because Python has the best ecosystem for ML, PyTorch, and LangChain.</li>
+        </ul>
+
+        <div class="callout">
+            <div class="callout-icon">💡</div>
+            <div class="callout-content">
+                <span class="callout-title">The "Why" for your Interview</span>
+                <p>If an interviewer asks <em>"Why didn't you just write the whole thing in Python?"</em>, tell them: <strong>Separation of Concerns and Ecosystem matching</strong>. Java handles transactional business rules perfectly with Hibernate, while Python is optimized for the AI inference. We scale the Python containers independently when AI load is high.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen">
+        <h2>Crucial Decision: Asynchronous Communication via Kafka</h2>
+        <p>When an interview finishes, the AI Engine takes time to generate feedback, scores, and transcripts. If the Java backend used a normal HTTP call and waited for this, the user's browser would freeze, and the connection might time out.</p>
+        
+        <div class="chat-window">
+            <div class="bubble python">Python: "I just finished analyzing a 30-minute interview. Generating feedback..."</div>
+            <div class="bubble kafka">MESSAGE BROKER: { topic: 'interview-feedback', id: '123' }</div>
+            <div class="bubble java">Java: "I'm listening to the Kafka topic. I got the feedback, updating PostgreSQL now!"</div>
+        </div>
+
+        <div class="translation-block">
+            <div class="translation-code">
+                <pre><code><span class="a">@KafkaListener</span>(
+    topics = <span class="s">"${spring.kafka.topics.feedback}"</span>, 
+    groupId = <span class="s">"backend-core-group"</span>
+)
+<span class="a">@Transactional</span>
+<span class="k">public void</span> consumeFeedback(<span class="t">InterviewFeedbackEvent</span> event) {
+    <span class="t">UUID</span> sessionUuid = <span class="t">UUID</span>.fromString(event.getSessionId());
+    <span class="t">InterviewSession</span> session = sessionRepository
+        .findById(sessionUuid)
+        .orElseThrow();
+
+    session.setOverallScore(event.getOverallScore());
+    sessionRepository.save(session);
+}</code></pre>
+            </div>
+            <div class="translation-english">
+                <p>We tell Spring to constantly listen to the <span class="term" data-definition="A category or feed name to which records are published in Kafka.">Kafka Topic</span>.</p>
+                <p>If an error happens while saving (like the DB goes down), <code>@Transactional</code> rolls back the database change, ensuring we don't save half the data.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="module">
+    <div class="module-header">
+        <span class="module-number">02</span>
+        <h1 class="module-title">The Edge: API Gateway & Security</h1>
+    </div>
+
+    <div class="screen">
+        <h2>The Bouncer at the Door</h2>
+        <p>Instead of the React frontend trying to memorize port 8081 for Java and port 8000 for Python, we put an <strong>API Gateway</strong> (Port 8080) in front. It acts as a <span class="term" data-definition="A design pattern where all incoming traffic hits a single entry point before being routed to microservices.">Reverse Proxy</span>.</p>
+        
+        <div class="translation-block">
+            <div class="translation-code">
+                <pre><code>spring:
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: ai_engine
+            uri: <span class="s">http://localhost:8000</span>
+            predicates:
+              - Path=/api/engine/**
+          - id: backend_core
+            uri: <span class="s">http://localhost:8081</span>
+            predicates:
+              - Path=/api/core/**</code></pre>
+            </div>
+            <div class="translation-english">
+                <p>If the URL starts with <code>/api/engine</code>, send it to Python silently.</p>
+                <p>If it starts with <code>/api/core</code>, send it to Java.</p>
+                <p>The frontend only ever talks to port 8080. It doesn't know microservices exist!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen">
+        <h2>JWT Authentication Filter</h2>
+        <p>In the Java backend, security is handled by a <span class="term" data-definition="A piece of code that intercepts an HTTP request before it reaches the Controller.">Filter</span>. It checks every request for a JSON Web Token (JWT).</p>
+
+        <div class="translation-block">
+            <div class="translation-code">
+                <pre><code><span class="k">protected void</span> doFilterInternal(
+    <span class="t">HttpServletRequest</span> request, 
+    <span class="t">HttpServletResponse</span> response, 
+    <span class="t">FilterChain</span> filterChain) {
+    
+    <span class="t">String</span> jwt = parseJwt(request);
+    <span class="k">if</span> (jwt != <span class="k">null</span> && jwtUtils.validateJwtToken(jwt)) {
+        <span class="t">String</span> email = jwtUtils.getEmailFromJwtToken(jwt);
+        <span class="t">UserDetails</span> userDetails = userDetailsService
+            .loadUserByUsername(email);
+            
+        <span class="t">SecurityContextHolder</span>.getContext()
+            .setAuthentication(authentication);
+    }
+    filterChain.doFilter(request, response);
+}</code></pre>
+            </div>
+            <div class="translation-english">
+                <p>Pull the token out of the "Authorization: Bearer..." header.</p>
+                <p>If the cryptographic signature is valid, read the email address from it.</p>
+                <p>Load the user from the database and tell Spring Security: "This user is logged in for this request."</p>
+                <p>Pass the request down the chain to the actual Controller.</p>
+            </div>
+        </div>
+
+        <div class="callout interview">
+            <div class="callout-icon">🎯</div>
+            <div class="callout-content">
+                <span class="callout-title">Interview Question: Session vs Stateless</span>
+                <p><strong>Q:</strong> "Why did you use JWTs instead of HTTP Sessions?" <br><strong>A:</strong> "Because our architecture is stateless. If we used Sessions, the server stores state in memory. If we scale Java to 3 servers, Server 2 doesn't know the user logged into Server 1. With JWT, the token itself contains the identity, meaning the user can hit <em>any</em> server and be authenticated."</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="module">
+    <div class="module-header">
+        <span class="module-number">03</span>
+        <h1 class="module-title">Spring Boot Fundamentals in Action</h1>
+    </div>
+
+    <div class="screen">
+        <h2>Dependency Injection (DI) & IoC</h2>
+        <p>In traditional Java, you manually instantiate objects (<code>new Service()</code>). In Spring, the <span class="term" data-definition="The core container that creates, wires, and manages the lifecycle of beans.">IoC Container</span> (Inversion of Control) manages objects, called <strong>Beans</strong>.</p>
+        
+        <div class="translation-block">
+            <div class="translation-code">
+                <pre><code><span class="a">@Service</span>
+<span class="k">public class</span> <span class="t">PlacementDriveService</span> {
+
+    <span class="a">@Autowired</span>
+    <span class="k">private</span> <span class="t">PlacementDriveRepository</span> repository;
+
+    <span class="a">@Autowired</span>
+    <span class="k">private</span> <span class="t">AiIntegrationService</span> aiService;
+}</code></pre>
+            </div>
+            <div class="translation-english">
+                <p><code>@Service</code> tells Spring: "Create a Singleton instance of this class on startup."</p>
+                <p><code>@Autowired</code> tells Spring: "Find the Repository bean you created, and inject it into this variable automatically."</p>
+            </div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-icon">⚠️</div>
+            <div class="callout-content">
+                <span class="callout-title">Architecture Improvement</span>
+                <p>The code uses <strong>Field Injection</strong> (putting <code>@Autowired</code> directly on variables). In an interview, mention that <strong>Constructor Injection</strong> is the modern best practice. It allows fields to be <code>final</code>, ensuring they aren't modified, and makes writing unit tests much easier because you don't need Spring to inject mocks—you just pass them to the constructor.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen">
+        <h2>Global Exception Handling</h2>
+        <p>Instead of writing <code>try/catch</code> blocks in every single controller, Spring uses <span class="term" data-definition="Aspect-Oriented Programming: modularizing cross-cutting concerns like logging, security, or error handling.">AOP (Aspect-Oriented Programming)</span> to catch errors globally.</p>
+
+        <div class="translation-block">
+            <div class="translation-code">
+                <pre><code><span class="a">@ControllerAdvice</span>
+<span class="k">public class</span> <span class="t">GlobalExceptionHandler</span> {
+
+    <span class="a">@ExceptionHandler</span>(ResourceNotFoundException.<span class="k">class</span>)
+    <span class="k">public</span> <span class="t">ResponseEntity</span>&lt;Object&gt; handleNotFound(<span class="t">ResourceNotFoundException</span> ex) {
+        <span class="t">Map</span>&lt;String, Object&gt; body = <span class="k">new</span> LinkedHashMap&lt;&gt;();
+        body.put(<span class="s">"message"</span>, ex.getMessage());
+        body.put(<span class="s">"success"</span>, <span class="k">false</span>);
+        
+        <span class="k">return new</span> <span class="t">ResponseEntity</span>&lt;&gt;(body, <span class="t">HttpStatus</span>.NOT_FOUND);
+    }
+}</code></pre>
+            </div>
+            <div class="translation-english">
+                <p><code>@ControllerAdvice</code> acts as an interceptor. If <em>any</em> controller throws an error...</p>
+                <p>...and it matches <code>ResourceNotFoundException</code>, this method runs.</p>
+                <p>It creates a standard JSON response with <code>success: false</code> and an HTTP 404 status code.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="module">
+    <div class="module-header">
+        <span class="module-number">04</span>
+        <h1 class="module-title">Data Modeling with JPA/Hibernate</h1>
+    </div>
+
+    <div class="screen">
+        <h2>Mapping Objects to Tables (ORM)</h2>
+        <p>Spring Data JPA uses Hibernate under the hood to translate Java objects into SQL tables. Look at how <code>PlacementDrive</code> is defined:</p>
+
+        <div class="translation-block">
+            <div class="translation-code">
+                <pre><code><span class="a">@Entity</span>
+<span class="a">@Table</span>(name = <span class="s">"placement_drives"</span>)
+<span class="k">public class</span> <span class="t">PlacementDrive</span> {
+
+    <span class="a">@Id</span>
+    <span class="a">@GeneratedValue</span>(strategy = <span class="t">GenerationType</span>.UUID)
+    <span class="k">private</span> <span class="t">UUID</span> id;
+
+    <span class="a">@ManyToOne</span>(fetch = <span class="t">FetchType</span>.LAZY)
+    <span class="a">@JoinColumn</span>(name = <span class="s">"tpo_id"</span>)
+    <span class="k">private</span> <span class="t">User</span> tpo;
+
+    <span class="a">@Column</span>(name = <span class="s">"config_json"</span>, columnDefinition = <span class="s">"jsonb"</span>)
+    <span class="a">@JdbcTypeCode</span>(<span class="t">SqlTypes</span>.JSON)
+    <span class="k">private</span> <span class="t">String</span> configJson;
+}</code></pre>
+            </div>
+            <div class="translation-english">
+                <p>Create a PostgreSQL table called <code>placement_drives</code>.</p>
+                <p>Auto-generate a secure UUID for the primary key.</p>
+                <p>Many Drives belong to One TPO user. FetchType.LAZY means "don't query the User table until I explicitly ask for <code>drive.getTpo()</code>" (saves memory).</p>
+                <p>Store JSON directly in Postgres using the native <code>jsonb</code> format for speed and queryability.</p>
+            </div>
+        </div>
+        
+        <div class="callout interview">
+            <div class="callout-icon">🎯</div>
+            <div class="callout-content">
+                <span class="callout-title">Interview Question: N+1 Problem</span>
+                <p><strong>Q:</strong> "What is the N+1 select problem in Hibernate?" <br><strong>A:</strong> "It happens when you fetch a list of drives (1 query), and then loop through them calling <code>drive.getTpo().getName()</code>. If there are 100 drives, Hibernate runs 100 extra queries to fetch the TPOs (N+1 queries total). To fix it, you write a JPQL query using <code>JOIN FETCH d.tpo</code> to grab everything in a single SQL query."</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="module">
+    <div class="module-header">
+        <span class="module-number">05</span>
+        <h1 class="module-title">Architecture Flaws & How You'd Fix Them</h1>
+    </div>
+
+    <div class="screen">
+        <h2>The "Distributed Monolith" Smell</h2>
+        <p>Right now, both the Java Backend and the Python AI-Engine use the same <code>jdbc:postgresql://localhost:5432/intervyouai</code> database. </p>
+        <p><strong>Why is this bad?</strong> If Java changes the <code>User</code> table schema, the Python code might crash. This violates the microservice principle of <span class="term" data-definition="Each microservice should own its own data completely. If another service needs that data, it must ask via API.">Database-per-Service</span>.</p>
+        
+        <p><strong>The Fix to suggest in an interview:</strong></p>
+        <ul>
+            <li>Java owns the PostgreSQL DB (Users, Drives, Auth).</li>
+            <li>Python owns a separate NoSQL DB (e.g., MongoDB) for storing raw transcripts, FAISS vectors, and JSON feedback.</li>
+            <li>When Java needs feedback, Python sends it over Kafka, and Java stores only a <em>reference</em> or a flattened summary.</li>
+        </ul>
+    </div>
+
+    <div class="screen">
+        <h2>Synchronous External API Calls</h2>
+        <p>In <code>PlacementDriveService.java</code>, when a drive is created, Java uses <code>RestTemplate</code> to POST to the Python engine to extract skills from the Job Description.</p>
+        <p><strong>Why is this bad?</strong> If the Python engine is restarting, the Drive creation fails completely. It creates tight coupling.</p>
+        <p><strong>The Fix:</strong> Create the drive with a status of <code>PENDING_ANALYSIS</code>. Publish a <code>DriveCreatedEvent</code> to Kafka. Python picks it up, extracts skills, and replies via Kafka. The UI listens via WebSockets or polling for the "Analysis Complete" update.</p>
+    </div>
+
+    <div class="quiz">
+        <h3>Final Challenge: The Architect's Dilemma</h3>
+        <p>During a massive placement drive, 500 students upload their resumes at the exact same minute. The Python AI engine (which parses PDFs and creates vectors) gets overwhelmed and crashes. As the Java Backend Developer, how do you fix the system architecture to handle this?</p>
+        <div class="option" onclick="alert('Wrong. RestTemplate is synchronous. If Python is slow, Java threads will block waiting for a response, eventually crashing the Java server too (Thread Pool exhaustion).')">A) Use RestTemplate with a retry mechanism in Java to keep hitting Python until it responds.</div>
+        <div class="option" onclick="alert('Wrong. Scaling up helps, but it doesn\'t solve the architectural bottleneck of synchronous processing.')">B) Buy a massive AWS server with 128GB of RAM so Python never crashes.</div>
+        <div class="option" onclick="alert('Correct! This is called the Event-Driven or Publisher/Subscriber pattern. Kafka acts as a shock absorber. Python reads at its own pace, and the UI tells the student Processing... until it\'s done.')">C) Java uploads the file to S3, saves status as 'Processing', and puts a message in a Kafka queue. Python pulls messages from Kafka one by one at its own pace.</div>
+    </div>
+</div>
+
+<script>
+    // Quiz logic
+    document.querySelectorAll('.option').forEach(opt => {
+        opt.addEventListener('click', function(e) {
+            if(this.getAttribute('onclick')) return; // handled by inline alert for simplicity in this demo
+        });
+    });
+</script>
+
+</body>
+</html>
