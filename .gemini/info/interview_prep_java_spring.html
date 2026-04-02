@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Java & Spring Boot: The Senior Interview Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #FAF7F2; --color-bg-warm: #F5F0E8; --color-bg-code: #1E1E2E;
+            --color-text: #2C2A28; --color-accent: #D94F30; --color-accent-light: #FDEEE9;
+            --font-display: 'Bricolage Grotesque', sans-serif; --font-body: 'DM Sans', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+        }
+        body { font-family: var(--font-body); background: var(--color-bg); color: var(--color-text); line-height: 1.6; margin: 0; }
+        header { padding: 4rem 2rem; text-align: center; background: var(--color-bg-warm); border-bottom: 1px solid #E5DFD6; }
+        .module { max-width: 1000px; margin: 3rem auto; padding: 2.5rem; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        h1, h2, h3 { font-family: var(--font-display); color: var(--color-text); }
+        h2 { border-bottom: 2px solid var(--color-accent-light); display: inline-block; padding-bottom: 5px; }
+        .callout { padding: 1.5rem; border-left: 4px solid var(--color-accent); background: var(--color-accent-light); margin: 2rem 0; border-radius: 0 12px 12px 0; }
+        .translation-block { display: grid; grid-template-columns: 1fr 1fr; background: var(--color-bg-code); border-radius: 12px; overflow: hidden; margin: 2rem 0; }
+        .translation-code { padding: 1.5rem; color: #CDD6F4; font-family: var(--font-mono); font-size: 0.85rem; border-right: 1px solid #313244; }
+        .translation-english { padding: 1.5rem; background: #fff; border-left: 4px solid var(--color-accent); font-size: 0.95rem; }
+        .quiz { background: var(--color-bg-warm); padding: 2rem; border-radius: 12px; border: 1px solid #E5DFD6; }
+        .option { display: block; padding: 1rem; background: white; margin: 0.5rem 0; border: 1px solid #E5DFD6; border-radius: 8px; cursor: pointer; transition: 0.2s; font-weight: 500;}
+        .option:hover { border-color: var(--color-accent); background: var(--color-accent-light); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+        .badge { display: inline-block; background: var(--color-bg-code); color: #CBA6F7; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Java & Spring Boot Interview Mastery</h1>
+    <p>Comprehensive Revision for Senior-Level Backend Interviews</p>
+</header>
+
+<div class="module">
+    <h2>Module 1: JVM & Memory Internals</h2>
+    <p>Understanding the JVM is what separates a coder from an engineer. Startups need people who can optimize memory footprints.</p>
+    
+    <div class="grid">
+        <div class="quiz" style="background:white;">
+            <h3>Stack vs Heap</h3>
+            <ul>
+                <li><strong>Stack:</strong> Stores local variables and method calls. Thread-safe and fast.</li>
+                <li><strong>Heap:</strong> Stores all objects. Shared across threads. Managed by Garbage Collection.</li>
+            </ul>
+        </div>
+        <div class="quiz" style="background:white;">
+            <h3>Metaspace</h3>
+            <p>Replaced PermGen in Java 8. Stores class metadata. It grows automatically and uses <strong>Native Memory</strong>.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <strong>Tricky Question:</strong> "Can an object ever be stored on the Stack?"
+        <p><strong>Answer:</strong> Yes, via <strong>Escape Analysis</strong>. If the JVM determines that an object doesn't 'escape' the method (it's not returned or passed elsewhere), it may perform <em>Scalar Replacement</em> and allocate the object's fields on the stack to avoid GC overhead.</p>
+    </div>
+</div>
+
+<div class="module">
+    <h2>Module 2: Java 8+ & Streams</h2>
+    <div class="translation-block">
+        <div class="translation-code">
+            <pre><code>list.stream()
+    .filter(d -> d.isActive())
+    .map(Drive::getCompanyName)
+    .collect(Collectors.toList());</code></pre>
+        </div>
+        <div class="translation-english">
+            <p><strong>Streams:</strong> A sequence of elements supporting functional-style operations.</p>
+            <p><strong>Intermediate Operations:</strong> (filter, map) are <em>Lazy</em>. They don't run until a terminal operation is called.</p>
+            <p><strong>Terminal Operations:</strong> (collect, forEach, count) trigger the processing.</p>
+        </div>
+    </div>
+    <div class="callout">
+        <strong>Warning:</strong> Never use <code>.parallelStream()</code> for tasks involving I/O or blocking operations. Parallel streams use a shared <strong>ForkJoinPool.commonPool()</strong>; if you block it, you slow down the <em>entire JVM</em>.
+    </div>
+</div>
+
+<div class="module">
+    <h2>Module 3: Spring Bean Lifecycle</h2>
+    <p>If you don't know the lifecycle, you'll struggle with circular dependencies and initialization bugs.</p>
+    <ol>
+        <li><strong>Instantiate:</strong> Spring 'new's up the object.</li>
+        <li><strong>Populate Properties:</strong> DI happens here (Setter/Field injection).</li>
+        <li><strong>BeanNameAware / BeanFactoryAware:</strong> Giving the bean info about the container.</li>
+        <li><strong>Pre-Initialization:</strong> <code>BeanPostProcessor.postProcessBeforeInitialization</code>.</li>
+        <li><strong>AfterPropertiesSet:</strong> <code>InitializingBean</code> interface or <code>@PostConstruct</code>.</li>
+        <li><strong>Initialization:</strong> Custom <code>init-method</code>.</li>
+        <li><strong>Post-Initialization:</strong> <code>BeanPostProcessor.postProcessAfterInitialization</code>. <br><em>(This is where AOP Proxies are created!)</em></li>
+    </ol>
+</div>
+
+<div class="module">
+    <h2>Module 4: Spring Data JPA Performance</h2>
+    <div class="callout" style="border-left-color: #2D8B55; background: #E8F5EE;">
+        <strong>The N+1 Problem:</strong> You fetch 10 Users and then loop to get their Roles. Hibernate runs 1 query for users + 10 queries for roles.
+        <br><strong>Solution:</strong> Use <code>JOIN FETCH</code> in your JPQL or an <code>@EntityGraph</code> to fetch everything in one SQL JOIN.
+    </div>
+    
+    <div class="quiz">
+        <h3>Interview Challenge</h3>
+        <p>What is the difference between <code>@Transactional(readOnly = true)</code> and a normal transaction?</p>
+        <div class="option" onclick="alert('Correct! Hibernate disables dirty checking, which saves memory and CPU because it doesn\'t have to track if objects changed.')">It optimizes performance by disabling dirty checking in the Persistence Context.</div>
+        <div class="option" onclick="alert('Wrong. Read-only transactions still use the database, just more efficiently.')">It completely bypasses the database and uses cache only.</div>
+    </div>
+</div>
+</body>
+</html>
