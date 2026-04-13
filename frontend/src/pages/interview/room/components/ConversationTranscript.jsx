@@ -31,44 +31,47 @@ const ConversationTranscript = ({
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar"
       >
-        {transcript.map((message, index) => (
-          <div
-            key={message.id || index}
-            className={cn(
-              "flex flex-col gap-2",
-              message.type === 'user' ? 'items-end' : 'items-start'
-            )}
-          >
-            <div className="flex items-center gap-3">
-              <span className={cn(
-                "text-[9px] font-bold tracking-widest px-2 py-0.5 border",
-                message.type === 'user' ? "border-sky-500/30 text-sky-500 bg-sky-500/5" : "border-emerald-500/30 text-emerald-500 bg-emerald-500/5"
-              )}>
-                {message.speaker.toUpperCase()}
-              </span>
-              <span className="text-[8px] text-slate-600">
-                [{formatTime(message.timestamp)}]
-              </span>
-            </div>
-            
-            <div className={cn(
-              "max-w-[90%] p-4 border relative group transition-all duration-300",
-              message.type === 'user' 
-                ? 'bg-sky-500/5 border-sky-500/20 text-sky-50 shadow-[4px_4px_0px_rgba(56,189,248,0.1)]' 
-                : 'bg-emerald-500/5 border-emerald-500/20 text-emerald-50 shadow-[-4px_4px_0px_rgba(16,185,129,0.1)]'
-            )}>
-              <p className="text-[11px] leading-relaxed tracking-tight">
-                {message.text}
-              </p>
+        {transcript.map((message, index) => {
+          if (!message) return null;
+          return (
+            <div
+              key={message.id || index}
+              className={cn(
+                "flex flex-col gap-2",
+                message.type === 'user' ? 'items-end' : 'items-start'
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <span className={cn(
+                  "text-[9px] font-bold tracking-widest px-2 py-0.5 border",
+                  message.type === 'user' ? "border-sky-500/30 text-sky-500 bg-sky-500/5" : "border-emerald-500/30 text-emerald-500 bg-emerald-500/5"
+                )}>
+                  {(message.speaker || 'UNKNOWN').toUpperCase()}
+                </span>
+                <span className="text-[8px] text-slate-600">
+                  [{formatTime(message.timestamp)}]
+                </span>
+              </div>
               
-              {/* Message status bit */}
               <div className={cn(
-                "absolute -bottom-1 w-1 h-1",
-                message.type === 'user' ? "right-0 bg-sky-500" : "left-0 bg-emerald-500"
-              )} />
+                "max-w-[90%] p-4 border relative group transition-all duration-300",
+                message.type === 'user' 
+                  ? 'bg-sky-500/5 border-sky-500/20 text-sky-50 shadow-[4px_4px_0px_rgba(56,189,248,0.1)]' 
+                  : 'bg-emerald-500/5 border-emerald-500/20 text-emerald-50 shadow-[-4px_4px_0px_rgba(16,185,129,0.1)]'
+              )}>
+                <p className="text-[11px] leading-relaxed tracking-tight">
+                  {message.text}
+                </p>
+                
+                {/* Message status bit */}
+                <div className={cn(
+                  "absolute -bottom-1 w-1 h-1",
+                  message.type === 'user' ? "right-0 bg-sky-500" : "left-0 bg-emerald-500"
+                )} />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* Loading Indicator - Terminal Style */}
         {isLoading && (
@@ -98,7 +101,7 @@ const ConversationTranscript = ({
           <div className="space-y-1">
             <p className="text-[8px] text-slate-500 uppercase">Token_Count</p>
             <p className="text-[10px] text-slate-300 font-bold tracking-widest">
-              {transcript.reduce((acc, msg) => acc + msg.text.split(' ').length, 0)}
+              {transcript.reduce((acc, msg) => acc + (msg?.text ? msg.text.split(' ').length : 0), 0)}
             </p>
           </div>
           <div className="space-y-1 text-right">

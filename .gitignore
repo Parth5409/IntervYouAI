@@ -67,3 +67,4 @@ frontend/.env.production.local
 frontend/coverage/
 ai-engine/llm_models/
 .gemini/
+IntervYouNewDesigns/

@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Build Artifacts
+dist/
+build/
+target/
+out/
+.next/
+.vite/
+.parcel-cache/
+
+# IDE & System
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.log
+
+# Project Specific Large Folders
+ai-engine/vector_stores/
+ai-engine/llm_models/
+ai-engine/temp_audio_stt/
+temp_audio_stt/
+vector_stores/
+
+# Local Environment
+.env
+.env.*
+!.env.example
