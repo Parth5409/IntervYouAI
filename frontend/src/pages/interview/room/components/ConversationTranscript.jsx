@@ -19,75 +19,77 @@ const ConversationTranscript = ({
     return new Date(timestamp).toLocaleTimeString('en-US', {
       hour12: false,
       hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
+      minute: '2-digit'
     });
   };
 
   return (
-    <div className={cn("flex flex-col h-full bg-slate-950 font-mono", className)}>
+    <div className={cn("flex flex-col h-full bg-background font-body", className)}>
       {/* Transcript Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar"
+        className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar scroll-smooth"
       >
         {transcript.map((message, index) => {
           if (!message) return null;
+          const isUser = message.type === 'user';
           return (
             <div
               key={message.id || index}
               className={cn(
-                "flex flex-col gap-2",
-                message.type === 'user' ? 'items-end' : 'items-start'
+                "flex flex-col gap-3 group animate-in fade-in slide-in-from-bottom-2 duration-500",
+                isUser ? 'items-end ml-12' : 'items-start mr-12'
               )}
             >
-              <div className="flex items-center gap-3">
+              <div className={cn(
+                "flex items-center gap-3 px-1",
+                isUser ? "flex-row-reverse" : "flex-row"
+              )}>
                 <span className={cn(
-                  "text-[9px] font-bold tracking-widest px-2 py-0.5 border",
-                  message.type === 'user' ? "border-sky-500/30 text-sky-500 bg-sky-500/5" : "border-emerald-500/30 text-emerald-500 bg-emerald-500/5"
+                  "text-[9px] font-bold tracking-[0.2em] uppercase",
+                  isUser ? "text-primary" : "text-white"
                 )}>
-                  {(message.speaker || 'UNKNOWN').toUpperCase()}
+                  {isUser ? 'Candidate Response' : 'AI Analysis Agent'}
                 </span>
-                <span className="text-[8px] text-slate-600">
-                  [{formatTime(message.timestamp)}]
+                <span className="text-[9px] text-on-surface-variant font-medium opacity-40">
+                  {formatTime(message.timestamp)}
                 </span>
               </div>
               
               <div className={cn(
-                "max-w-[90%] p-4 border relative group transition-all duration-300",
-                message.type === 'user' 
-                  ? 'bg-sky-500/5 border-sky-500/20 text-sky-50 shadow-[4px_4px_0px_rgba(56,189,248,0.1)]' 
-                  : 'bg-emerald-500/5 border-emerald-500/20 text-emerald-50 shadow-[-4px_4px_0px_rgba(16,185,129,0.1)]'
+                "p-5 rounded-2xl relative transition-all duration-500 shadow-xl",
+                isUser 
+                  ? 'bg-primary/5 border border-primary/20 text-white rounded-tr-none' 
+                  : 'bg-surface-container-high/40 border border-outline-variant/10 text-on-surface rounded-tl-none backdrop-blur-md'
               )}>
-                <p className="text-[11px] leading-relaxed tracking-tight">
+                <p className="text-[13px] leading-relaxed tracking-tight font-medium">
                   {message.text}
                 </p>
-                
-                {/* Message status bit */}
-                <div className={cn(
-                  "absolute -bottom-1 w-1 h-1",
-                  message.type === 'user' ? "right-0 bg-sky-500" : "left-0 bg-emerald-500"
-                )} />
               </div>
             </div>
           );
         })}
 
-        {/* Loading Indicator - Terminal Style */}
+        {/* Loading Indicator */}
         {isLoading && (
-          <div className="flex flex-col gap-2 items-start">
-            <div className="flex items-center gap-3">
-              <span className="text-[9px] font-bold tracking-widest px-2 py-0.5 border border-emerald-500/30 text-emerald-500 bg-emerald-500/5 animate-pulse">
-                AI_ANALYST
+          <div className="flex flex-col gap-3 items-start animate-pulse">
+            <div className="flex items-center gap-3 px-1">
+              <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-primary">
+                AI Synthesis
               </span>
-              <span className="text-[8px] text-slate-600 animate-pulse">
-                [PROCESSING_RESPONSE...]
+              <span className="text-[9px] text-on-surface-variant font-medium opacity-40">
+                Live Feed
               </span>
             </div>
-            <div className="bg-emerald-500/5 border border-emerald-500/20 p-4 w-24">
-              <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className="w-1 h-3 bg-emerald-500/40 animate-waveform" style={{ animationDelay: `${i * 0.2}s` }} />
+            <div className="bg-surface-container-high/40 border border-outline-variant/10 p-5 rounded-2xl rounded-tl-none backdrop-blur-md min-w-[80px]">
+              <div className="flex gap-1.5 items-end h-3">
+                {[0, 1, 2, 3].map((i) => (
+                  <motion.div 
+                    key={i} 
+                    animate={{ height: [4, 12, 4] }}
+                    transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.1 }}
+                    className="w-[3px] bg-primary/40 rounded-full" 
+                  />
                 ))}
               </div>
             </div>
@@ -96,19 +98,28 @@ const ConversationTranscript = ({
       </div>
 
       {/* Analytics Footer */}
-      <div className="p-4 border-t border-slate-800 bg-slate-900/30">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <p className="text-[8px] text-slate-500 uppercase">Token_Count</p>
-            <p className="text-[10px] text-slate-300 font-bold tracking-widest">
-              {transcript.reduce((acc, msg) => acc + (msg?.text ? msg.text.split(' ').length : 0), 0)}
-            </p>
+      <div className="p-8 border-t border-outline-variant/10 bg-surface-container-low/30 backdrop-blur-lg">
+        <div className="grid grid-cols-2 gap-8">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Icon name="ms:description" size={14} className="text-on-surface-variant opacity-40" />
+              <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-[0.2em]">Context Weight</p>
+            </div>
+            <div className="flex items-baseline gap-1">
+              <p className="text-xl font-headline font-extrabold text-white leading-none">
+                {transcript.reduce((acc, msg) => acc + (msg?.text ? msg.text.split(' ').length : 0), 0)}
+              </p>
+              <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest opacity-40">Tokens</span>
+            </div>
           </div>
-          <div className="space-y-1 text-right">
-            <p className="text-[8px] text-slate-500 uppercase">Stream_Integrity</p>
+          <div className="space-y-2 text-right">
             <div className="flex items-center justify-end gap-2">
-              <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">100%</span>
-              <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
+              <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-[0.2em]">Feed Fidelity</p>
+              <Icon name="ms:graphic_eq" size={14} className="text-primary opacity-60" />
+            </div>
+            <div className="flex items-center justify-end gap-3">
+              <span className="text-xs font-headline font-extrabold text-white tracking-widest leading-none">Synchronized</span>
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(255,145,90,0.5)]" />
             </div>
           </div>
         </div>

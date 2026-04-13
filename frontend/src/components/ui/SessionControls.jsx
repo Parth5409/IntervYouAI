@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
-import Button from './Button';
+import Button from './button';
 import { cn } from '../../utils/cn';
 import {
   AlertDialog,
@@ -38,80 +38,88 @@ const SessionControls = ({
 
   return (
     <>
-      {/* Main Session Controls - Industrial Bar */}
-      <div className={cn("fixed bottom-8 left-1/2 -translate-x-1/2 z-50", className)}>
-        <div className="bg-slate-950 border border-slate-800 p-2 flex items-center gap-4 shadow-2xl backdrop-blur-md">
+      {/* Main Session Controls */}
+      <div className={cn("fixed bottom-10 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-6 animate-in slide-in-from-bottom-5 duration-700 delay-300", className)}>
+        <div className="bg-surface-container-high/60 backdrop-blur-3xl border border-outline-variant/10 p-3 rounded-3xl flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+
           {/* Status Segment */}
-          <div className="flex items-center gap-3 px-4 border-r border-slate-800">
+          <div className="flex items-center gap-4 px-6 border-r border-outline-variant/10">
             <div className={cn(
-              "w-2 h-2",
-              isConnected ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+              "w-2 h-2 rounded-full",
+              isConnected ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-error"
             )} />
-            <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest hidden sm:block">
-              {isConnected ? 'Uplink_Active' : 'Uplink_Lost'}
-            </span>
+            <div className="flex flex-col">
+              <span className="font-headline text-[9px] text-white font-extrabold uppercase tracking-[0.2em] leading-none">
+                {isConnected ? 'Stream Active' : 'Disconnected'}
+              </span>
+              <span className="font-body text-[8px] text-on-surface-variant font-bold uppercase tracking-widest mt-1 opacity-40">
+                Network Node 01
+              </span>
+            </div>
           </div>
 
           {/* Controls Segment */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={onToggleRecording}
               className={cn(
-                "w-10 h-10 border flex items-center justify-center transition-all",
-                isRecording 
-                  ? "bg-red-500/10 border-red-500 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]" 
-                  : "bg-emerald-500/10 border-emerald-500/50 text-emerald-500 hover:border-emerald-500"
+                "w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-500",
+                isRecording
+                  ? "bg-error/10 border-error text-error shadow-[0_0_20px_rgba(255,115,81,0.2)]"
+                  : "bg-surface-container-highest border-outline-variant/10 text-on-surface-variant hover:text-white hover:border-outline-variant"
               )}
             >
-              <Icon name={isRecording ? "Square" : "Mic"} size={18} />
+              <Icon name={isRecording ? "ms:stop_circle" : "ms:mic"} size={22} />
             </button>
 
             <button
               onClick={onToggleMute}
               className={cn(
-                "w-10 h-10 border flex items-center justify-center transition-all",
-                isMuted 
-                  ? "bg-amber-500/10 border-amber-500 text-amber-500" 
-                  : "border-slate-800 text-slate-400 hover:border-slate-600"
+                "w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-500",
+                isMuted
+                  ? "bg-error/10 border-error text-error"
+                  : "bg-surface-container-highest border-outline-variant/10 text-on-surface-variant hover:text-white hover:border-outline-variant"
               )}
             >
-              <Icon name={isMuted ? "MicOff" : "Volume2"} size={18} />
+              <Icon name={isMuted ? "ms:mic_off" : "ms:volume_up"} size={22} />
             </button>
           </div>
 
           {/* Timer Segment */}
           {showTimer && (
-            <div className="px-4 border-l border-slate-800">
-              <div className="font-mono text-xs font-bold text-slate-300 tracking-widest">
+            <div className="px-6 border-l border-outline-variant/10">
+              <div className="font-headline text-lg font-extrabold text-white tracking-tighter tabular-nums leading-none">
                 {formatTime(sessionTime)}
               </div>
+              <p className="font-body text-[8px] text-on-surface-variant font-bold uppercase tracking-widest mt-1 opacity-40">Session Duration</p>
             </div>
           )}
 
           {/* Termination Segment */}
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <button
-                className="ml-2 bg-slate-900 border border-slate-800 hover:border-red-500/50 hover:text-red-500 text-slate-500 font-mono text-[10px] font-bold tracking-widest uppercase h-10 px-4 transition-all"
+              <Button
+                variant="outline"
+                className="ml-4 h-12 px-6 rounded-2xl border-outline-variant/10 hover:border-error/20 hover:text-error text-xs uppercase tracking-widest font-bold bg-transparent"
               >
-                Terminate
-              </button>
+                End Session
+              </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="border-red-500/20">
+            <AlertDialogContent className="bg-surface-container-high border-outline-variant/10 rounded-[2.5rem] p-12 max-w-lg shadow-2xl">
               <AlertDialogHeader>
-                <div className="w-12 h-12 border border-red-500/30 bg-red-500/5 flex items-center justify-center mx-auto mb-4">
-                  <Icon name="AlertTriangle" size={24} className="text-red-500" />
+                <div className="w-20 h-20 rounded-3xl bg-error/10 border border-error/20 flex items-center justify-center mx-auto mb-8">
+                  <Icon name="ms:warning" size={40} className="text-error" />
                 </div>
-                <AlertDialogTitle className="text-center">TERMINATE_MISSION_LOG?</AlertDialogTitle>
-                <AlertDialogDescription className="text-center uppercase leading-relaxed text-[10px]">
-                  Confirmation required to end current simulation. 
+                <AlertDialogTitle className="text-3xl font-headline font-extrabold text-white tracking-tight text-center">Terminate Session?</AlertDialogTitle>
+                <AlertDialogDescription className="text-[13px] text-on-surface-variant font-medium leading-relaxed text-center max-w-xs mx-auto mt-4">
+                  Confirming termination will end the current simulation.
                   All captured data will be processed for analysis.
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter className="sm:justify-center gap-4">
-                <AlertDialogCancel className="flex-1">ABORTED</AlertDialogCancel>
-                <AlertDialogAction onClick={onEndSession} className="flex-1 bg-red-500 hover:bg-red-400 text-slate-950">
-                  CONFIRM_END
+              <AlertDialogFooter className="sm:justify-center gap-4 mt-10">
+                <AlertDialogCancel className="h-16 rounded-2xl flex-1 border-outline-variant/10 font-bold uppercase tracking-widest text-xs">Stay in Session</AlertDialogCancel>
+                <AlertDialogAction onClick={onEndSession} className="h-16 rounded-2xl flex-1 bg-error hover:bg-error-dim text-white font-bold uppercase tracking-widest text-xs transition-all shadow-xl">
+                  End Interview
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

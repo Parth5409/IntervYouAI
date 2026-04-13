@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
-import Button from './Button';
+import Button from './button';
 import { useTheme } from '../../hooks/useTheme';
 
 const DashboardNavigation = ({ currentUser, onTabChange, activeTab = 'profile' }) => {

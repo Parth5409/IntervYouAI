@@ -1,37 +1,69 @@
 @layer base {
   .dark {
-    /* Core Colors - Industrial Slate */
-    --color-background: #020617; /* Slate-950 */
-    --color-foreground: #f8fafc; /* Slate-50 */
-    --color-card: #0f172a;       /* Slate-900 */
-    --color-card-foreground: #f8fafc;
-    --color-popover: #0f172a;
-    --color-popover-foreground: #f8fafc;
-    --color-muted: #1e293b;      /* Slate-800 */
-    --color-muted-foreground: #64748b; /* Slate-500 */
-    --color-border: #1e293b;     /* Slate-800 */
-    --color-input: #0f172a;      /* Slate-900 */
-    --color-ring: #10b981;       /* Emerald-500 */
+    /* Core Colors - The Void */
+    --color-background: #0e0e0e;
+    --color-foreground: #ffffff;
+    --color-card: #131313;
+    --color-card-foreground: #ffffff;
+    --color-popover: #131313;
+    --color-popover-foreground: #ffffff;
+    --color-muted: #262626;
+    --color-muted-foreground: #8E8E8E;
+    --color-border: #262626;
+    --color-input: #000000;
+    --color-ring: #ff915a;
 
-    /* Brand Colors */
-    --color-primary: #10b981;    /* Emerald-500 */
-    --color-primary-foreground: #020617; /* Slate-950 */
-    --color-secondary: #334155;  /* Slate-700 */
-    --color-secondary-foreground: #f8fafc;
-    --color-accent: #38bdf8;     /* Sky-400 */
-    --color-accent-foreground: #020617;
+    /* Primary - The Signal */
+    --color-primary: #ff915a;
+    --color-primary-dim: #ff7526;
+    --color-primary-container: #ff7a31;
+    --color-primary-fixed: #ff7a31;
+    --color-primary-foreground: #531e00;
+
+    /* Secondary */
+    --color-secondary: #ff923c;
+    --color-secondary-dim: #ee8530;
+    --color-secondary-container: #954a00;
+    --color-secondary-foreground: #ffffff;
+
+    /* Tertiary */
+    --color-tertiary: #ffc96f;
+    --color-tertiary-dim: #efa914;
+    --color-tertiary-container: #ffb627;
 
     /* Status Colors */
     --color-success: #10b981;
     --color-success-foreground: #020617;
-    --color-warning: #f59e0b;
-    --color-warning-foreground: #020617;
-    --color-error: #ef4444;
-    --color-error-foreground: #f8fafc;
-    --color-destructive: #ef4444;
-    --color-destructive-foreground: #f8fafc;
+    --color-warning: #ffb627;
+    --color-warning-foreground: #3a2600;
+    --color-error: #ff7351;
+    --color-error-dim: #d53d18;
+    --color-error-container: #b92902;
+    --color-error-foreground: #ffffff;
+    --color-destructive: #ff4d4d;
+    --color-destructive-foreground: #ffffff;
 
-    /* Radius - Industrial Sharpness */
-    --radius: 0px; 
+    /* Surface Tokens */
+    --color-surface: #0e0e0e;
+    --color-surface-dim: #0e0e0e;
+    --color-surface-bright: #2c2c2c;
+    --color-surface-variant: #262626;
+    --color-surface-tint: #ff915a;
+    --color-surface-container-lowest: #000000;
+    --color-surface-container-low: #131313;
+    --color-surface-container: #1a1919;
+    --color-surface-container-high: #201f1f;
+    --color-surface-container-highest: #262626;
+
+    /* Outline Tokens */
+    --color-outline: #484847;
+    --color-outline-variant: #262626;
+
+    /* On Surface Tokens */
+    --color-on-surface: #ffffff;
+    --color-on-surface-variant: #8E8E8E;
+
+    /* Radius - Soft & Premium */
+    --radius: 0.75rem; 
   }
 }

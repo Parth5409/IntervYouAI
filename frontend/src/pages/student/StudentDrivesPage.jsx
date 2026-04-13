@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DashboardLayout from '../../components/ui/DashboardLayout';
 import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/button';
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';

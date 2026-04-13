@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../../components/ui/Input';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import Icon from '../../../components/AppIcon';
 import api from '../../../utils/api';
 import useAuth from '../../../hooks/useAuth';

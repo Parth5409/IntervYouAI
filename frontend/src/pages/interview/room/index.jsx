@@ -200,26 +200,36 @@ const InterviewRoom = () => {
   }, [sessionDetails]);
 
   return (
-    <div className="h-screen bg-slate-950 text-slate-50 flex flex-col relative overflow-hidden">
-      {/* Blueprint Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
+    <div className="h-screen bg-background text-white flex flex-col relative overflow-hidden font-body">
+      {/* Luminescent Mesh Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
+      </div>
 
       <InterviewProgressNav currentStep={2} totalSteps={3} isInterviewActive={true} />
       
       <div className="flex-1 flex flex-col lg:flex-row relative z-10 overflow-hidden">
         {/* Left: Main Interaction Zone */}
-        <div className="flex-1 relative flex flex-col items-center justify-between p-6 sm:p-8 overflow-hidden">
-          <div className="absolute top-8 left-8 flex items-center gap-3 z-20">
-            <div className="w-2 h-2 bg-emerald-500 animate-pulse" />
-            <span className="font-mono text-[10px] text-emerald-500 uppercase tracking-[0.2em]">MISSION_STATUS: ACTIVE</span>
+        <div className="flex-1 relative flex flex-col items-center justify-between p-8 overflow-hidden">
+          {/* Active Status Badge */}
+          <div className="absolute top-10 left-10 flex items-center gap-4 z-20 bg-surface-container-high/40 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-outline-variant/10">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,1)]" />
+            <span className="font-headline text-[10px] font-extrabold text-white uppercase tracking-[0.3em]">Neural Link Active</span>
           </div>
 
-          <div className="flex-1 flex flex-col items-center justify-center space-y-8 sm:space-y-12 max-w-2xl w-full overflow-hidden">
-            <div className="flex-1 flex items-center justify-center min-h-0 w-full">
+          <div className="flex-1 flex flex-col items-center justify-center space-y-12 max-w-3xl w-full overflow-hidden">
+            <div className="flex-1 flex items-center justify-center min-h-0 w-full relative">
+              {/* Orbital Avatar Nesting */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-[120%] aspect-square border-2 border-primary/5 rounded-full animate-[spin_20s_linear_infinite]" />
+                <div className="w-[140%] aspect-square border border-dashed border-primary/5 rounded-full animate-[spin_30s_linear_infinite_reverse]" />
+              </div>
+              
               <AIAvatar isSpeaking={isAIPlaying} size="xlarge" isActive={isSessionActive && !isAIPlaying} />
             </div>
             
-            <div className="shrink-0 w-full flex justify-center py-4 bg-gradient-to-t from-slate-950 via-slate-950 to-transparent">
+            <div className="shrink-0 w-full flex justify-center py-6">
               <VoiceControls
                 isRecording={isRecording}
                 isMuted={isMuted}
@@ -236,10 +246,10 @@ const InterviewRoom = () => {
         </div>
 
         {/* Right: Tactical Sidebar */}
-        <div className="hidden lg:flex lg:w-[380px] xl:w-[450px] flex-col border-l border-slate-800 bg-slate-900/50 backdrop-blur-xl shrink-0 h-full">
-          <div className="p-6 border-b border-slate-800 bg-slate-950/20">
+        <div className="hidden lg:flex lg:w-[420px] xl:w-[480px] flex-col border-l border-outline-variant/10 bg-surface-container-high/30 backdrop-blur-3xl shrink-0 h-full shadow-[-20px_0_50px_rgba(0,0,0,0.3)]">
+          <div className="p-10 border-b border-outline-variant/10">
             <SessionProgress
-              currentPhase={sessionTitle.toUpperCase()}
+              currentPhase={sessionDetails?.session_type || 'TECHNICAL_PROTOCOL'}
               sessionTime={sessionTime}
               questionsAnswered={questionsAnswered}
               totalQuestions={totalQuestions}
@@ -247,11 +257,18 @@ const InterviewRoom = () => {
           </div>
           
           <div className="flex-1 overflow-hidden flex flex-col">
-            <div className="px-6 py-3 bg-slate-950/50 border-b border-slate-800 flex items-center justify-between">
-              <span className="font-mono text-[9px] text-slate-500 uppercase tracking-widest">TRANSMISSION_LOG</span>
-              <span className="font-mono text-[9px] text-emerald-500 uppercase">SYNCED</span>
+            <div className="px-10 py-5 flex items-center justify-between border-b border-outline-variant/5">
+              <div className="flex items-center gap-3">
+                <Icon name="ms:history" size={16} className="text-primary" />
+                <span className="font-headline text-[11px] text-white font-extrabold uppercase tracking-[0.15em]">Transcript stream</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-body text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Live Sync</span>
+                <div className="w-1 h-1 bg-emerald-500 rounded-full" />
+              </div>
             </div>
-            <div className="flex-1 relative overflow-hidden">
+            
+            <div className="flex-1 relative overflow-hidden px-4">
               <ConversationTranscript 
                 transcript={conversationHistory} 
                 isLoading={isAISpeaking || isTranscribing} 

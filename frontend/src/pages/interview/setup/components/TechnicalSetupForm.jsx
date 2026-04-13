@@ -8,26 +8,26 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
   const [loadingCompanies, setLoadingCompanies] = useState(false);
 
   const jobRoles = [
-    { value: "frontend-developer", label: "FRONTEND_DEVELOPER" },
-    { value: "backend-developer", label: "BACKEND_DEVELOPER" },
-    { value: "fullstack-developer", label: "FULLSTACK_DEVELOPER" },
-    { value: "mobile-developer", label: "MOBILE_DEVELOPER" },
-    { value: "devops-engineer", label: "DEVOPS_ENGINEER" },
-    { value: "data-scientist", label: "DATA_SCIENTIST" },
-    { value: "machine-learning-engineer", label: "ML_ENGINEER" }
+    { value: "frontend-developer", label: "Frontend Developer" },
+    { value: "backend-developer", label: "Backend Developer" },
+    { value: "fullstack-developer", label: "Fullstack Developer" },
+    { value: "mobile-developer", label: "Mobile Developer" },
+    { value: "devops-engineer", label: "DevOps Engineer" },
+    { value: "data-scientist", label: "Data Scientist" },
+    { value: "machine-learning-engineer", label: "ML Engineer" }
   ];
 
   const difficultyLevels = [
-    { value: "Easy", label: "EASY_MODE" },
-    { value: "Medium", label: "BALANCED_MODE" },
-    { value: "Hard", label: "COMBAT_MODE (HARD)" }
+    { value: "Easy", label: "Standard Mode" },
+    { value: "Medium", label: "Advanced Protocol" },
+    { value: "Hard", label: "Extreme Stress Test" }
   ];
 
   const questionCounts = [
-    { value: 5, label: "05_QUESTIONS (QUICK)" },
-    { value: 8, label: "08_QUESTIONS (STD)" },
-    { value: 10, label: "10_QUESTIONS (DEEP)" },
-    { value: 15, label: "15_QUESTIONS (STRESS_TEST)" }
+    { value: 5, label: "05 Questions (Fast)" },
+    { value: 8, label: "08 Questions (Normal)" },
+    { value: 10, label: "10 Questions (Dense)" },
+    { value: 15, label: "15 Questions (Exhaustive)" }
   ];
 
   useEffect(() => {
@@ -36,7 +36,7 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
       try {
         const response = await api.get('drives/all');
         const uniqueCompanies = Array.from(new Set(response.data.data.map(d => d.companyName)))
-          .map(name => ({ value: name, label: name.toUpperCase() }));
+          .map(name => ({ value: name, label: name }));
         setCompanies(uniqueCompanies);
       } catch (error) {
         console.error("Failed to fetch companies:", error);
@@ -53,21 +53,22 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="border-l-2 border-emerald-500 pl-4">
-        <h3 className="text-sm font-mono font-bold text-slate-100 uppercase tracking-[0.2em]">
-          TECHNICAL_PROTOCOL_CONFIGURATION
+    <div className="space-y-12">
+      <div className="space-y-2">
+        <h3 className="text-2xl font-extrabold text-white uppercase tracking-tight flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-primary rounded-full shadow-[0_0_10px_rgba(255,145,90,0.5)]" />
+          Protocol Configuration
         </h3>
-        <p className="text-slate-500 font-mono text-[10px] mt-1 uppercase tracking-wider">
-          Establish simulation parameters for technical assessment
+        <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
+          Calibrating Technical Execution Parameters
         </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="space-y-6">
+      <div className="grid gap-12 md:grid-cols-2">
+        <div className="space-y-8 p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
           <Select
-            label="Simulation_Target (Role)"
-            placeholder="SELECT_JOB_ROLE"
+            label="Target Specialization"
+            placeholder="Select Role"
             options={jobRoles}
             value={formData?.jobRole}
             onChange={handleFieldChange('jobRole')}
@@ -75,8 +76,8 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
             required
           />
           <Select
-            label="Entity_Database (Company)"
-            placeholder={loadingCompanies ? "FETCHING_DATA..." : "SELECT_TARGET_ENTITY"}
+            label="Corporate Alignment"
+            placeholder={loadingCompanies ? "Syncing Repositories..." : "Select Entity"}
             options={companies}
             value={formData?.company}
             onChange={handleFieldChange('company')}
@@ -85,10 +86,10 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
           />
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8 p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
           <Select
-            label="Complexity_Index (Difficulty)"
-            placeholder="SELECT_DIFFICULTY"
+            label="Complexity Matrix"
+            placeholder="Select Level"
             options={difficultyLevels}
             value={formData?.difficulty}
             onChange={handleFieldChange('difficulty')}
@@ -96,8 +97,8 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
             required
           />
           <Select
-            label="Sequence_Length (Questions)"
-            placeholder="SELECT_ITERATIONS"
+            label="Instructional Density"
+            placeholder="Select Iterations"
             options={questionCounts}
             value={formData?.max_questions}
             onChange={handleFieldChange('max_questions')}
@@ -107,26 +108,37 @@ const TechnicalSetupForm = ({ formData, onChange, errors }) => {
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 p-6 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-          <Icon name="Cpu" size={64} className="text-emerald-500" />
+      <div className="bg-primary/5 rounded-[3rem] border border-primary/20 p-12 relative overflow-hidden group shadow-2xl backdrop-blur-3xl">
+        <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:opacity-20 transition-all duration-700 -rotate-12 transform group-hover:scale-110">
+          <Icon name="ms:memorybolt" size={120} className="text-primary" />
         </div>
-        <h4 className="text-[10px] font-mono font-bold text-emerald-500 mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-emerald-500" />
-          SIMULATION_MODULES_LOADED
-        </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-          {[
-            'ALGORITHMIC_COMPLEXITY_ANALYSIS',
-            'SYSTEM_ARCHITECTURAL_DESIGN',
-            'DYNAMIC_FOLLOW_UP_LOGIC',
-            'REAL_TIME_VOCAL_PROCESSING'
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <span className="text-slate-700 font-mono text-[10px]">0{i+1}</span>
-              <span className="text-slate-400 font-mono text-[9px] uppercase tracking-tighter">{item}</span>
-            </div>
-          ))}
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-12">
+          <div className="space-y-4 max-w-md">
+            <h4 className="text-[11px] font-extrabold text-primary uppercase tracking-[0.5em] flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              Engine Subsystems Loaded
+            </h4>
+            <p className="font-body text-base text-on-surface-variant opacity-70 leading-relaxed">
+              Our advanced neural engine combines multiple assessment frameworks to provide an exhaustive technical audit of your profile.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 flex-1">
+            {[
+              { text: 'Algorithmic Complexity Path', icon: 'ms:account_tree' },
+              { text: 'Architectural Blueprint Audit', icon: 'ms:architecture' },
+              { text: 'Dynamic Follow-up Heuristics', icon: 'ms:analytics' },
+              { text: 'Real-time Semantic Mapping', icon: 'ms:psychology' }
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-5 group/item transition-all hover:translate-x-2">
+                <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-primary border border-outline-variant/10 group-hover/item:bg-primary group-hover/item:text-white transition-all duration-500 shadow-md">
+                  <Icon name={item.icon} size={22} />
+                </div>
+                <span className="text-white font-extrabold text-[10px] uppercase tracking-widest leading-tight transition-colors group-hover/item:text-primary">{item.text}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../../components/ui/DashboardLayout';
 import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import Input from '../../../components/ui/Input';
 import api from '../../../utils/api';
 

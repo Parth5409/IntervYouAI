@@ -7,12 +7,10 @@ import LoginPrompt from './components/LoginPrompt';
 const RegistrationScreen = () => {
   return (
     <AuthLayout 
-      title="Entity_Registration" 
-      subtitle="Initialize new profile in the system"
+      title="Manifest Identity" 
+      subtitle="Initialize your presence in the workspace"
     >
       <RegistrationForm />
-      <TrustSignals />
-      <LoginPrompt />
     </AuthLayout>
   );
 };

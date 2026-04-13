@@ -10,6 +10,20 @@ function Icon({
     strokeWidth = 2,
     ...props
 }) {
+    // Support for Material Symbols with 'ms:' prefix
+    if (name?.startsWith('ms:')) {
+        const iconName = name.split(':')[1];
+        return (
+            <span 
+                className={`material-symbols-outlined ${className}`} 
+                style={{ fontSize: size, color: color }}
+                {...props}
+            >
+                {iconName}
+            </span>
+        );
+    }
+
     const IconComponent = LucideIcons?.[name];
 
     if (!IconComponent) {

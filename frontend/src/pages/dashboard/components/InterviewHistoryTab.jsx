@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 
 const InterviewHistoryTab = ({ onViewFeedback }) => {
   const [selectedFilter, setSelectedFilter] = useState('all');

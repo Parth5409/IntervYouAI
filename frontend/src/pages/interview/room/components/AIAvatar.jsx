@@ -15,86 +15,113 @@ const AIAvatar = ({
   };
 
   const sizeClasses = {
-    small: 'w-16 h-16',
-    medium: 'w-24 h-24',
-    large: 'w-32 h-32 md:w-40 md:h-40',
-    xlarge: 'w-48 h-48 md:w-56 md:h-56'
+    small: 'w-24 h-24',
+    medium: 'w-32 h-32',
+    large: 'w-48 h-48 md:w-56 md:h-56',
+    xlarge: 'w-64 h-64 md:w-72 md:h-72'
   };
 
   return (
-    <div className="flex flex-col items-center space-y-6">
-      {/* Avatar Container - Industrial Frame */}
+    <div className="flex flex-col items-center space-y-10">
+      {/* Avatar Container */}
       <div className="relative group">
+        {/* Glow Effects */}
+        <div className={cn(
+          "absolute -inset-4 rounded-full blur-2xl transition-all duration-1000 opacity-20",
+          isSpeaking ? "bg-primary scale-110 opacity-40" : "bg-white/10"
+        )} />
+        
         <div
           className={cn(
-            "relative z-10 overflow-hidden border transition-all duration-500",
+            "relative z-10 overflow-hidden rounded-full border-2 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]",
             sizeClasses[size],
             isSpeaking 
-              ? "border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.2)] scale-105" 
-              : "border-slate-800"
+              ? "border-primary shadow-[0_0_80px_rgba(255,145,90,0.3)] scale-105" 
+              : "border-outline-variant/30 opacity-80"
           )}
         >
           <Image
             src={avatarImages[avatarType]}
             alt="AI_SYSTEM_CORE"
             className={cn(
-              "w-full h-full object-cover transition-all duration-700",
-              isSpeaking ? "opacity-100 grayscale-0" : "opacity-60 grayscale"
+              "w-full h-full object-cover transition-all duration-1000",
+              isSpeaking ? "scale-110 grayscale-0" : "grayscale opacity-40"
             )}
           />
           
-          {/* Scanline Effect during speech */}
+          {/* Subtle Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-40" />
+        </div>
+
+        {/* Orbitals */}
+        <AnimatePresence>
           {isSpeaking && (
-            <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(16,185,129,0)_50%,rgba(16,185,129,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0),rgba(0,255,0,0),rgba(0,0,255,0))] bg-[length:100%_2px,3px_100%] animate-pulse" />
+            <>
+              <motion.div 
+                initial={{ rotate: 0, opacity: 0 }}
+                animate={{ rotate: 360, opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                className="absolute -inset-8 rounded-full border border-primary/20 border-dashed pointer-events-none"
+              />
+              <motion.div 
+                initial={{ rotate: 180, opacity: 0 }}
+                animate={{ rotate: -180, opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                className="absolute -inset-12 rounded-full border border-primary/10 pointer-events-none"
+              />
+            </>
           )}
-        </div>
-
-        {/* Decorative Corner Brackets */}
-        <div className="absolute -top-2 -left-2 w-6 h-6 border-t border-l border-slate-700" />
-        <div className="absolute -bottom-2 -right-2 w-6 h-6 border-b border-r border-slate-700" />
-
-        {/* Status Protocol Label */}
-        <div className="absolute -right-4 top-4 rotate-90 origin-left">
-          <span className={cn(
-            "font-mono text-[8px] tracking-[0.2em] uppercase",
-            isSpeaking ? "text-emerald-500" : "text-slate-600"
-          )}>
-            {isSpeaking ? 'AI_VOCAL_ACTIVE' : 'SYSTEM_IDLE'}
-          </span>
-        </div>
+        </AnimatePresence>
       </div>
 
       {/* Identity Segment */}
-      <div className="text-center space-y-1">
-        <h3 className="font-mono font-bold text-slate-200 tracking-widest uppercase">
-          AI_ANALYST_NODE
-        </h3>
+      <div className="text-center space-y-3 z-10">
         <div className="flex items-center justify-center gap-3">
-          <div className={cn(
-            "w-1.5 h-1.5",
-            isSpeaking ? "bg-emerald-500 animate-pulse" : isActive ? "bg-sky-500" : "bg-slate-700"
-          )} />
-          <p className="font-mono text-[10px] text-slate-500 uppercase tracking-tighter">
-            {isSpeaking ? 'TRANSMITTING_DATA' : isActive ? 'LISTENING_PROTOCOL' : 'READY_FOR_UPLINK'}
-          </p>
+          <span className="w-6 h-[1px] bg-outline-variant/50"></span>
+          <h3 className="font-headline font-extrabold text-white tracking-[0.3em] uppercase text-[10px]">
+            AI Analyst Node
+          </h3>
+          <span className="w-6 h-[1px] bg-outline-variant/50"></span>
+        </div>
+        
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-3 bg-surface-container-high/40 px-5 py-2 rounded-full border border-outline-variant/10 backdrop-blur-md shadow-xl">
+            <div className={cn(
+              "w-2 h-2 rounded-full",
+              isSpeaking ? "bg-primary animate-pulse" : isActive ? "bg-white" : "bg-outline"
+            )} />
+            <p className="font-body text-[11px] font-bold text-on-surface-variant uppercase tracking-widest leading-none">
+              {isSpeaking ? 'Transmitting Data' : isActive ? 'Listening Protocol' : 'Neural Link Idle'}
+            </p>
+          </div>
+
+          {/* Waveform Visualization */}
+          <div className="flex items-end justify-center gap-1.5 h-10 min-w-[200px]">
+            {[...Array(24)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ height: 4 }}
+                animate={{ 
+                  height: isSpeaking ? [4, 10 + Math.random() * 30, 4] : 4,
+                  opacity: isSpeaking ? 1 : 0.2
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 0.8,
+                  delay: i * 0.03,
+                  ease: "easeInOut"
+                }}
+                className={cn(
+                  "w-[2px] rounded-full",
+                  isSpeaking ? "bg-primary" : "bg-outline"
+                )}
+              />
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* Waveform Visualization */}
-      {isSpeaking && (
-        <div className="flex items-end justify-center gap-1 h-8">
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="w-1 bg-emerald-500 animate-waveform"
-              style={{
-                height: `${20 + Math.random() * 80}%`,
-                animationDelay: `${i * 0.1}s`
-              }}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 };

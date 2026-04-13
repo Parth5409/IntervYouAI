@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DashboardLayout from '../../../components/ui/DashboardLayout';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import Icon from '../../../components/AppIcon';
 import useAuth from '../../../hooks/useAuth';
 import api from '../../../utils/api';

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DashboardLayout from '../../components/ui/DashboardLayout';
 import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/button';
 import useAuth from '../../hooks/useAuth';
 import api from '../../utils/api';
 import { uploadToCloudinary } from '../../utils/cloudinary';

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/ui/DashboardLayout';
 import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
 import { cn } from '../../utils/cn';

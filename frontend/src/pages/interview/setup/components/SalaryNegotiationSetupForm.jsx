@@ -9,18 +9,18 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
   const [loadingCompanies, setLoadingCompanies] = useState(false);
 
   const experienceLevels = [
-    { value: "entry", label: "ENTRY_LEVEL (0-2Y)" },
-    { value: "mid", label: "MID_LEVEL (3-5Y)" },
-    { value: "expert", label: "EXPERT_LEVEL (5Y+)" }
+    { value: "entry", label: "Early Career (0-2Y)" },
+    { value: "mid", label: "Professional Tier (3-5Y)" },
+    { value: "expert", label: "Executive Level (5Y+)" }
   ];
 
   const industries = [
-    { value: "technology", label: "TECHNOLOGY" },
-    { value: "finance", label: "FINANCE_BANKING" },
-    { value: "healthcare", label: "HEALTHCARE" },
-    { value: "retail", label: "RETAIL_ECOMMERCE" },
-    { value: "consulting", label: "CONSULTING" },
-    { value: "manufacturing", label: "MANUFACTURING" }
+    { value: "technology", label: "Technology" },
+    { value: "finance", label: "Finance & Banking" },
+    { value: "healthcare", label: "Healthcare" },
+    { value: "retail", label: "Retail & E-commerce" },
+    { value: "consulting", label: "Consulting" },
+    { value: "manufacturing", label: "Manufacturing" }
   ];
 
   const salaryRanges = [
@@ -32,9 +32,9 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
   ];
 
   const negotiationStyles = [
-    { value: "collaborative", label: "COLLABORATIVE_WIN_WIN" },
-    { value: "assertive", label: "ASSERTIVE_DIRECT" },
-    { value: "analytical", label: "ANALYTICAL_DATA_DRIVEN" }
+    { value: "collaborative", label: "Collaborative (Win-Win)" },
+    { value: "assertive", label: "Assertive (Direct)" },
+    { value: "analytical", label: "Analytical (Data-Driven)" }
   ];
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
       try {
         const response = await api.get('drives/all');
         const uniqueCompanies = Array.from(new Set(response.data.data.map(d => d.companyName)))
-          .map(name => ({ value: name, label: name.toUpperCase() }));
+          .map(name => ({ value: name, label: name }));
         setCompanies(uniqueCompanies);
       } catch (error) {
         console.error("Failed to fetch companies:", error);
@@ -60,30 +60,32 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="border-l-2 border-emerald-500 pl-4">
-        <h3 className="text-sm font-mono font-bold text-slate-100 uppercase tracking-[0.2em]">
-          COMPENSATION_PROTOCOL_CONFIGURATION
+    <div className="space-y-12">
+      <div className="space-y-2">
+        <h3 className="text-2xl font-extrabold text-white uppercase tracking-tight flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-primary rounded-full shadow-[0_0_10px_rgba(255,145,90,0.5)]" />
+          Compensation Protocol
         </h3>
-        <p className="text-slate-500 font-mono text-[10px] mt-1 uppercase tracking-wider">
-          Define financial parameters and negotiation strategy
+        <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
+          Calibrating Tactical Negotiation Parameters
         </p>
       </div>
 
-      <div className="space-y-6">
-        <div className="grid gap-8 md:grid-cols-2">
+      <div className="space-y-12">
+        <div className="grid gap-12 md:grid-cols-2">
           <Input
-            label="Vector_Target (Role)"
-            placeholder="E.G. SENIOR_DEVELOPER"
+            label="Vector Target (Role)"
+            placeholder="E.G. SENIOR DEVELOPER"
             value={formData?.jobRole || ''}
-            onChange={(e) => handleFieldChange('jobRole')(e.target.value.toUpperCase())}
+            onChange={(e) => handleFieldChange('jobRole')(e.target.value)}
             error={errors?.jobRole}
             required
+            leftElement={<Icon name="ms:payments" size={20} />}
           />
 
           <Select
-            label="Entity_Database (Company)"
-            placeholder={loadingCompanies ? "FETCHING..." : "SELECT_ENTITY"}
+            label="Target Entity"
+            placeholder={loadingCompanies ? "Syncing..." : "Select Corporate Database"}
             options={companies}
             value={formData?.company}
             onChange={handleFieldChange('company')}
@@ -91,71 +93,90 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
           />
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          <Select
-            label="Experience_Tier"
-            placeholder="SELECT_EXPERIENCE"
-            options={experienceLevels}
-            value={formData?.experienceLevel}
-            onChange={handleFieldChange('experienceLevel')}
-            error={errors?.experienceLevel}
-            required
-          />
+        <div className="grid gap-12 md:grid-cols-2">
+          <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
+            <Select
+              label="Experience Tier"
+              placeholder="Select Seniority"
+              options={experienceLevels}
+              value={formData?.experienceLevel}
+              onChange={handleFieldChange('experienceLevel')}
+              error={errors?.experienceLevel}
+              required
+            />
+          </div>
 
-          <Select
-            label="Sector_Classification"
-            placeholder="SELECT_INDUSTRY"
-            options={industries}
-            value={formData?.industry}
-            onChange={handleFieldChange('industry')}
-            error={errors?.industry}
-            required
-          />
+          <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
+            <Select
+              label="Sector Classification"
+              placeholder="Select Industry"
+              options={industries}
+              value={formData?.industry}
+              onChange={handleFieldChange('industry')}
+              error={errors?.industry}
+              required
+            />
+          </div>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          <Select
-            label="Target_Compensation_Range"
-            placeholder="SELECT_SALARY_RANGE"
-            options={salaryRanges}
-            value={formData?.salaryRange}
-            onChange={handleFieldChange('salaryRange')}
-            error={errors?.salaryRange}
-            required
-          />
-          
-          <Select
-            label="Negotiation_Tactical_Style"
-            placeholder="SELECT_STYLE"
-            options={negotiationStyles}
-            value={formData?.negotiationStyle}
-            onChange={handleFieldChange('negotiationStyle')}
-            error={errors?.negotiationStyle}
-            required
-          />
+        <div className="grid gap-12 md:grid-cols-2">
+          <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
+            <Select
+              label="Target Range"
+              placeholder="Select Salary Window"
+              options={salaryRanges}
+              value={formData?.salaryRange}
+              onChange={handleFieldChange('salaryRange')}
+              error={errors?.salaryRange}
+              required
+            />
+          </div>
+
+          <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
+            <Select
+              label="Tactical Style"
+              placeholder="Select Engagement Style"
+              options={negotiationStyles}
+              value={formData?.negotiationStyle}
+              onChange={handleFieldChange('negotiationStyle')}
+              error={errors?.negotiationStyle}
+              required
+            />
+          </div>
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 p-6 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-          <Icon name="DollarSign" size={64} className="text-emerald-500" />
+      <div className="bg-primary/5 rounded-[3rem] border border-primary/20 p-12 relative overflow-hidden group shadow-2xl backdrop-blur-3xl">
+        <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:opacity-20 transition-all duration-700 -rotate-12 transform group-hover:scale-110">
+          <Icon name="ms:account_balance" size={120} className="text-primary" />
         </div>
-        <h4 className="text-[10px] font-mono font-bold text-emerald-500 mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-emerald-500" />
-          NEGOTIATION_LOGIC_MODULES
-        </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-          {[
-            'MARKET_VALUE_CALIBRATION',
-            'TOTAL_PACKAGE_OPTIMIZATION',
-            'REBUTTAL_ALGORITHM_PROCESSING',
-            'LEVERAGE_INDEX_SCORING'
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <span className="text-slate-700 font-mono text-[10px]">0{i+1}</span>
-              <span className="text-slate-400 font-mono text-[9px] uppercase tracking-tighter">{item}</span>
-            </div>
-          ))}
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-12">
+          <div className="space-y-4 max-w-md">
+            <h4 className="text-[11px] font-extrabold text-primary uppercase tracking-[0.5em] flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              Strategic Modules Loaded
+            </h4>
+            <p className="font-body text-base text-on-surface-variant opacity-70 leading-relaxed">
+              Our AI calibrates market value benchmarks against real-time industry leverage indices.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 flex-1">
+            {[
+              { text: 'Market Value Calibration', icon: 'ms:chart_bar' },
+              { text: 'Total Package Optimization', icon: 'ms:inventory' },
+              { text: 'Rebuttal Logic Processing', icon: 'ms:forum' },
+              { text: 'Leverage Index Scoring', icon: 'ms:trending_up' }
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-5 group/item transition-all hover:translate-x-2">
+                <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-primary border border-outline-variant/10 group-hover/item:bg-primary group-hover/item:text-white transition-all duration-500 shadow-md">
+                  <Icon name={item.icon} size={22} />
+                </div>
+                <span className="text-white font-extrabold text-[10px] uppercase tracking-widest leading-tight transition-colors group-hover/item:text-primary">{item.text}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -1,16 +1,42 @@
-html {
-  scroll-behavior: smooth;
+html.dark {
+  background-color: #0e0e0e;
 }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: Inter;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #0e0e0e;
 }
 
 * {
   box-sizing: border-box;
   line-height: normal;
-  font-family: inherit;
-  margin: unset;
+}
+
+.glow-mesh {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 145, 90, 0.05) 0%, transparent 70%);
+}
+
+.glass-card {
+  background: rgba(19, 19, 19, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.subtle-grid {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
+}
+
+.premium-border {
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.glass-panel {
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }

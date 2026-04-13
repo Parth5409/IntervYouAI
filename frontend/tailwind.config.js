@@ -18,50 +18,84 @@ export default {
     },
     extend: {
       colors: {
-        border: "var(--color-border)", /* light border */
-        input: "var(--color-input)", /* pure white */
-        ring: "var(--color-ring)", /* deep professional blue */
-        background: "var(--color-background)", /* warm off-white */
-        foreground: "var(--color-foreground)", /* rich charcoal */
+        border: "var(--color-border)",
+        input: "var(--color-input)",
+        ring: "var(--color-ring)",
+        background: "var(--color-background)",
+        foreground: "var(--color-foreground)",
         primary: {
-          DEFAULT: "var(--color-primary)", /* deep professional blue */
-          foreground: "var(--color-primary-foreground)", /* white */
+          DEFAULT: "var(--color-primary)",
+          dim: "var(--color-primary-dim)",
+          container: "var(--color-primary-container)",
+          foreground: "var(--color-primary-foreground)",
+          fixed: "var(--color-primary-fixed)",
         },
         secondary: {
-          DEFAULT: "var(--color-secondary)", /* sophisticated slate gray */
-          foreground: "var(--color-secondary-foreground)", /* white */
+          DEFAULT: "var(--color-secondary)",
+          dim: "var(--color-secondary-dim)",
+          container: "var(--color-secondary-container)",
+          foreground: "var(--color-secondary-foreground)",
         },
-        destructive: {
-          DEFAULT: "var(--color-destructive)", /* clear red */
-          foreground: "var(--color-destructive-foreground)", /* white */
-        },
-        muted: {
-          DEFAULT: "var(--color-muted)", /* light gray */
-          foreground: "var(--color-muted-foreground)", /* balanced gray */
-        },
-        accent: {
-          DEFAULT: "var(--color-accent)", /* confident emerald green */
-          foreground: "var(--color-accent-foreground)", /* white */
-        },
-        popover: {
-          DEFAULT: "var(--color-popover)", /* pure white */
-          foreground: "var(--color-popover-foreground)", /* rich charcoal */
-        },
-        card: {
-          DEFAULT: "var(--color-card)", /* pure white */
-          foreground: "var(--color-card-foreground)", /* rich charcoal */
-        },
-        success: {
-          DEFAULT: "var(--color-success)", /* vibrant green */
-          foreground: "var(--color-success-foreground)", /* white */
-        },
-        warning: {
-          DEFAULT: "var(--color-warning)", /* warm amber */
-          foreground: "var(--color-warning-foreground)", /* white */
+        tertiary: {
+          DEFAULT: "var(--color-tertiary)",
+          dim: "var(--color-tertiary-dim)",
+          container: "var(--color-tertiary-container)",
         },
         error: {
-          DEFAULT: "var(--color-error)", /* clear red */
-          foreground: "var(--color-error-foreground)", /* white */
+          DEFAULT: "var(--color-error)",
+          dim: "var(--color-error-dim)",
+          container: "var(--color-error-container)",
+          foreground: "var(--color-error-foreground)",
+        },
+        surface: {
+          DEFAULT: "var(--color-surface)",
+          dim: "var(--color-surface-dim)",
+          bright: "var(--color-surface-bright)",
+          variant: "var(--color-surface-variant)",
+          tint: "var(--color-surface-tint)",
+          container: {
+            lowest: "var(--color-surface-container-lowest)",
+            low: "var(--color-surface-container-low)",
+            DEFAULT: "var(--color-surface-container)",
+            high: "var(--color-surface-container-high)",
+            highest: "var(--color-surface-container-highest)",
+          },
+        },
+        outline: {
+          DEFAULT: "var(--color-outline)",
+          variant: "var(--color-outline-variant)",
+        },
+        "on-surface": {
+          DEFAULT: "var(--color-on-surface)",
+          variant: "var(--color-on-surface-variant)",
+        },
+        destructive: {
+          DEFAULT: "var(--color-destructive)",
+          foreground: "var(--color-destructive-foreground)",
+        },
+        muted: {
+          DEFAULT: "var(--color-muted)",
+          foreground: "var(--color-muted-foreground)",
+        },
+        accent: {
+          DEFAULT: "var(--color-accent)",
+          foreground: "var(--color-accent-foreground)",
+        },
+        popover: {
+          DEFAULT: "var(--color-popover)",
+          foreground: "var(--color-popover-foreground)",
+        },
+        card: {
+          DEFAULT: "var(--color-card)",
+          foreground: "var(--color-card-foreground)",
+        },
+        success: {
+          DEFAULT: "var(--color-success)",
+          foreground: "var(--color-success-foreground)",
+        },
+        warning: {
+          DEFAULT: "var(--color-warning)",
+          foreground: "var(--color-warning-foreground)",
         },
       },
       borderRadius: {
@@ -70,8 +104,11 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        headline: ["Plus Jakarta Sans", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        label: ["Inter", "sans-serif"],
+        sans: ["Inter", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],
