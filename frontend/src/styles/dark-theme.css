@@ -1,19 +1,19 @@
 @layer base {
   .dark {
-    /* Core Colors - The Void */
-    --color-background: #0e0e0e;
+    /* Core Colors - Premium Dark */
+    --color-background: #080808;
     --color-foreground: #ffffff;
-    --color-card: #131313;
+    --color-card: #111111;
     --color-card-foreground: #ffffff;
-    --color-popover: #131313;
+    --color-popover: #111111;
     --color-popover-foreground: #ffffff;
-    --color-muted: #262626;
-    --color-muted-foreground: #8E8E8E;
-    --color-border: #262626;
+    --color-muted: #1c1c1c;
+    --color-muted-foreground: #888888;
+    --color-border: #333333;
     --color-input: #000000;
     --color-ring: #ff915a;
 
-    /* Primary - The Signal */
+    /* Primary - Refined Orange */
     --color-primary: #ff915a;
     --color-primary-dim: #ff7526;
     --color-primary-container: #ff7a31;
@@ -44,26 +44,26 @@
     --color-destructive-foreground: #ffffff;
 
     /* Surface Tokens */
-    --color-surface: #0e0e0e;
-    --color-surface-dim: #0e0e0e;
-    --color-surface-bright: #2c2c2c;
-    --color-surface-variant: #262626;
+    --color-surface: #080808;
+    --color-surface-dim: #080808;
+    --color-surface-bright: #222222;
+    --color-surface-variant: #212121;
     --color-surface-tint: #ff915a;
     --color-surface-container-lowest: #000000;
-    --color-surface-container-low: #131313;
-    --color-surface-container: #1a1919;
-    --color-surface-container-high: #201f1f;
-    --color-surface-container-highest: #262626;
+    --color-surface-container-low: #111111;
+    --color-surface-container: #141414;
+    --color-surface-container-high: #181818;
+    --color-surface-container-highest: #1c1c1c;
 
     /* Outline Tokens */
-    --color-outline: #484847;
+    --color-outline: #333333;
     --color-outline-variant: #262626;
 
     /* On Surface Tokens */
     --color-on-surface: #ffffff;
-    --color-on-surface-variant: #8E8E8E;
+    --color-on-surface-variant: #888888;
 
-    /* Radius - Soft & Premium */
+    /* Radius */
     --radius: 0.75rem; 
   }
 }

@@ -39,21 +39,21 @@ const SessionControls = ({
   return (
     <>
       {/* Main Session Controls */}
-      <div className={cn("fixed bottom-10 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-6 animate-in slide-in-from-bottom-5 duration-700 delay-300", className)}>
-        <div className="bg-surface-container-high/60 backdrop-blur-3xl border border-outline-variant/10 p-3 rounded-3xl flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+      <div className={cn("fixed bottom-10 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-6 animate-in slide-in-from-bottom-5 duration-700", className)}>
+        <div className="bg-surface/60 backdrop-blur-xl border border-outline-variant/20 p-3 rounded-2xl flex items-center justify-between shadow-2xl">
 
           {/* Status Segment */}
           <div className="flex items-center gap-4 px-6 border-r border-outline-variant/10">
             <div className={cn(
               "w-2 h-2 rounded-full",
-              isConnected ? "bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-error"
+              isConnected ? "bg-emerald-500 animate-pulse shadow-md" : "bg-error"
             )} />
             <div className="flex flex-col">
-              <span className="font-headline text-[9px] text-white font-extrabold uppercase tracking-[0.2em] leading-none">
-                {isConnected ? 'Stream Active' : 'Disconnected'}
+              <span className="font-headline text-[10px] text-white font-bold uppercase tracking-wider leading-none">
+                {isConnected ? 'Sync Active' : 'Link Offline'}
               </span>
-              <span className="font-body text-[8px] text-on-surface-variant font-bold uppercase tracking-widest mt-1 opacity-40">
-                Network Node 01
+              <span className="font-headline text-[9px] text-on-surface-variant font-bold uppercase tracking-widest mt-1 opacity-40">
+                Network_Node_01
               </span>
             </div>
           </div>
@@ -63,10 +63,10 @@ const SessionControls = ({
             <button
               onClick={onToggleRecording}
               className={cn(
-                "w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-500",
+                "w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300",
                 isRecording
-                  ? "bg-error/10 border-error text-error shadow-[0_0_20px_rgba(255,115,81,0.2)]"
-                  : "bg-surface-container-highest border-outline-variant/10 text-on-surface-variant hover:text-white hover:border-outline-variant"
+                  ? "bg-primary text-black border-primary shadow-[0_0_20px_rgba(255,145,90,0.3)]"
+                  : "bg-surface-container-high border-outline-variant/30 text-on-surface-variant hover:text-white hover:border-outline-variant"
               )}
             >
               <Icon name={isRecording ? "ms:stop_circle" : "ms:mic"} size={22} />
@@ -75,10 +75,10 @@ const SessionControls = ({
             <button
               onClick={onToggleMute}
               className={cn(
-                "w-12 h-12 rounded-2xl border flex items-center justify-center transition-all duration-500",
+                "w-12 h-12 rounded-xl border flex items-center justify-center transition-all duration-300",
                 isMuted
                   ? "bg-error/10 border-error text-error"
-                  : "bg-surface-container-highest border-outline-variant/10 text-on-surface-variant hover:text-white hover:border-outline-variant"
+                  : "bg-surface-container-high border-outline-variant/30 text-on-surface-variant hover:text-white hover:border-outline-variant"
               )}
             >
               <Icon name={isMuted ? "ms:mic_off" : "ms:volume_up"} size={22} />
@@ -88,10 +88,10 @@ const SessionControls = ({
           {/* Timer Segment */}
           {showTimer && (
             <div className="px-6 border-l border-outline-variant/10">
-              <div className="font-headline text-lg font-extrabold text-white tracking-tighter tabular-nums leading-none">
+              <div className="font-headline text-lg font-bold text-white tabular-nums leading-none">
                 {formatTime(sessionTime)}
               </div>
-              <p className="font-body text-[8px] text-on-surface-variant font-bold uppercase tracking-widest mt-1 opacity-40">Session Duration</p>
+              <p className="font-headline text-[9px] text-on-surface-variant font-bold uppercase tracking-widest mt-1 opacity-40">Duration</p>
             </div>
           )}
 
@@ -100,26 +100,25 @@ const SessionControls = ({
             <AlertDialogTrigger asChild>
               <Button
                 variant="outline"
-                className="ml-4 h-12 px-6 rounded-2xl border-outline-variant/10 hover:border-error/20 hover:text-error text-xs uppercase tracking-widest font-bold bg-transparent"
+                className="ml-4 h-12 px-6 rounded-xl border-outline-variant/30 hover:border-error/40 hover:text-error font-bold text-xs uppercase tracking-widest bg-transparent text-on-surface-variant"
               >
-                End Session
+                Abort
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-surface-container-high border-outline-variant/10 rounded-[2.5rem] p-12 max-w-lg shadow-2xl">
+            <AlertDialogContent className="bg-surface-container border border-outline-variant/30 rounded-3xl p-10 max-w-lg shadow-2xl backdrop-blur-3xl">
               <AlertDialogHeader>
-                <div className="w-20 h-20 rounded-3xl bg-error/10 border border-error/20 flex items-center justify-center mx-auto mb-8">
-                  <Icon name="ms:warning" size={40} className="text-error" />
+                <div className="w-16 h-16 rounded-2xl bg-error/10 border border-error/20 flex items-center justify-center mx-auto mb-6">
+                  <Icon name="ms:warning" size={32} className="text-error" />
                 </div>
-                <AlertDialogTitle className="text-3xl font-headline font-extrabold text-white tracking-tight text-center">Terminate Session?</AlertDialogTitle>
-                <AlertDialogDescription className="text-[13px] text-on-surface-variant font-medium leading-relaxed text-center max-w-xs mx-auto mt-4">
-                  Confirming termination will end the current simulation.
-                  All captured data will be processed for analysis.
+                <AlertDialogTitle className="text-2xl font-headline font-extrabold text-white text-center uppercase tracking-tight">Abort Session?</AlertDialogTitle>
+                <AlertDialogDescription className="text-sm text-on-surface-variant font-medium leading-relaxed text-center max-w-xs mx-auto mt-2">
+                  Terminating this uplink will end the simulation. All captured telemetry will be preserved for analysis.
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter className="sm:justify-center gap-4 mt-10">
-                <AlertDialogCancel className="h-16 rounded-2xl flex-1 border-outline-variant/10 font-bold uppercase tracking-widest text-xs">Stay in Session</AlertDialogCancel>
-                <AlertDialogAction onClick={onEndSession} className="h-16 rounded-2xl flex-1 bg-error hover:bg-error-dim text-white font-bold uppercase tracking-widest text-xs transition-all shadow-xl">
-                  End Interview
+              <AlertDialogFooter className="sm:justify-center gap-4 mt-8">
+                <AlertDialogCancel className="h-14 rounded-xl flex-1 border-outline-variant/30 font-bold text-xs uppercase tracking-widest text-on-surface-variant">Resume Link</AlertDialogCancel>
+                <AlertDialogAction onClick={onEndSession} className="h-14 rounded-xl flex-1 bg-error hover:bg-error-dim text-white font-bold transition-all shadow-xl text-xs uppercase tracking-widest">
+                  Terminate
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

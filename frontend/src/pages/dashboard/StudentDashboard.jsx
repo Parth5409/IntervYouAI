@@ -6,6 +6,7 @@ import Button from '../../components/ui/button';
 import useAuth from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
+import { cn } from '@/lib/utils';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -48,29 +49,28 @@ const StudentDashboard = () => {
   return (
     <div className="space-y-16 animate-in fade-in duration-1000 slide-in-from-bottom-5">
       {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 pb-10 border-b border-outline-variant/10">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 pb-10 border-b border-outline/20">
         <div className="space-y-6">
           <div className="flex items-center gap-4">
-            <span className="w-12 h-[2px] bg-primary rounded-full"></span>
-            <span className="text-[11px] font-extrabold tracking-[0.4em] text-primary uppercase">Candidate Node</span>
+            <span className="w-10 h-[2px] bg-primary rounded-full"></span>
+            <span className="text-xs font-bold uppercase tracking-widest text-primary italic">Student Workspace</span>
           </div>
-          <h1 className="text-6xl md:text-7xl font-headline font-extrabold tracking-tight text-white leading-[1.1]">
+          <h1 className="text-5xl font-headline font-bold tracking-tight text-white leading-[1.1]">
             Good {getTimeOfDay()}, <br />
-            <span className="text-primary italic font-light">{user?.fullName?.split(' ')[0]}.</span>
+            <span className="text-primary italic">{user?.fullName?.split(' ')[0]}.</span>
           </h1>
-          <p className="text-on-surface-variant font-body text-base max-w-xl leading-relaxed opacity-60">
-            Neural interface synchronized. You have <span className="text-white font-bold">{activeDrives.length} active protocols</span> awaiting your intervention. Ready for deployment?
+          <p className="text-on-surface-variant font-body text-lg max-w-xl leading-relaxed">
+            Your intelligence sync is complete. You have <span className="text-on-surface font-semibold">{activeDrives.length} active placement drives</span> awaiting your preparation. Ready to begin?
           </p>
         </div>
         <div className="flex gap-6">
           <Button 
             onClick={() => navigate('/interview/setup')}
-            variant="primary"
-            className="h-20 px-10 rounded-3xl group shadow-[0_20px_40px_rgba(255,145,90,0.3)] hover:shadow-[0_25px_50px_rgba(255,145,90,0.4)] transition-all duration-500"
+            className="h-16 px-10 rounded-xl group shadow-sm transition-all duration-300 bg-primary text-black hover:bg-primary/90 font-bold"
           >
-            <span className="flex items-center gap-4 font-headline text-xs font-extrabold uppercase tracking-widest">
-              Launch Practice Hub
-              <Icon name="ms:psychology_alt" size={24} className="group-hover:rotate-12 transition-transform" />
+            <span className="flex items-center gap-3 font-headline font-semibold text-sm">
+              Practice Hub
+              <Icon name="ms:psychology_alt" size={20} />
             </span>
           </Button>
         </div>
@@ -81,21 +81,20 @@ const StudentDashboard = () => {
         {stats.map((stat, index) => (
           <motion.div
             key={stat.label}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1, duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
-            className="bg-surface-container-high/40 backdrop-blur-2xl p-10 rounded-[2.5rem] border border-outline-variant/10 group hover:bg-surface-container-high transition-all duration-700 relative overflow-hidden shadow-xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.6 }}
+            className="bg-surface-container-low glass-border p-8 rounded-2xl group hover:bg-surface-bright transition-all duration-500 relative overflow-hidden shadow-sm"
           >
-            <div className="absolute -top-12 -right-12 w-24 h-24 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-700" />
             <div className="flex justify-between items-start mb-8 relative z-10">
-              <div className="w-14 h-14 bg-surface-container-highest rounded-2xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-700 shadow-lg border border-outline-variant/5">
+              <div className="w-14 h-14 bg-surface-container-low rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm border border-outline/10">
                 <Icon name={stat.icon} size={28} />
               </div>
-              <span className="text-[10px] font-extrabold text-primary px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">{stat.trend}</span>
+              <span className="text-xs font-label font-bold text-primary px-3 py-1 bg-primary/10 rounded-full border border-primary/20">{stat.trend}</span>
             </div>
             <div className="relative z-10">
-              <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.25em] mb-3 opacity-60">{stat.label}</p>
-              <p className="text-5xl font-headline font-extrabold text-white tracking-tighter tabular-nums">{stat.value}</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">{stat.label}</p>
+              <p className="text-5xl font-headline font-bold text-on-surface italic">{stat.value}</p>
             </div>
           </motion.div>
         ))}
@@ -105,67 +104,66 @@ const StudentDashboard = () => {
         {/* Active Drives Table */}
         <div className="xl:col-span-2 space-y-10">
           <div className="flex items-center justify-between">
-            <h2 className="font-headline text-2xl font-extrabold tracking-tight text-white flex items-center gap-4 uppercase">
-              <Icon name="ms:rocket_launch" size={24} className="text-primary" />
-              Active Placement Missions
+            <h2 className="font-headline text-3xl font-bold text-on-surface flex items-center gap-4">
+              <Icon name="ms:rocket_launch" size={28} className="text-primary" />
+              Active Placement Drives
             </h2>
             <button 
               onClick={() => navigate('/student/drives')}
-              className="text-[11px] font-extrabold text-primary hover:text-white transition-all uppercase tracking-[0.22em] flex items-center gap-3 group px-4 py-2 rounded-xl hover:bg-primary/5"
+              className="text-sm font-headline font-semibold text-primary hover:text-on-surface transition-all flex items-center gap-2 group px-4 py-2 rounded-xl hover:bg-primary/5"
             >
-              Access Satellite Feed
+              View All Drives
               <Icon name="ms:arrow_forward" size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
           
-          <div className="bg-surface-container-high/40 backdrop-blur-2xl rounded-[3rem] overflow-hidden shadow-2xl border border-outline-variant/10">
+          <div className="bg-surface-container-low rounded-3xl overflow-hidden shadow-sm border border-outline-variant/30">
             {isLoading ? (
               <div className="p-32 text-center">
-                <div className="w-16 h-16 border-4 border-primary/10 border-t-primary rounded-full animate-spin mx-auto mb-8 shadow-[0_0_20px_rgba(255,145,90,0.2)]"></div>
-                <p className="font-headline text-xs font-extrabold text-on-surface-variant uppercase tracking-[0.4em] animate-pulse">Syncing Mission Log...</p>
+                <div className="w-12 h-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin mx-auto mb-6 shadow-sm"></div>
+                <p className="font-headline text-sm font-medium text-on-surface-variant animate-pulse italic">Loading your sessions...</p>
               </div>
             ) : activeDrives.length > 0 ? (
               <div className="overflow-x-auto px-2">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="border-b border-outline-variant/5">
-                      <th className="pl-12 pr-6 py-8 text-[11px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Target Entity</th>
-                      <th className="px-6 py-8 text-[11px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Entry Criteria</th>
-                      <th className="px-6 py-8 text-[11px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Established</th>
-                      <th className="pl-6 pr-12 py-8 text-right"></th>
+                    <tr className="border-b border-outline/20">
+                      <th className="pl-12 pr-6 py-6 text-xs font-label font-bold text-on-surface-variant italic opacity-60">Company</th>
+                      <th className="px-6 py-6 text-xs font-label font-bold text-on-surface-variant italic opacity-60">Eligibility</th>
+                      <th className="px-6 py-6 text-xs font-label font-bold text-on-surface-variant italic opacity-60">Created</th>
+                      <th className="pl-6 pr-12 py-6 text-right"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-outline-variant/5">
+                  <tbody className="divide-y divide-outline/10">
                     {activeDrives.map((drive) => (
-                      <tr key={drive.id} className="hover:bg-primary/5 transition-all duration-700 group">
-                        <td className="pl-12 pr-6 py-10">
-                          <div className="flex items-center gap-6">
-                            <div className="w-14 h-14 rounded-2xl bg-surface-container-highest flex items-center justify-center text-white border border-outline-variant/10 shadow-lg group-hover:scale-110 transition-transform duration-500">
-                              <span className="text-xl font-headline font-extrabold text-primary">{drive.companyName.charAt(0)}</span>
+                      <tr key={drive.id} className="hover:bg-surface-bright transition-all duration-300 group">
+                        <td className="pl-12 pr-6 py-8">
+                          <div className="flex items-center gap-5">
+                            <div className="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-on-surface border border-outline/20 shadow-sm group-hover:scale-110 transition-transform duration-500">
+                              <span className="text-xl font-headline font-bold text-primary">{drive.companyName.charAt(0)}</span>
                             </div>
-                            <div className="space-y-1">
-                              <p className="text-base font-headline font-extrabold text-white tracking-tight leading-none">{drive.companyName}</p>
-                              <p className="text-[10px] text-on-surface-variant font-bold tracking-widest opacity-40 uppercase">Class-S Deployment</p>
+                            <div>
+                              <p className="text-lg font-headline font-bold text-on-surface leading-tight">{drive.companyName}</p>
+                              <p className="text-xs text-on-surface-variant font-medium mt-1">Full-time Opportunity</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-10">
-                          <span className="px-4 py-2 rounded-xl bg-surface-container-highest/60 border border-outline-variant/10 text-[11px] font-extrabold text-white tracking-wider">
+                        <td className="px-6 py-8">
+                          <span className="px-4 py-1.5 rounded-full bg-surface-container-high border border-outline/20 text-xs font-label font-bold text-on-surface">
                             CGPA {'>'} {drive.minCgpa}
                           </span>
                         </td>
-                        <td className="px-6 py-10">
-                          <p className="text-[13px] text-on-surface-variant font-medium tabular-nums opacity-60 italic">
+                        <td className="px-6 py-8">
+                          <p className="text-sm text-on-surface-variant font-medium italic opacity-60">
                             {new Date(drive.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </p>
                         </td>
-                        <td className="pl-6 pr-12 py-10 text-right">
+                        <td className="pl-6 pr-12 py-8 text-right">
                           <Button 
                             onClick={() => handleInitializeMock(drive.id)}
-                            variant="primary"
-                            className="h-12 px-8 rounded-xl text-[10px] font-extrabold uppercase tracking-widest group-hover:shadow-[0_0_20px_rgba(255,145,90,0.3)]"
+                            className="h-11 px-8 rounded-xl text-xs font-headline font-bold"
                           >
-                            Execute Mission
+                            Start Session
                           </Button>
                         </td>
                       </tr>
@@ -175,10 +173,10 @@ const StudentDashboard = () => {
               </div>
             ) : (
               <div className="p-32 text-center space-y-6">
-                <div className="w-20 h-20 bg-surface-container-low rounded-3xl flex items-center justify-center mx-auto border border-outline-variant/10">
+                <div className="w-20 h-20 bg-surface-container-low rounded-3xl flex items-center justify-center mx-auto border border-outline/20">
                   <Icon name="ms:nearby_error" size={40} className="text-on-surface-variant opacity-20" />
                 </div>
-                <p className="font-headline text-sm font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">No Signal Detected</p>
+                <p className="font-headline text-lg font-medium text-on-surface-variant opacity-60 italic">No active drives detected</p>
               </div>
             )}
           </div>
@@ -186,39 +184,39 @@ const StudentDashboard = () => {
 
         {/* System Status / Log */}
         <div className="space-y-10">
-          <h2 className="font-headline text-2xl font-extrabold tracking-tight text-white flex items-center gap-4 uppercase">
-            <Icon name="ms:terminal" size={20} className="text-primary" />
-            Neural Status
+          <h2 className="font-headline text-3xl font-bold text-on-surface flex items-center gap-4">
+            <Icon name="ms:terminal" size={24} className="text-primary" />
+            Session Status
           </h2>
-          <div className="bg-surface-container-high/40 backdrop-blur-2xl rounded-[3rem] p-10 space-y-10 border border-outline-variant/10 shadow-2xl relative overflow-hidden">
+          <div className="bg-surface-container-low rounded-3xl p-10 space-y-10 border border-outline-variant/30 shadow-sm relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
             
-            <div className="flex items-center gap-6 p-6 rounded-3xl bg-surface-container-highest/40 border border-outline-variant/5 shadow-inner">
-              <div className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]"></div>
+            <div className="flex items-center gap-6 p-6 rounded-2xl bg-surface-container-low border border-outline/20">
+              <div className="w-4 h-4 rounded-full bg-emerald-500 animate-pulse shadow-sm"></div>
               <div className="flex-1 space-y-1">
-                <p className="text-[11px] font-extrabold text-white uppercase tracking-[0.2em]">Neural Link Status</p>
+                <p className="text-xs font-label font-bold text-on-surface italic">Connectivity Status</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-[12px] text-on-surface-variant font-medium opacity-60 tabular-nums">Signal Integrity 98.4%</span>
+                  <span className="text-sm text-on-surface-variant font-medium italic opacity-60">Session Integrity 98.4%</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-6">
               <div className="flex items-center justify-between px-2">
-                <p className="text-[11px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Process Feed</p>
+                <p className="text-xs font-label font-bold text-on-surface-variant italic opacity-60">Recent Activity</p>
                 <div className="w-2 h-2 rounded-full bg-primary/20 animate-bounce" />
               </div>
               <div className="space-y-5">
                 {[
-                  { time: '04:22', tag: 'SYNC', msg: 'Profile metadata updated', color: 'text-primary' },
-                  { time: '12:05', tag: 'DATA', msg: `${activeDrives.length} entities tracked`, color: 'text-white' },
-                  { time: '22:15', tag: 'AUTH', msg: 'Neural key refreshed', color: 'text-on-surface-variant' }
+                  { time: '04:22', tag: 'SYNC', msg: 'Profile updated', color: 'text-primary' },
+                  { time: '12:05', tag: 'DRIVE', msg: `${activeDrives.length} drives tracked`, color: 'text-on-surface' },
+                  { time: '22:15', tag: 'AUTH', msg: 'Session refreshed', color: 'text-on-surface-variant' }
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-6 font-body text-[11px] items-start group">
-                    <span className="text-on-surface-variant/20 tabular-nums font-bold group-hover:text-primary/40 transition-colors">{item.time}</span>
+                  <div key={i} className="flex gap-6 font-body text-xs items-start group">
+                    <span className="text-on-surface-variant/30 font-bold group-hover:text-primary/60 transition-colors">{item.time}</span>
                     <div className="flex flex-col gap-1.5 flex-1">
-                      <span className={`${item.color} font-headline font-extrabold text-[9px] uppercase tracking-widest leading-none`}>[{item.tag}]</span>
-                      <span className="text-on-surface-variant leading-relaxed font-medium group-hover:text-white transition-colors">{item.msg}</span>
+                      <span className={`${item.color} font-headline font-bold text-[10px] italic leading-none`}>[{item.tag}]</span>
+                      <span className="text-on-surface-variant leading-relaxed font-medium group-hover:text-on-surface transition-colors">{item.msg}</span>
                     </div>
                   </div>
                 ))}
@@ -226,10 +224,10 @@ const StudentDashboard = () => {
             </div>
 
             <div className="pt-6">
-              <div className="h-32 rounded-3xl bg-[url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2574&auto=format&fit=crop')] bg-cover opacity-10 grayscale brightness-150 rounded-[2.5rem] border border-outline-variant/10 shadow-inner group cursor-crosshair overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+              <div className="h-32 rounded-3xl bg-[url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=2574&auto=format&fit=crop')] bg-cover opacity-5 grayscale brightness-110 rounded-2xl border border-outline/10 shadow-inner group overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                  <span className="text-[10px] font-extrabold text-white uppercase tracking-[0.5em] animate-pulse">Scanning Neural Pattern...</span>
+                  <span className="text-sm font-headline italic text-on-surface animate-pulse">Analyzing session data...</span>
                 </div>
               </div>
             </div>
@@ -237,7 +235,7 @@ const StudentDashboard = () => {
         </div>
       </div>
     </div>
-);
+  );
 };
 
 export default StudentDashboard;

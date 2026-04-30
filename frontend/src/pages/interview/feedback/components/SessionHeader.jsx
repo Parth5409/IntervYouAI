@@ -49,7 +49,7 @@ const SessionHeader = ({ sessionData }) => {
             />
 
             {/* Main Score Value */}
-            <div className="bg-surface-container-highest w-36 h-36 rounded-full flex flex-col items-center justify-center shadow-[0_0_40px_rgba(0,0,0,0.4)] border border-outline-variant/10">
+            <div className="bg-[#111111] w-36 h-36 rounded-full flex flex-col items-center justify-center shadow-md border border-outline-variant/10">
               <span className={cn("text-5xl font-extrabold tracking-tighter leading-none mb-1", getScoreColor(overallScore))}>
                 {overallScore}
               </span>
@@ -58,7 +58,7 @@ const SessionHeader = ({ sessionData }) => {
             
             {/* Glowing Dot on Progress */}
             <div 
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-[0_0_15px_rgba(255,145,90,1)] z-20"
+              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-sm z-20"
               style={{ transform: `rotate(${(overallScore / 100) * 360}deg) translateY(-88px)` }}
             />
           </div>
@@ -72,7 +72,7 @@ const SessionHeader = ({ sessionData }) => {
                 transition={{ delay: i * 0.1 }}
                 className={cn(
                   "w-10 h-1.5 rounded-full",
-                  i < Math.round(overallScore/20) ? "bg-primary shadow-[0_0_8px_rgba(255,145,90,0.5)]" : "bg-outline-variant/20"
+                  i < Math.round(overallScore/20) ? "bg-primary shadow-sm" : "bg-outline-variant/20"
                 )} 
               />
             ))}
@@ -94,11 +94,11 @@ const SessionHeader = ({ sessionData }) => {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-4xl font-extrabold text-white tracking-tighter uppercase leading-none">
+              <h2 className="text-4xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
                 {companyName} SIMULATION
               </h2>
               <p className="text-xl font-body text-on-surface-variant/70 italic tracking-tight">
-                Evaluating path for <span className="text-white font-extrabold not-italic uppercase tracking-normal">{jobRole}</span>
+                Evaluating path for <span className="text-on-surface font-extrabold not-italic uppercase tracking-normal">{jobRole}</span>
               </p>
             </div>
           </div>
@@ -110,7 +110,7 @@ const SessionHeader = ({ sessionData }) => {
               </div>
               <div className="space-y-1">
                 <p className="text-[9px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em] opacity-40">Security Clearance</p>
-                <p className="text-sm font-extrabold text-white tracking-widest uppercase">LEVEL_ALPHA_4</p>
+                <p className="text-sm font-extrabold text-on-surface tracking-widest uppercase">LEVEL_ALPHA_4</p>
               </div>
             </div>
 
@@ -120,7 +120,7 @@ const SessionHeader = ({ sessionData }) => {
               </div>
               <div className="space-y-1">
                 <p className="text-[9px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em] opacity-40">Neural Processing</p>
-                <p className="text-sm font-extrabold text-white tracking-widest uppercase">REAL_TIME_AUDIT</p>
+                <p className="text-sm font-extrabold text-on-surface tracking-widest uppercase">REAL_TIME_AUDIT</p>
               </div>
             </div>
           </div>
@@ -149,7 +149,7 @@ const SessionHeader = ({ sessionData }) => {
                 initial={{ width: 0 }}
                 animate={{ width: `${metric.score}%` }}
                 transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
-                className={cn("h-full rounded-full shadow-[0_0_12px_rgba(0,0,0,0.2)]", getScoreColor(metric.score).replace('text', 'bg'))}
+                className={cn("h-full rounded-full shadow-md", getScoreColor(metric.score).replace('text', 'bg'))}
               />
             </div>
           </motion.div>

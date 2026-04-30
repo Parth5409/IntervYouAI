@@ -50,7 +50,7 @@ const SocialSharing = ({ sessionData, achievements }) => {
 
          {achievements && (
            <div className="bg-primary/10 border border-primary/20 p-5 rounded-[1.5rem] flex items-center gap-5 group/achieve animate-pulse">
-             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-[0_0_15px_rgba(255,145,90,0.4)]">
+             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-sm">
                <Icon name="ms:workspace_premium" size={20} />
              </div>
              <p className="text-[10px] font-extrabold text-primary uppercase tracking-widest leading-none">
@@ -80,7 +80,7 @@ const SocialSharing = ({ sessionData, achievements }) => {
 
          <button
             onClick={handleCopyLink}
-            className="w-full h-12 flex items-center justify-center gap-3 text-[10px] font-extrabold text-on-surface-variant/40 hover:text-white uppercase tracking-[0.2em] border border-dashed border-outline-variant/20 rounded-2xl transition-all hover:border-primary/40 group/copy"
+            className="w-full h-12 flex items-center justify-center gap-3 text-[10px] font-extrabold text-on-surface-variant/40 hover:text-on-surface uppercase tracking-[0.2em] border border-dashed border-outline-variant/20 rounded-2xl transition-all hover:border-primary/40 group/copy"
          >
             <Icon name="ms:content_copy" size={16} className="group-hover/copy:scale-110 transition-transform" />
             Secure Access Link

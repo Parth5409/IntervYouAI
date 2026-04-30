@@ -188,11 +188,11 @@ const GDRoom = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="min-h-screen bg-surface-container-low flex flex-col items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
         <div className="relative z-10 flex flex-col items-center gap-6">
           <div className="w-16 h-16 border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
-          <p className="font-mono text-[10px] text-emerald-500 uppercase tracking-[0.3em] animate-pulse">
+          <p className="font-mono text-[10px] text-emerald-500 animate-pulse font-label font-medium text-on-surface-variant">
             INITIALIZING_MULTI_AGENT_ENVIRONMENT...
           </p>
         </div>
@@ -201,30 +201,30 @@ const GDRoom = () => {
   }
 
   return (
-    <div className="h-screen bg-slate-950 text-slate-50 flex flex-col relative overflow-hidden">
+    <div className="h-screen bg-surface-container-low text-on-surface flex flex-col relative overflow-hidden">
       {/* Blueprint Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
 
-      <header className="h-16 border-b border-slate-800 bg-slate-950/50 backdrop-blur-md flex items-center justify-between px-8 relative z-10 shrink-0">
+      <header className="h-16 border-b border-outline-variant/30 bg-surface-container-low/50 backdrop-blur-md flex items-center justify-between px-8 relative z-10 shrink-0">
         <div className="flex items-center gap-4">
           <div className="w-8 h-8 bg-amber-500 flex items-center justify-center shrink-0">
             <Icon name="Users" size={20} className="text-slate-950" />
           </div>
-          <span className="font-mono font-bold tracking-tighter text-lg uppercase truncate max-w-[200px] sm:max-w-none">
+          <span className="font-mono font-bold text-lg truncate max-w-[200px] sm:max-w-none">
             INTERVYOU.AI {'//'} COLLECTIVE_NODE
           </span>
         </div>
         <div className="flex items-center gap-6">
           <div className="hidden md:flex flex-col items-end">
-            <span className="text-[8px] font-mono text-slate-500 uppercase tracking-widest">Temporal_Marker</span>
-            <span className="text-xs font-mono font-bold text-amber-500 tracking-widest">
+            <span className="text-[8px] font-mono text-on-surface-variant font-label font-medium text-on-surface-variant">Temporal_Marker</span>
+            <span className="text-xs font-mono font-bold text-amber-500 font-label font-medium text-on-surface-variant">
               {new Date(sessionTime * 1000).toISOString().substr(14, 5)}
             </span>
           </div>
-          <div className="w-px h-8 bg-slate-800" />
+          <div className="w-px h-8 bg-surface-container-low" />
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-mono text-emerald-500/80 uppercase tracking-widest hidden sm:inline">Stream_Live</span>
+            <span className="text-[10px] font-mono text-emerald-500/80 hidden sm:inline font-label font-medium text-on-surface-variant">Stream_Live</span>
           </div>
         </div>
       </header>
@@ -245,12 +245,12 @@ const GDRoom = () => {
               {/* Interruption Overlay */}
               {isInterruptionWindow && interruptionTimer > 0 && (
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-                  <div className="bg-slate-950/95 border border-amber-500/50 p-6 backdrop-blur-2xl flex flex-col items-center gap-4 shadow-[0_0_100px_rgba(245,158,11,0.15)] min-w-[220px]">
-                    <span className="font-mono text-[10px] text-amber-500 uppercase tracking-[0.3em]">Interruption_Window_Open</span>
-                    <div className="text-6xl font-mono font-bold text-slate-100 tracking-tighter animate-pulse">
+                  <div className="bg-surface-container-low/95 border border-amber-500/50 p-6 backdrop-blur-2xl flex flex-col items-center gap-4 shadow-md min-w-[220px]">
+                    <span className="font-mono text-[10px] text-amber-500 font-label font-medium text-on-surface-variant">Interruption_Window_Open</span>
+                    <div className="text-6xl font-headline font-bold text-on-surface animate-pulse italic">
                       0{interruptionTimer}
                     </div>
-                    <p className="font-mono text-[8px] text-slate-500 uppercase tracking-widest">Activate Mic to Interject</p>
+                    <p className="font-mono text-[8px] text-on-surface-variant font-label font-medium text-on-surface-variant">Activate Mic to Interject</p>
                   </div>
                 </div>
               )}
@@ -273,13 +273,13 @@ const GDRoom = () => {
         </div>
 
         {/* Right: Transcription Zone */}
-        <div className="hidden lg:flex lg:w-[380px] xl:w-[450px] flex-col border-l border-slate-800 bg-slate-900/50 backdrop-blur-xl shrink-0 h-full">
-          <div className="px-6 py-3 bg-slate-950/50 border-b border-slate-800 flex items-center justify-between">
+        <div className="hidden lg:flex lg:w-[380px] xl:w-[450px] flex-col border-l border-outline-variant/30 bg-surface-container-low/50 backdrop-blur-xl shrink-0 h-full">
+          <div className="px-6 py-3 bg-surface-container-low/50 border-b border-outline-variant/30 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 bg-emerald-500" />
-              <span className="font-mono text-[9px] text-slate-500 uppercase tracking-widest">MULTI_AGENT_LOG</span>
+              <span className="font-mono text-[9px] text-on-surface-variant font-label font-medium text-on-surface-variant">MULTI_AGENT_LOG</span>
             </div>
-            <span className="font-mono text-[9px] text-slate-600 uppercase">Buffer_Active</span>
+            <span className="font-mono text-[9px] text-on-surface-variant font-label font-medium text-on-surface-variant">Buffer_Active</span>
           </div>
           <div className="flex-1 relative overflow-hidden">
             <GDTranscript 

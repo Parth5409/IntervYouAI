@@ -140,7 +140,7 @@ const OnboardingForm = () => {
             disabled={isLoading || lockedFields.prn}
           />
           {lockedFields.prn && (
-            <div className="absolute right-3 top-9 text-slate-600" title="Verified by Institution">
+            <div className="absolute right-3 top-9 text-on-surface-variant" title="Verified by Institution">
               <Icon name="Lock" size={14} />
             </div>
           )}
@@ -155,7 +155,7 @@ const OnboardingForm = () => {
             disabled={isLoading || lockedFields.branch}
           />
           {lockedFields.branch && (
-            <div className="absolute right-3 top-9 text-slate-600" title="Verified by Institution">
+            <div className="absolute right-3 top-9 text-on-surface-variant" title="Verified by Institution">
               <Icon name="Lock" size={14} />
             </div>
           )}
@@ -193,19 +193,19 @@ const OnboardingForm = () => {
       </div>
 
       <div>
-        <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block mb-2">
+        <label className="font-mono text-[10px] text-on-surface-variant block mb-2 font-label font-medium text-on-surface-variant">
           Technical_Capabilities (Comma Separated)
         </label>
         <textarea
           name="skills"
-          className="w-full rounded-none border border-slate-800 bg-slate-950 px-4 py-2 text-slate-50 font-mono text-sm ring-offset-background placeholder:text-slate-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors min-h-[80px]"
+          className="w-full rounded-none border border-outline-variant/30 bg-surface-container-low px-4 py-2 text-on-surface font-mono text-sm ring-offset-background placeholder:text-slate-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors min-h-[80px]"
           placeholder="JAVA, PYTHON, REACT, SPRING_BOOT..."
           value={formData.skills}
           onChange={handleInputChange}
           disabled={isLoading}
         />
         {errors.skills && (
-          <p className="font-mono text-[10px] text-red-500 uppercase tracking-tight mt-1">{errors.skills}</p>
+          <p className="font-mono text-[10px] text-red-500 mt-1 font-label font-medium text-on-surface-variant">{errors.skills}</p>
         )}
       </div>
 
@@ -219,10 +219,10 @@ const OnboardingForm = () => {
       />
 
       <div className="space-y-2">
-        <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
+        <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
           Resume_Upload (PDF)
         </label>
-        <div className="relative border border-dashed border-slate-800 bg-slate-900/50 p-6 text-center hover:bg-slate-900 transition-colors group">
+        <div className="relative border border-dashed border-outline-variant/30 bg-surface-container-low/50 p-6 text-center hover:bg-surface-container-low transition-colors group">
           <input
             type="file"
             accept=".pdf"
@@ -231,14 +231,14 @@ const OnboardingForm = () => {
             disabled={isLoading}
           />
           <div className="flex flex-col items-center justify-center space-y-2">
-            <Icon name="Upload" size={24} className="text-slate-500 group-hover:text-emerald-500 transition-colors" />
-            <span className="text-xs font-mono text-slate-400 group-hover:text-slate-200 transition-colors">
+            <Icon name="Upload" size={24} className="text-on-surface-variant group-hover:text-emerald-500 transition-colors" />
+            <span className="text-xs font-mono text-on-surface-variant group-hover:text-on-surface transition-colors">
               {resume ? resume.name : 'DRAG_DROP OR CLICK_TO_UPLOAD'}
             </span>
           </div>
         </div>
         {errors.resume && (
-          <p className="font-mono text-[10px] text-red-500 uppercase tracking-tight mt-1">
+          <p className="font-mono text-[10px] text-red-500 mt-1 font-label font-medium text-on-surface-variant">
             {errors.resume}
           </p>
         )}
@@ -246,7 +246,7 @@ const OnboardingForm = () => {
 
       {errors.submit && (
         <div className="p-3 bg-red-500/10 border border-red-500/20">
-          <p className="text-[10px] font-mono text-red-500 uppercase">{errors.submit}</p>
+          <p className="text-[10px] font-mono text-red-500 font-label font-medium text-on-surface-variant">{errors.submit}</p>
         </div>
       )}
 

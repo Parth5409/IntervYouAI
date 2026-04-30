@@ -35,7 +35,7 @@ const Select = React.forwardRef(({ className, options = [], value, onChange, pla
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex h-16 w-full items-center justify-between rounded-2xl border border-outline-variant/10 bg-surface-container-highest/30 px-6 py-4 text-sm font-extrabold transition-all duration-300 backdrop-blur-3xl hover:bg-surface-container-highest/50 hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-primary/20",
-          isOpen && "border-primary/50 shadow-[0_0_20px_rgba(255,145,90,0.15)]",
+          isOpen && "border-primary/50 shadow-sm",
           error && "border-red-500/50",
           className
         )}
@@ -43,7 +43,7 @@ const Select = React.forwardRef(({ className, options = [], value, onChange, pla
       >
         <span className={cn(
           "truncate transition-colors",
-          selectedOption ? "text-white" : "text-on-surface-variant opacity-40 uppercase tracking-widest text-[11px]"
+          selectedOption ? "text-on-surface" : "text-on-surface-variant opacity-40 uppercase tracking-widest text-[11px]"
         )}>
           {selectedOption?.label || placeholder}
         </span>
@@ -80,7 +80,7 @@ const Select = React.forwardRef(({ className, options = [], value, onChange, pla
                     "relative flex w-full cursor-pointer select-none items-center rounded-xl py-4 px-10 text-xs font-extrabold uppercase tracking-widest transition-all duration-300",
                     value === option.value 
                       ? "bg-primary text-on-primary shadow-lg scale-[0.98]" 
-                      : "text-on-surface-variant hover:bg-surface-container-highest hover:text-white"
+                      : "text-on-surface-variant hover:bg-surface-container-highest hover:text-on-surface"
                   )}
                 >
                   <span className="absolute left-4 opacity-60 italic text-[9px] tabular-nums">

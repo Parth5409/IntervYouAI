@@ -31,7 +31,7 @@ const Checkbox = React.forwardRef(({ className, label, id, checked, onChange, na
         onCheckedChange={handleCheckedChange}
         name={name}
         className={cn(
-          "peer h-4 w-4 shrink-0 rounded-none border border-slate-800 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-emerald-500 data-[state=checked]:text-slate-950",
+          "peer h-4 w-4 shrink-0 rounded-none border border-outline-variant/30 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-emerald-500 data-[state=checked]:text-slate-950",
           className
         )}
         {...props}
@@ -45,7 +45,7 @@ const Checkbox = React.forwardRef(({ className, label, id, checked, onChange, na
       {label && (
         <label 
           htmlFor={checkboxId}
-          className="text-sm font-mono text-slate-200 uppercase tracking-tight cursor-pointer peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
+          className="text-sm font-mono text-on-surface cursor-pointer peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
         >
           {label}
         </label>

@@ -47,7 +47,7 @@ const InterviewTypeCard = ({
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-6 right-8 z-20"
           >
-            <div className="bg-primary text-on-primary px-3 py-1 rounded-full font-headline text-[9px] font-extrabold tracking-[0.2em] uppercase shadow-lg">
+            <div className="bg-primary text-on-primary px-3 py-1 rounded-full font-headline text-[9px] font-extrabold shadow-lg font-label font-medium text-on-surface-variant">
               Selected
             </div>
           </motion.div>
@@ -68,7 +68,7 @@ const InterviewTypeCard = ({
         {/* Typography */}
         <h3 className={cn(
           "text-xl font-headline font-extrabold mb-4 tracking-tight uppercase leading-none transition-colors duration-500",
-          isSelected ? "text-white" : "text-white/80 group-hover:text-white"
+          isSelected ? "text-on-surface" : "text-on-surface/80 group-hover:text-on-surface"
         )}>
           {title.replace(' Interview', '')}
         </h3>
@@ -83,11 +83,11 @@ const InterviewTypeCard = ({
               <div key={index} className="flex items-center space-x-4 group/item">
                 <div className={cn(
                   "w-1.5 h-1.5 rounded-full transition-all duration-500",
-                  isSelected ? "bg-primary scale-110 shadow-[0_0_8px_rgba(255,145,90,1)]" : "bg-outline-variant/40 group-hover:bg-primary/40"
+                  isSelected ? "bg-primary scale-110 shadow-sm" : "bg-outline-variant/40 group-hover:bg-primary/40"
                 )} />
                 <span className={cn(
                   "text-[10px] font-headline font-bold text-on-surface-variant uppercase tracking-widest transition-colors duration-500",
-                  isSelected ? "text-white/80" : "group-hover/item:text-white/60"
+                  isSelected ? "text-on-surface/80" : "group-hover/item:text-on-surface/60"
                 )}>
                   {feature}
                 </span>

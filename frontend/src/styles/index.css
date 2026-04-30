@@ -1,5 +1,5 @@
 html.dark {
-  background-color: #0e0e0e;
+  background-color: #080808;
 }
 
 body {
@@ -7,7 +7,9 @@ body {
   padding: 0;
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
-  background-color: #0e0e0e;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #080808;
+  color: #ffffff;
 }
 
 * {
@@ -15,28 +17,63 @@ body {
   line-height: normal;
 }
 
+/* Glass surfaces */
+.glass {
+  background: rgba(20, 20, 20, 0.4);
+  backdrop-filter: blur(16px);
+}
+.glass-card {
+  background: rgba(17, 17, 17, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+.glass-panel {
+  background: rgba(17, 17, 17, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Ghost borders */
+.glass-border { border: 1px solid rgba(255, 255, 255, 0.05); }
+.premium-border { border: 1px solid rgba(255, 255, 255, 0.04); }
+
+/* Ambient background effects */
 .glow-mesh {
   background: radial-gradient(circle at 50% 50%, rgba(255, 145, 90, 0.05) 0%, transparent 70%);
 }
-
-.glass-card {
-  background: rgba(19, 19, 19, 0.6);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-}
-
 .subtle-grid {
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+}
+.bg-grid-subtle {
+  background-image: radial-gradient(#262626 0.5px, transparent 0.5px);
+  background-size: 24px 24px;
 }
 
-.premium-border {
-  border: 1px solid rgba(255, 255, 255, 0.04);
+/* Text gradient (brand wordmark) */
+.text-gradient {
+  background: linear-gradient(135deg, #FF915A, #FF7A31);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.glass-panel {
-  background: rgba(17, 17, 17, 0.6);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+/* Circular score ring */
+.circular-progress {
+  background: conic-gradient(from 0deg, #ff915a 0%, #ff7a31 82%, #1c1c1c 82%);
 }
+
+/* Audio waveform bars */
+.waveform-bar {
+  width: 3px;
+  background-color: #FF915A;
+  border-radius: 999px;
+  transition: height 0.2s ease;
+}
+
+/* Subtle hover for list rows */
+.subtle-hover:hover { background-color: rgba(255, 255, 255, 0.02); }
+
+/* Text wrapping */
+.text-balance { text-wrap: balance; }

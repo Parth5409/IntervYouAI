@@ -186,10 +186,10 @@ const StudentDirectoryPage = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-mono font-bold text-slate-100 uppercase tracking-tighter">
+            <h1 className="text-2xl font-headline font-bold text-on-surface">
               Student_Registry
             </h1>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-widest mt-1">
+            <p className="font-mono text-on-surface-variant mt-1 text-xs font-label font-medium text-on-surface-variant">
               Active candidates within institutional domain
             </p>
           </div>
@@ -199,7 +199,7 @@ const StudentDirectoryPage = () => {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
-                    className="bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white"
+                    className="bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-on-surface"
                   >
                     <Icon name="Trash2" size={16} className="mr-2" />
                     DELETE_SELECTED ({selectedStudents.length})
@@ -230,15 +230,15 @@ const StudentDirectoryPage = () => {
                   BULK_IMPORT_CSV
                 </Button>
               </SheetTrigger>
-              <SheetContent className="bg-slate-950 border-l border-slate-800 text-slate-50 w-full sm:max-w-md">
+              <SheetContent className="bg-surface-container-low border-l border-outline-variant/30 text-on-surface w-full sm:max-w-md">
                 <SheetHeader>
-                  <SheetTitle className="text-slate-100 font-mono text-xl uppercase tracking-tighter">
+                  <SheetTitle className="text-on-surface font-headline text-xl">
                     Initialize_Bulk_Import
                   </SheetTitle>
                 </SheetHeader>
 
                 <div className="mt-8 space-y-6">
-                  <div className="p-4 border border-dashed border-slate-800 bg-slate-900/50 text-center">
+                  <div className="p-4 border border-dashed border-outline-variant/30 bg-surface-container-low/50 text-center">
                     <input
                       type="file"
                       accept=".csv"
@@ -247,15 +247,15 @@ const StudentDirectoryPage = () => {
                       id="csv-upload"
                     />
                     <label htmlFor="csv-upload" className="cursor-pointer space-y-2 block">
-                      <Icon name="FileSpreadsheet" size={32} className="mx-auto text-slate-500" />
-                      <p className="text-xs font-mono text-slate-400">
+                      <Icon name="FileSpreadsheet" size={32} className="mx-auto text-on-surface-variant" />
+                      <p className="text-xs font-mono text-on-surface-variant">
                         {csvData ? 'FILE_LOADED_READY_TO_PROCESS' : 'SELECT_CSV_FILE_FOR_UPLOAD'}
                       </p>
                     </label>
                   </div>
 
-                  <div className="bg-slate-900 p-4 border border-slate-800">
-                    <h3 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">
+                  <div className="bg-surface-container-low p-4 border border-outline-variant/30">
+                    <h3 className="text-[10px] font-mono font-bold text-on-surface-variant mb-3 font-label font-medium text-on-surface-variant">
                       Expected_CSV_Format
                     </h3>
                     <code className="text-[10px] font-mono text-emerald-500 block">
@@ -265,7 +265,7 @@ const StudentDirectoryPage = () => {
 
                   {importError && (
                     <div className="p-3 bg-red-500/10 border border-red-500/20">
-                      <p className="text-[10px] font-mono text-red-500 uppercase">{importError}</p>
+                      <p className="text-[10px] font-mono text-red-500 font-label font-medium text-on-surface-variant">{importError}</p>
                     </div>
                   )}
 
@@ -277,7 +277,7 @@ const StudentDirectoryPage = () => {
                     >
                       {isImporting ? 'PROCESSING_DATA...' : 'EXECUTE_IMPORT'}
                     </Button>
-                    <p className="text-[8px] font-mono text-slate-500 text-center uppercase leading-relaxed">
+                    <p className="text-[8px] font-mono text-on-surface-variant text-center leading-relaxed font-label font-medium text-on-surface-variant">
                       * Default passwords will be generated as ST + INSTITUTION_CODE + PRN (e.g., STMIT20230001).
                       Students will be required to update credentials on first node access.
                     </p>
@@ -289,10 +289,10 @@ const StudentDirectoryPage = () => {
         </div>
 
         {/* Table View */}
-        <div className="bg-slate-900/50 border border-slate-800 overflow-hidden">
+        <div className="bg-surface-container-low/50 border border-outline-variant/30 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left font-mono text-xs">
-              <thead className="bg-slate-950 border-b border-slate-800">
+              <thead className="bg-surface-container-low border-b border-outline-variant/30">
                 <tr>
                   <th className="px-4 py-4 w-10">
                     <Checkbox
@@ -300,22 +300,22 @@ const StudentDirectoryPage = () => {
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
                   </th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter">Candidate_Identity</th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter">PRN</th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter">Academic_Unit</th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter">CGPA</th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter text-right">Actions</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter">Candidate_Identity</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter">PRN</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter">Academic_Unit</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter">CGPA</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/50">
                 {isLoading ? (
-                  <tr><td colSpan="6" className="px-6 py-12 text-center text-slate-500 animate-pulse uppercase tracking-widest">Scanning_Records...</td></tr>
+                  <tr><td colSpan="6" className="px-6 py-12 text-center text-on-surface-variant animate-pulse uppercase tracking-widest">Scanning_Records...</td></tr>
                 ) : students.length === 0 ? (
-                  <tr><td colSpan="6" className="px-6 py-12 text-center text-slate-500 uppercase tracking-widest">Empty_Registry_Zero_Records</td></tr>
+                  <tr><td colSpan="6" className="px-6 py-12 text-center text-on-surface-variant uppercase tracking-widest">Empty_Registry_Zero_Records</td></tr>
                 ) : (
                   students.map((student) => (
                     <tr key={student.id} className={cn(
-                      "hover:bg-slate-800/30 transition-colors group",
+                      "hover:bg-surface-container-low/30 transition-colors group",
                       selectedStudents.includes(student.id) && "bg-emerald-500/5"
                     )}>
                       <td className="px-4 py-4">
@@ -326,23 +326,23 @@ const StudentDirectoryPage = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-400 group-hover:border-emerald-500/50 transition-colors">
+                          <div className="w-8 h-8 bg-surface-container-low border border-outline-variant/30 flex items-center justify-center text-[10px] text-on-surface-variant group-hover:border-emerald-500/50 transition-colors">
                             {student.fullName?.charAt(0) || '?'}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-200">{student.fullName || 'UNKNOWN_CANDIDATE'}</div>
-                            <div className="text-[10px] text-slate-500 lowercase">{student.email || 'no-email@system.local'}</div>
+                            <div className="font-bold text-on-surface">{student.fullName || 'UNKNOWN_CANDIDATE'}</div>
+                            <div className="text-[10px] text-on-surface-variant lowercase">{student.email || 'no-email@system.local'}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-slate-400 font-mono">{student.prn}</td>
-                      <td className="px-6 py-4 text-slate-400">{student.branch}</td>
+                      <td className="px-6 py-4 text-on-surface-variant font-mono">{student.prn}</td>
+                      <td className="px-6 py-4 text-on-surface-variant">{student.branch}</td>
                       <td className="px-6 py-4 font-bold text-sky-400">{student.currentCgpa || 'N/A'}</td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => handleEditClick(student)}
-                            className="p-1.5 text-slate-500 hover:text-emerald-500 transition-colors"
+                            className="p-1.5 text-on-surface-variant hover:text-emerald-500 transition-colors"
                             title="Edit Student"
                           >
                             <Icon name="Pencil" size={14} />
@@ -350,7 +350,7 @@ const StudentDirectoryPage = () => {
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <button
-                                className="p-1.5 text-slate-500 hover:text-red-500 transition-colors"
+                                className="p-1.5 text-on-surface-variant hover:text-red-500 transition-colors"
                                 title="Delete Student"
                               >
                                 <Icon name="Trash2" size={14} />
@@ -385,19 +385,19 @@ const StudentDirectoryPage = () => {
 
       {/* Edit Student Sheet */}
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent className="bg-slate-950 border-l border-slate-800 text-slate-50 w-full sm:max-w-md overflow-y-auto">
+        <SheetContent className="bg-surface-container-low border-l border-outline-variant/30 text-on-surface w-full sm:max-w-md overflow-y-auto">
           <SheetHeader>
-            <SheetTitle className="text-slate-100 font-mono text-xl uppercase tracking-tighter">
+            <SheetTitle className="text-on-surface font-headline text-xl">
               Modify_Student_Node
             </SheetTitle>
           </SheetHeader>
 
           {editingStudent && (
             <form onSubmit={handleUpdateStudent} className="mt-8 space-y-6">
-              <div className="p-4 bg-slate-900 border border-slate-800 space-y-1 mb-6">
-                <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Fixed_Identity</p>
-                <p className="text-sm font-mono font-bold text-slate-200">{editingStudent.fullName}</p>
-                <p className="text-xs font-mono text-slate-400">{editingStudent.email}</p>
+              <div className="p-4 bg-surface-container-low border border-outline-variant/30 space-y-1 mb-6">
+                <p className="text-[10px] font-mono text-on-surface-variant font-label font-medium text-on-surface-variant">Fixed_Identity</p>
+                <p className="text-sm font-mono font-bold text-on-surface">{editingStudent.fullName}</p>
+                <p className="text-xs font-mono text-on-surface-variant">{editingStudent.email}</p>
               </div>
 
               <Input
@@ -436,11 +436,11 @@ const StudentDirectoryPage = () => {
               />
 
               <div className="space-y-2">
-                <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
+                <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
                   Capabilities (Comma Separated)
                 </label>
                 <textarea
-                  className="w-full bg-slate-900 border border-slate-800 p-3 font-mono text-xs text-slate-200 focus:ring-1 focus:ring-emerald-500 outline-none min-h-[80px]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-xs text-on-surface focus:ring-1 focus:ring-emerald-500 outline-none min-h-[80px]"
                   value={editingStudent.skills || ''}
                   onChange={(e) => setEditingStudent({ ...editingStudent, skills: e.target.value })}
                 />
@@ -457,7 +457,7 @@ const StudentDirectoryPage = () => {
                   type="button"
                   variant="outline"
                   onClick={() => setIsEditSheetOpen(false)}
-                  className="flex-1 border-slate-800 text-slate-400 hover:bg-slate-900"
+                  className="flex-1 border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low"
                 >
                   CANCEL
                 </Button>

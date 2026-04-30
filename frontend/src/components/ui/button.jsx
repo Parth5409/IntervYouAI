@@ -5,23 +5,24 @@ import { cva } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-headline font-bold tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-headline font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
   {
     variants: {
       variant: {
-        default: "bg-on-surface text-surface-dim hover:bg-white shadow-[0_4px_12px_rgba(255,255,255,0.1)]",
+        default: "bg-primary text-black hover:brightness-110 shadow-lg shadow-primary/10",
         destructive:
-          "bg-error text-white hover:bg-error-dim shadow-[0_4px_12px_rgba(255,115,81,0.2)]",
+          "bg-error text-white hover:opacity-90 shadow-sm",
         outline:
-          "border border-outline-variant bg-transparent text-on-surface hover:border-on-surface hover:bg-on-surface/5 font-medium",
+          "border border-outline-variant hover:border-white text-on-surface font-bold transition-all",
         secondary:
-          "bg-surface-container-highest text-white hover:bg-surface-bright",
-        ghost: "hover:bg-on-surface/5 text-on-surface-variant hover:text-white font-medium uppercase tracking-widest text-[10px]",
-        link: "text-primary hover:underline underline-offset-4 font-semibold",
-        primary: "bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold hover:opacity-90 shadow-[0_4px_20px_rgba(255,145,90,0.3)]",
+          "bg-surface-container-high/40 border border-outline-variant/50 text-on-surface font-bold rounded-lg text-xs hover:bg-surface-container-highest transition-all",
+        ghost: "text-on-surface-variant hover:text-white hover:bg-surface-container transition-all",
+        link: "text-primary hover:underline underline-offset-4 font-bold",
+        primary: "py-5 bg-primary text-black font-headline font-bold text-lg rounded-xl hover:bg-primary-dim transition-all duration-300 active:scale-[0.99]",
+        white: "bg-white text-black font-headline font-bold rounded-lg text-xs uppercase tracking-widest hover:bg-primary transition-all",
       },
       size: {
-        default: "h-12 px-8 py-3",
+        default: "h-12 px-6 py-3",
         sm: "h-9 px-4 text-xs",
         lg: "h-14 px-10 text-base",
         icon: "h-11 w-11",

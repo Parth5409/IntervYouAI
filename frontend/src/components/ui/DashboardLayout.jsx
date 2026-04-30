@@ -6,7 +6,7 @@ import useAuth from '../../hooks/useAuth';
 import { cn } from '../../utils/cn';
 
 const DashboardLayout = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -46,39 +46,30 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="h-screen bg-background text-on-surface font-body flex overflow-hidden selection:bg-primary/30 selection:text-on-surface relative">
-      {/* Global Background mesh */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/5 rounded-full blur-[120px] opacity-40 animate-pulse" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[100px] opacity-30 animate-pulse" />
-      </div>
+      {/* Background Ambient Layers */}
+      <div className="fixed inset-0 glow-mesh pointer-events-none z-0"></div>
+      <div className="fixed inset-0 subtle-grid pointer-events-none z-0"></div>
 
       {/* Sidebar */}
       <aside 
         className={cn(
-          "h-full fixed left-0 top-0 flex flex-col p-8 bg-surface-container-low/40 backdrop-blur-3xl border-r border-outline-variant/10 z-[60] transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)]",
-          isSidebarOpen ? "w-80" : "w-28"
+          "fixed left-0 top-0 h-full flex flex-col p-6 bg-surface border-r border-outline-variant/30 z-50 font-headline text-sm transition-all duration-500",
+          isSidebarOpen ? "w-64" : "w-20"
         )}
       >
-        <div className="mb-14 flex items-center justify-between">
-          <div className={cn(
-            "flex items-center gap-4 transition-all duration-500",
-            !isSidebarOpen && "translate-x-1"
-          )}>
-            <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-on-primary shadow-[0_0_25px_rgba(255,145,90,0.4)] transition-transform hover:scale-110">
-              <Icon name="ms:bolt" size={26} className="font-extrabold" />
-            </div>
-            {isSidebarOpen && (
-              <div className="flex flex-col animate-in slide-in-from-left-2">
-                <h1 className="text-lg font-headline font-extrabold tracking-[0.1em] text-white uppercase leading-none">
-                  IntervYou.AI
-                </h1>
-                <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-[0.2em] mt-1.5 opacity-40">Core Interface</span>
-              </div>
-            )}
-          </div>
+        {/* Logo Section */}
+        <div className="flex items-center gap-2.5 mb-10">
+          <span className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-black shadow-lg shadow-primary/10">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'wght' 700", fontSize: '18px' }}>bolt</span>
+          </span>
+          {isSidebarOpen && (
+            <h1 className="text-lg font-extrabold tracking-tight text-white font-headline animate-in fade-in slide-in-from-left-2">
+              IntervYou.AI
+            </h1>
+          )}
         </div>
 
-        <nav className="flex-1 space-y-3">
+        <nav className="flex-1 space-y-2">
           {getMenu().map((item) => {
             const active = location.pathname === item.path;
             return (
@@ -86,97 +77,99 @@ const DashboardLayout = ({ children }) => {
                 key={item.path}
                 onClick={() => navigate(item.path)}
                 className={cn(
-                  "w-full flex items-center gap-4 px-5 py-4 rounded-[1.25rem] transition-all duration-500 group relative",
+                  "w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all group relative",
                   active 
-                    ? "text-white bg-surface-container-highest shadow-xl" 
-                    : "text-on-surface-variant hover:text-white hover:bg-surface-container-high/60"
+                    ? "text-primary bg-primary/5 font-semibold" 
+                    : "text-on-surface-variant hover:text-white hover:bg-surface-container"
                 )}
               >
-                <Icon name={item.icon} size={22} className={cn("transition-transform group-hover:scale-110", active && "text-primary")} />
-                {isSidebarOpen && <span className="font-headline text-[13px] font-bold tracking-wide uppercase">{item.label}</span>}
-                {active && (
-                  <motion.div 
-                    layoutId="active-indicator"
-                    className="absolute left-0 w-1 h-6 bg-primary rounded-full" 
-                  />
-                )}
+                <Icon name={item.icon} size={20} className={cn("transition-transform group-hover:scale-110", active && "text-primary")} />
+                {isSidebarOpen && <span className="font-headline text-[13px] font-semibold tracking-tight">{item.label}</span>}
               </button>
             );
           })}
         </nav>
 
-        <div className="mt-auto pt-8 border-t border-outline-variant/10 space-y-3">
+        <div className="mt-auto pt-6 border-t border-outline-variant/30 space-y-3">
           <button
             onClick={() => navigate('/settings')}
             className={cn(
-              "w-full flex items-center gap-4 px-5 py-3.5 text-on-surface-variant hover:text-white hover:bg-surface-container-high/60 transition-all duration-500 rounded-[1.25rem] group",
+              "w-full flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:text-white hover:bg-surface-container transition-all rounded-lg",
               !isSidebarOpen && "justify-center"
             )}
           >
-            <Icon name="ms:settings" size={22} className="group-hover:rotate-45 transition-transform" />
-            {isSidebarOpen && <span className="font-headline text-[12px] font-bold tracking-wide uppercase">Settings</span>}
+            <Icon name="ms:settings" size={20} className="group-hover:rotate-45 transition-transform" />
+            {isSidebarOpen && <span className="font-headline text-[13px] font-semibold tracking-tight">Settings</span>}
           </button>
           
-          <button
-            onClick={handleLogout}
-            className={cn(
-              "w-full flex items-center gap-4 px-5 py-3.5 text-on-surface-variant hover:text-error transition-all duration-500 rounded-[1.25rem] group",
-              !isSidebarOpen && "justify-center"
-            )}
-          >
-            <Icon name="ms:logout" size={22} className="group-hover:-translate-x-1 transition-transform" />
-            {isSidebarOpen && <span className="font-headline text-[12px] font-bold tracking-wide uppercase">Logout</span>}
-          </button>
+          {isSidebarOpen ? (
+            <button 
+              className="w-full py-2.5 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition-all text-xs tracking-tight font-headline shadow-lg shadow-primary/10"
+              onClick={() => navigate('/interview/setup')}
+            >
+              Start New Session
+            </button>
+          ) : (
+             <button 
+              className="w-full h-10 flex items-center justify-center bg-primary text-black rounded-lg hover:bg-primary/90 transition-all shadow-lg shadow-primary/10"
+              onClick={() => navigate('/interview/setup')}
+            >
+               <Icon name="ms:add" size={20} />
+            </button>
+          )}
 
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="w-full h-12 flex items-center justify-center text-on-surface-variant hover:text-primary transition-all duration-500 hover:bg-primary/5 rounded-[1.25rem] border border-outline-variant/10 mt-6"
+            className="w-full h-10 flex items-center justify-center text-on-surface-variant hover:text-primary transition-all border border-outline-variant/20 rounded-lg mt-2"
           >
-            <Icon name={isSidebarOpen ? "ms:keyboard_double_arrow_left" : "ms:keyboard_double_arrow_right"} size={22} />
+            <Icon name={isSidebarOpen ? "ms:keyboard_double_arrow_left" : "ms:keyboard_double_arrow_right"} size={18} />
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <div className={cn(
-        "flex-1 flex flex-col relative z-20 overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.33,1,0.68,1)]",
-        isSidebarOpen ? "ml-80" : "ml-28"
+        "flex-1 flex flex-col relative z-20 overflow-hidden transition-all duration-500",
+        isSidebarOpen ? "ml-64" : "ml-20"
       )}>
         {/* Top Header */}
-        <header className="fixed top-0 right-0 left-auto z-50 h-24 flex justify-between items-center px-16 bg-background/40 backdrop-blur-3xl border-b border-outline-variant/10 font-headline shadow-sm" style={{ left: isSidebarOpen ? '320px' : '112px' }}>
+        <header className="fixed top-0 right-0 left-64 z-40 h-16 flex justify-between items-center px-10 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 font-headline text-xs font-semibold" style={{ left: isSidebarOpen ? '256px' : '80px' }}>
           <div className="flex items-center gap-6 flex-1">
-            <div className="relative w-full max-w-md group">
-              <Icon name="ms:search" size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/40 group-focus-within:text-primary transition-colors" />
+            <div className="relative w-full max-w-sm group">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/50 text-lg">search</span>
               <input 
-                className="bg-surface-container-low/40 border-none rounded-2xl pl-12 pr-6 py-3.5 text-xs text-on-surface w-full focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-on-surface-variant/30 font-body" 
-                placeholder="Access global protocols..." 
                 type="text" 
+                placeholder="Search opportunities..." 
+                className="bg-surface-container border border-outline-variant/30 focus:border-primary/50 focus:ring-0 rounded-lg pl-10 pr-4 py-2 text-xs text-on-surface w-full transition-all placeholder:text-on-surface-variant/50"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-10">
-            <nav className="hidden xl:flex gap-10 items-center font-headline text-[11px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em]">
-              <a className="hover:text-white transition-all cursor-pointer" href="#">Core Hub</a>
-              <a className="hover:text-white transition-all cursor-pointer" href="#">Neural Lab</a>
-              <a className="hover:text-white transition-all cursor-pointer" href="#">Resources</a>
+          <div className="flex items-center gap-8">
+            <nav className="hidden xl:flex gap-8 items-center text-on-surface-variant uppercase tracking-[0.1em] text-[11px]">
+              <a className="hover:text-white transition-all" href="#">Network</a>
+              <a className="hover:text-white transition-all" href="#">Resources</a>
+              <a className="hover:text-white transition-all" href="#">Help</a>
             </nav>
-            <div className="flex items-center gap-8 border-l border-outline-variant/10 pl-10">
-              <button className="relative p-2 text-on-surface-variant hover:text-primary transition-colors group">
-                <Icon name="ms:notifications" size={24} />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(255,145,90,1)]" />
-              </button>
-              <div className="flex items-center gap-4">
-                <div className="text-right hidden sm:block">
-                  <p className="text-[11px] text-white font-headline font-extrabold tracking-tight uppercase leading-none">{user?.fullName}</p>
-                  <p className="text-[9px] text-on-surface-variant font-body font-bold mt-1.5 opacity-40 uppercase tracking-widest">{user?.role?.replace('ROLE_', '')}</p>
+            <div className="flex items-center gap-4 border-l border-outline-variant/30 pl-8">
+              {user?.role === 'ROLE_ORG_ADMIN' && (
+                <div className="flex flex-col items-end px-3">
+                  <span className="text-[10px] text-on-surface-variant uppercase tracking-wider font-bold">Administrator</span>
+                  <span className="text-[9px] text-on-surface-variant/40 uppercase tracking-widest font-mono">NODE 0X1A4</span>
                 </div>
-                <div className="w-11 h-11 rounded-2xl border border-outline-variant/20 p-1 group cursor-pointer hover:border-primary/40 transition-all duration-500">
-                  <img 
-                    alt="Profile" 
-                    className="w-full h-full rounded-xl grayscale group-hover:grayscale-0 transition-all duration-500 object-cover" 
-                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
-                  />
+              )}
+              <button className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors text-xl">notifications</button>
+              <div className="relative group cursor-pointer">
+                <img 
+                  alt="Profile" 
+                  className="w-8 h-8 rounded-full border border-outline-variant grayscale hover:grayscale-0 transition-all" 
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"
+                />
+                <div className="absolute right-0 top-full mt-2 w-48 bg-surface-container-high border border-outline-variant/30 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all p-2 z-50">
+                  <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-on-surface-variant hover:text-error hover:bg-error/5 rounded-lg transition-all text-xs font-bold uppercase tracking-wider">
+                    <Icon name="ms:logout" size={16} />
+                    Terminal Exit
+                  </button>
                 </div>
               </div>
             </div>
@@ -184,14 +177,14 @@ const DashboardLayout = ({ children }) => {
         </header>
 
         {/* Scrollable View */}
-        <main className="flex-1 overflow-y-auto pt-32 px-16 pb-24 custom-scrollbar bg-transparent">
+        <main className="flex-1 overflow-y-auto pt-24 px-10 pb-20 custom-scrollbar relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4, ease: [0.33, 1, 0.68, 1] }}
             >
               {children}
             </motion.div>

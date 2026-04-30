@@ -200,7 +200,7 @@ const InterviewRoom = () => {
   }, [sessionDetails]);
 
   return (
-    <div className="h-screen bg-background text-white flex flex-col relative overflow-hidden font-body">
+    <div className="h-screen bg-background text-on-surface flex flex-col relative overflow-hidden font-body">
       {/* Luminescent Mesh Background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
@@ -214,8 +214,8 @@ const InterviewRoom = () => {
         <div className="flex-1 relative flex flex-col items-center justify-between p-8 overflow-hidden">
           {/* Active Status Badge */}
           <div className="absolute top-10 left-10 flex items-center gap-4 z-20 bg-surface-container-high/40 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-outline-variant/10">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,1)]" />
-            <span className="font-headline text-[10px] font-extrabold text-white uppercase tracking-[0.3em]">Neural Link Active</span>
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-md" />
+            <span className="font-headline text-[10px] font-extrabold text-on-surface font-label font-medium text-on-surface-variant">Neural Link Active</span>
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center space-y-12 max-w-3xl w-full overflow-hidden">
@@ -260,7 +260,7 @@ const InterviewRoom = () => {
             <div className="px-10 py-5 flex items-center justify-between border-b border-outline-variant/5">
               <div className="flex items-center gap-3">
                 <Icon name="ms:history" size={16} className="text-primary" />
-                <span className="font-headline text-[11px] text-white font-extrabold uppercase tracking-[0.15em]">Transcript stream</span>
+                <span className="font-headline text-[11px] text-on-surface font-extrabold">Transcript stream</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-body text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Live Sync</span>

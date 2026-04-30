@@ -24,7 +24,7 @@ const FeedbackSections = ({
   return (
     <div className="space-y-10">
       <div className="flex items-center justify-between border-b border-outline-variant/10 pb-6">
-        <h2 className="text-[11px] font-extrabold text-white uppercase tracking-[0.4em] flex items-center gap-4">
+        <h2 className="text-[11px] font-extrabold text-on-surface uppercase tracking-[0.4em] flex items-center gap-4">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           Diagnostic Core
         </h2>
@@ -49,7 +49,7 @@ const FeedbackSections = ({
                     <Icon name={section.icon} size={24} className="text-on-surface-variant/40 group-hover/btn:text-primary transition-colors" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-extrabold text-white tracking-widest uppercase">{section.title}</h3>
+                    <h3 className="text-sm font-extrabold text-on-surface tracking-widest uppercase">{section.title}</h3>
                     <p className="text-[10px] text-on-surface-variant/40 font-extrabold uppercase mt-1 tracking-widest leading-none">{section.description}</p>
                   </div>
                 </div>
@@ -92,7 +92,7 @@ const FeedbackSections = ({
                             {strengths.map((strength, index) => (
                               <div key={index} className="flex items-start gap-4 bg-surface-container-highest/20 border border-outline-variant/5 p-5 rounded-[1.5rem] group/item hover:bg-surface-container-highest/40 transition-colors">
                                 <span className="text-primary font-extrabold text-[10px] mt-1 opacity-40 group-hover/item:opacity-100 transition-opacity">{String(index + 1).padStart(2, '0')}</span>
-                                <p className="text-xs font-body text-on-surface-variant leading-relaxed tracking-tight group-hover:text-white transition-colors">{strength}</p>
+                                <p className="text-xs font-body text-on-surface-variant leading-relaxed tracking-tight group-hover:text-on-surface transition-colors">{strength}</p>
                               </div>
                             ))}
                           </div>
@@ -108,7 +108,7 @@ const FeedbackSections = ({
                             {improvements.map((improvement, index) => (
                               <div key={index} className="flex items-start gap-4 bg-surface-container-highest/20 border border-outline-variant/5 p-5 rounded-[1.5rem] group/item hover:bg-surface-container-highest/40 transition-colors">
                                 <span className="text-sky-500 font-extrabold text-[10px] mt-1 opacity-40 group-hover/item:opacity-100 transition-opacity">{String(index + 1).padStart(2, '0')}</span>
-                                <p className="text-xs font-body text-on-surface-variant leading-relaxed tracking-tight group-hover:text-white transition-colors">{improvement}</p>
+                                <p className="text-xs font-body text-on-surface-variant leading-relaxed tracking-tight group-hover:text-on-surface transition-colors">{improvement}</p>
                               </div>
                             ))}
                           </div>
@@ -119,14 +119,14 @@ const FeedbackSections = ({
                       {feedback?.detailed_feedback && (
                         <div className="space-y-6 border-t border-outline-variant/10 pt-10">
                           <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-white opacity-40" />
+                            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                             <h4 className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em]">Neural Narrative Audit</h4>
                           </div>
-                          <div className="bg-surface-container-highest/30 p-8 rounded-[2rem] border border-outline-variant/10 relative overflow-hidden group/audit">
+                          <div className="glass-card p-10 rounded-[2rem] border border-outline-variant/10 relative overflow-hidden group/audit">
                             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover/audit:opacity-20 transition-opacity duration-1000">
                               <Icon name="ms:terminal" size={64} className="text-primary" />
                             </div>
-                            <p className="text-sm font-body text-on-surface-variant leading-relaxed tracking-tight relative z-10 first-letter:text-2xl first-letter:font-extrabold first-letter:text-white first-letter:mr-1">
+                            <p className="text-sm font-body text-on-surface-variant leading-relaxed tracking-tight relative z-10 first-letter:text-2xl first-letter:font-extrabold first-letter:text-on-surface first-letter:mr-1">
                               {feedback.detailed_feedback}
                             </p>
                           </div>

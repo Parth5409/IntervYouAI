@@ -105,7 +105,7 @@ const RegistrationForm = () => {
                  <Icon name="ms:error" size={18} />
               </div>
               <div>
-                <p className="text-[10px] text-error font-extrabold uppercase tracking-[0.2em] font-headline">Synthesis Rejected</p>
+                <p className="text-[10px] text-error font-extrabold font-headline font-label font-medium text-on-surface-variant">Synthesis Rejected</p>
                 <p className="text-xs text-error/70 mt-1 font-body leading-relaxed">{errors?.submit}</p>
               </div>
             </motion.div>
@@ -223,7 +223,7 @@ const RegistrationForm = () => {
                 className="w-5 h-5 rounded border-outline-variant/30 bg-surface-container-highest/20 text-primary focus:ring-primary/20 transition-all cursor-pointer"
               />
             </div>
-            <label htmlFor="terms" className="text-[11px] font-extrabold text-on-surface-variant uppercase tracking-widest leading-relaxed group-hover:text-white transition-colors cursor-pointer opacity-50 group-hover:opacity-100">
+            <label htmlFor="terms" className="text-[11px] font-extrabold text-on-surface-variant uppercase tracking-widest leading-relaxed group-hover:text-on-surface transition-colors cursor-pointer opacity-50 group-hover:opacity-100">
               I acknowledge the <button type="button" className="text-primary hover:underline">Nexus Protocols</button> and <button type="button" className="text-primary hover:underline">Privacy Spheres</button> of IntervYou.AI.
             </label>
           </div>
@@ -243,13 +243,12 @@ const RegistrationForm = () => {
 
         <Button
           type="submit"
-          variant="primary"
-          className="w-full h-16 group"
+          className="w-full h-16 group rounded-xl shadow-sm"
           disabled={isLoading}
         >
-          <span className="flex items-center gap-4 text-[11px] font-extrabold uppercase tracking-[0.4em]">
-            {isLoading ? 'Synthesizing Profile...' : 'Manifest Identity'}
-            {!isLoading && <Icon name="ms:rocket_launch" size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform duration-500" />}
+          <span className="flex items-center gap-3 font-headline font-semibold text-sm">
+            {isLoading ? 'Creating Profile...' : 'Create Account'}
+            {!isLoading && <Icon name="ms:rocket_launch" size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform duration-300" />}
           </span>
         </Button>
       </form>

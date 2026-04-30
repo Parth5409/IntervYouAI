@@ -62,8 +62,8 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
   return (
     <div className="space-y-12">
       <div className="space-y-2">
-        <h3 className="text-2xl font-extrabold text-white uppercase tracking-tight flex items-center gap-4">
-          <div className="w-1.5 h-8 bg-primary rounded-full shadow-[0_0_10px_rgba(255,145,90,0.5)]" />
+        <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-primary rounded-full shadow-sm" />
           Compensation Protocol
         </h3>
         <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
@@ -170,10 +170,10 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
               { text: 'Leverage Index Scoring', icon: 'ms:trending_up' }
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-5 group/item transition-all hover:translate-x-2">
-                <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-primary border border-outline-variant/10 group-hover/item:bg-primary group-hover/item:text-white transition-all duration-500 shadow-md">
+                <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-primary border border-outline-variant/10 group-hover/item:bg-primary group-hover/item:text-on-surface transition-all duration-500 shadow-md">
                   <Icon name={item.icon} size={22} />
                 </div>
-                <span className="text-white font-extrabold text-[10px] uppercase tracking-widest leading-tight transition-colors group-hover/item:text-primary">{item.text}</span>
+                <span className="text-on-surface font-extrabold text-[10px] uppercase tracking-widest leading-tight transition-colors group-hover/item:text-primary">{item.text}</span>
               </div>
             ))}
           </div>

@@ -11,7 +11,7 @@ const TrustSignals = () => {
       {trustFeatures.map((feature, index) => (
         <div key={index} className="bg-surface-container-high/20 backdrop-blur-xl border border-outline-variant/10 p-5 rounded-2xl flex flex-col items-center justify-center group hover:bg-surface-container-high/40 transition-all duration-500">
           <Icon name={feature.icon} size={20} className="text-on-surface-variant/20 mb-3 group-hover:text-primary transition-colors" />
-          <span className="text-[10px] font-extrabold text-on-surface-variant/40 group-hover:text-white uppercase tracking-[0.2em]">{feature.title}</span>
+          <span className="text-[10px] font-extrabold text-on-surface-variant/40 group-hover:text-on-surface uppercase tracking-[0.2em]">{feature.title}</span>
         </div>
       ))}
     </div>

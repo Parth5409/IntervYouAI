@@ -12,14 +12,14 @@ const Input = React.forwardRef(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] ml-1 opacity-60 transition-opacity group-focus-within:opacity-100"
+            className="block text-[11px] font-semibold text-on-surface-variant uppercase tracking-widest mb-2"
           >
             {label}
           </label>
         )}
         <div className="relative group/field">
           {leftElement && (
-            <div className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center justify-center text-primary opacity-40 group-focus-within/field:opacity-100 transition-all duration-300">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-primary/60 group-focus-within/field:text-primary transition-all duration-300">
               {leftElement}
             </div>
           )}
@@ -27,18 +27,17 @@ const Input = React.forwardRef(
             id={inputId}
             type={type}
             className={cn(
-              "w-full bg-surface-container-highest/30 border border-outline-variant/10 rounded-2xl py-5 transition-all duration-500 backdrop-blur-3xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 text-white placeholder:text-on-surface-variant/20 font-body text-base",
-              leftElement ? "pl-16" : "pl-6",
-              rightElement ? "pr-16" : "pr-6",
-              error && "border-red-500/50 focus:ring-red-500/10 focus:border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.1)]",
-              !error && "focus:shadow-[0_0_30px_rgba(255,145,90,0.15)]",
+              "w-full bg-surface-container-lowest/50 border border-outline-variant rounded-xl py-4 transition-all duration-300 focus:outline-none input-focus-glow text-on-surface placeholder:text-outline/40 font-body text-base",
+              leftElement ? "pl-12" : "pl-4",
+              rightElement ? "pr-12" : "pr-4",
+              error && "border-error/50 focus:ring-error/10 focus:border-error shadow-sm",
               className
             )}
             ref={ref}
             {...props}
           />
           {rightElement && (
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center justify-center text-primary opacity-40">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-primary/60">
               {rightElement}
             </div>
           )}
@@ -48,7 +47,7 @@ const Input = React.forwardRef(
             <motion.p
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-[10px] text-red-400 font-extrabold uppercase tracking-widest mt-2 ml-1"
+              className="text-[10px] text-error font-bold uppercase tracking-widest mt-2 ml-1"
             >
               {error}
             </motion.p>

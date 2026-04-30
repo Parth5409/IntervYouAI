@@ -4,8 +4,8 @@ const WelcomeHeader = () => {
   return (
     <div className="text-left mb-10 space-y-3">
       <div className="flex items-center gap-3">
-         <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(255,145,90,0.4)] animate-pulse" />
-         <h2 className="text-3xl font-extrabold text-white tracking-tighter uppercase leading-none">
+         <div className="w-2 h-2 rounded-full bg-primary shadow-sm animate-pulse" />
+         <h2 className="text-3xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
           Welcome Back
         </h2>
       </div>

@@ -91,7 +91,7 @@ const MissionBrief = () => {
             initial={{ left: '-100%' }}
             animate={{ left: '100%' }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 bg-primary shadow-[0_0_15px_rgba(255,145,90,0.5)]" 
+            className="absolute inset-0 bg-primary shadow-sm" 
           />
         </div>
         <p className="mt-10 text-primary font-extrabold text-[10px] tracking-[0.5em] uppercase animate-pulse">Synchronizing Mission Node...</p>
@@ -104,10 +104,10 @@ const MissionBrief = () => {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center font-headline p-6 relative overflow-hidden">
         <div className="bg-red-500/10 border border-red-500/20 p-16 rounded-[3rem] max-w-xl text-center space-y-10 glass-card backdrop-blur-3xl relative z-10 shadow-2xl">
           <div className="w-24 h-24 bg-red-500 rounded-3xl flex items-center justify-center mx-auto shadow-[0_15px_30px_rgba(239,68,68,0.3)] animate-bounce">
-            <Icon name="ms:report" size={48} className="text-white" />
+            <Icon name="ms:report" size={48} className="text-on-surface" />
           </div>
           <div className="space-y-4">
-            <h2 className="text-white text-3xl font-extrabold uppercase tracking-tighter">System Error</h2>
+            <h2 className="text-on-surface text-3xl font-extrabold uppercase tracking-tighter">System Error</h2>
             <p className="text-on-surface-variant text-base opacity-60 leading-relaxed font-body">{error}</p>
           </div>
           <Button 
@@ -123,7 +123,7 @@ const MissionBrief = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background text-white relative overflow-hidden flex flex-col font-headline">
+    <div className="min-h-screen bg-background text-on-surface relative overflow-hidden flex flex-col font-headline">
       {/* Dynamic Background Mesh */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
@@ -147,7 +147,7 @@ const MissionBrief = () => {
         </div>
         <button 
           onClick={() => navigate('/dashboard')}
-          className="text-[10px] font-extrabold uppercase tracking-[0.3em] text-on-surface-variant hover:text-white transition-all group flex items-center gap-3"
+          className="text-[10px] font-extrabold uppercase tracking-[0.3em] text-on-surface-variant hover:text-on-surface transition-all group flex items-center gap-3"
         >
           <Icon name="ms:close" size={18} className="group-hover:rotate-90 transition-transform" />
           Abort Deployment
@@ -160,7 +160,7 @@ const MissionBrief = () => {
           <div className="grid grid-cols-3 gap-8">
             {[
               { label: 'Target Entity', val: drive.companyName, icon: 'ms:business', color: 'text-primary' },
-              { label: 'Valuation Range', val: `${drive.minLpa} - ${drive.maxLpa} LPA`, icon: 'ms:payments', color: 'text-white' },
+              { label: 'Valuation Range', val: `${drive.minLpa} - ${drive.maxLpa} LPA`, icon: 'ms:payments', color: 'text-on-surface' },
               { label: 'Protocol Stages', val: `${drive.activeModules?.length || 0} SECTIONS`, icon: 'ms:account_tree', color: 'text-primary' },
             ].map((stat, i) => (
               <motion.div 
@@ -171,7 +171,7 @@ const MissionBrief = () => {
                 className="bg-surface-container-high/40 backdrop-blur-3xl p-8 rounded-[2rem] border border-outline-variant/10 group hover:bg-surface-container-highest transition-all duration-500 shadow-xl"
               >
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-surface transition-all">
                     <Icon name={stat.icon} size={20} />
                   </div>
                   <p className="text-on-surface-variant text-[10px] uppercase tracking-[0.3em] font-extrabold opacity-60">{stat.label}</p>
@@ -187,7 +187,7 @@ const MissionBrief = () => {
             <div className="px-10 py-8 border-b border-outline-variant/10 flex items-center justify-between shrink-0 bg-surface-container-high/60">
               <div className="flex items-center gap-4">
                 <Icon name="ms:description" size={24} className="text-primary" />
-                <span className="text-sm font-extrabold uppercase tracking-[0.2em] text-white">Execution Parameters</span>
+                <span className="text-sm font-extrabold uppercase tracking-[0.2em] text-on-surface">Execution Parameters</span>
               </div>
               <div className="flex gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary/40" />
@@ -206,7 +206,7 @@ const MissionBrief = () => {
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-[80px]" />
             
             <div className="space-y-2">
-              <h3 className="text-2xl font-extrabold tracking-tight uppercase flex items-center gap-4 text-white">
+              <h3 className="text-2xl font-extrabold tracking-tight uppercase flex items-center gap-4 text-on-surface">
                 <div className="w-2 h-8 bg-primary rounded-full" />
                 Mission Pipeline
               </h3>
@@ -231,7 +231,7 @@ const MissionBrief = () => {
                   <div className="flex items-center gap-6 relative z-10">
                     <span className={cn(
                       "text-xs font-extrabold tabular-nums opacity-40 transition-colors",
-                      selectedRound === module ? "text-on-primary opacity-60" : "text-white"
+                      selectedRound === module ? "text-on-primary opacity-60" : "text-on-surface"
                     )}>
                       0{idx + 1}
                     </span>
@@ -280,7 +280,7 @@ const MissionBrief = () => {
                   initial={{ width: 0 }}
                   animate={{ width: '100%' }}
                   transition={{ duration: 1.5 }}
-                  className="h-full bg-primary shadow-[0_0_10px_rgba(255,145,90,0.3)]"
+                  className="h-full bg-primary shadow-sm"
                 />
              </div>
           </div>

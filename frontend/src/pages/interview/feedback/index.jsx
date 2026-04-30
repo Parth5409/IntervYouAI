@@ -63,22 +63,19 @@ const InterviewFeedback = () => {
     return (
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-12 relative">
-          <div className="relative w-32 h-32">
-            <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
+          <div className="relative w-24 h-24">
+            <div className="absolute inset-0 border-4 border-primary/10 rounded-full" />
             <div className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin" />
-            <div className="absolute inset-2 border-2 border-sky-500/20 rounded-full" />
-            <div className="absolute inset-2 border-2 border-sky-500 rounded-full border-b-transparent animate-spin-slow" />
           </div>
-          <div className="text-center space-y-4">
-            <h2 className="text-2xl font-extrabold text-white uppercase tracking-tighter">
-              Generating Intelligence Report
+          <div className="text-center space-y-3">
+            <h2 className="text-3xl font-headline font-bold text-on-surface italic">
+              Generating your report
             </h2>
-            <p className="font-extrabold text-[10px] text-primary uppercase tracking-[0.5em] animate-pulse">
-               Synthesizing Performance Vectors...
+            <p className="font-headline text-sm font-medium text-primary animate-pulse italic">
+               Analyzing your interview session...
             </p>
           </div>
-        </div>
-      </DashboardLayout>
+        </div>      </DashboardLayout>
     );
   }
 
@@ -90,7 +87,7 @@ const InterviewFeedback = () => {
             <Icon name="ms:error" size={48} />
           </div>
           <div className="space-y-4">
-             <h2 className="text-3xl font-extrabold text-white tracking-tighter uppercase leading-none">
+             <h2 className="text-3xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
               Session Data Unavailable
             </h2>
             <p className="text-on-surface-variant font-extrabold text-[10px] uppercase tracking-[0.4em] opacity-40">
@@ -113,18 +110,18 @@ const InterviewFeedback = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="w-2 h-8 bg-primary rounded-full" />
-              <h1 className="text-4xl font-extrabold text-white tracking-tighter uppercase leading-none">
+              <h1 className="text-4xl font-extrabold tracking-tighter uppercase leading-none text-gradient">
                 Mission Debrief
               </h1>
             </div>
-            <p className="text-on-surface-variant font-extrabold text-[11px] uppercase tracking-[0.4em] opacity-40 ml-6">
-              Neural Path Analysis // Sequence {sessionId?.slice(0, 8)}
+            <p className="text-[10px] text-on-surface-variant uppercase tracking-[0.25em] ml-6 font-bold">
+              KINETIC INTELLIGENCE // Neural Path Analysis // Sequence {sessionId?.slice(0, 8)}
             </p>
           </div>
           <Button
             onClick={handleReturnToDashboard}
             variant="outline"
-            className="h-12 px-8 uppercase tracking-widest text-[10px] font-extrabold gap-3 self-start md:self-center"
+            className="h-12 px-8 uppercase tracking-widest text-[10px] font-extrabold gap-3 self-start md:self-center bg-surface-container-low border-outline-variant/20 hover:border-primary/50 transition-all"
           >
             <Icon name="ms:arrow_back" size={18} />
             Command Center
@@ -184,7 +181,7 @@ const InterviewFeedback = () => {
               <div className="bg-surface-container-highest/30 p-8 rounded-[2.5rem] border border-outline-variant/10">
                 <div className="space-y-4">
                    <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">System Core Version</p>
-                   <p className="text-xs font-extrabold text-white tracking-widest">INTERVYOU-AI-V2.5.0-ALPHA</p>
+                   <p className="text-xs font-extrabold text-on-surface tracking-widest">INTERVYOU-AI-V2.5.0-ALPHA</p>
                    <div className="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
                      <span className="text-[9px] font-extrabold text-primary uppercase tracking-[0.2em]">Validated by</span>
                      <div className="flex gap-2">

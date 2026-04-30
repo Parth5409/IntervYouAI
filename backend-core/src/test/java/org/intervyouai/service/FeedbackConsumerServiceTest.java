@@ -38,7 +38,7 @@ public class FeedbackConsumerServiceTest {
         session.setId(sessionId);
 
         InterviewFeedbackEvent event = new InterviewFeedbackEvent();
-        event.setSessionId(sessionId);
+        event.setSessionId(sessionId.toString());
         event.setOverallScore(85);
         event.setFeedback(Map.of("strength", "Java"));
         event.setTranscript("Mock Transcript");

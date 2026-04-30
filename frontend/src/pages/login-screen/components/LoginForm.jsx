@@ -93,7 +93,7 @@ const LoginForm = () => {
                <Icon name="ms:security" size={18} />
             </div>
             <div>
-              <p className="text-[10px] text-error font-extrabold uppercase tracking-[0.2em] font-headline">Access Interrupted</p>
+              <p className="text-[10px] text-error font-extrabold font-headline font-label font-medium text-on-surface-variant">Access Interrupted</p>
               <p className="text-xs text-error/70 mt-1 font-body leading-relaxed">{errors?.general}</p>
             </div>
           </motion.div>
@@ -151,7 +151,7 @@ const LoginForm = () => {
               className="w-4 h-4 rounded border-outline-variant/30 bg-surface-container-highest/20 text-primary focus:ring-primary/20 transition-all cursor-pointer"
             />
           </div>
-          <label htmlFor="rememberMe" className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest group-hover:text-white transition-colors cursor-pointer opacity-40 group-hover:opacity-100">
+          <label htmlFor="rememberMe" className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest group-hover:text-on-surface transition-colors cursor-pointer opacity-40 group-hover:opacity-100">
             Persistent Link
           </label>
         </div>
@@ -159,7 +159,7 @@ const LoginForm = () => {
         <button
           type="button"
           onClick={() => toast.info('Initiating clearance recovery.')}
-          className="text-[10px] font-extrabold text-primary hover:text-white transition-all uppercase tracking-[0.3em] font-headline group/link"
+          className="text-[10px] font-extrabold text-primary hover:text-on-surface transition-all font-headline group/link font-label font-medium text-on-surface-variant"
           disabled={isLoading}
         >
           Lost Access?
@@ -174,7 +174,7 @@ const LoginForm = () => {
         disabled={isLoading}
       >
         <span className="flex items-center gap-4 text-[11px] font-extrabold uppercase tracking-[0.4em]">
-          {isLoading ? 'Decrypting Clearance...' : 'Enter the Ether'}
+          {isLoading ? 'Decrypting Clearance...' : 'Sign In'}
           {!isLoading && <Icon name="ms:arrow_forward" size={18} className="group-hover:translate-x-2 transition-transform duration-500" />}
         </span>
       </Button>
@@ -186,7 +186,7 @@ const LoginForm = () => {
         <button
           type="button"
           onClick={() => navigate('/register')}
-          className="h-14 w-full border border-outline-variant/10 rounded-2xl hover:border-primary/40 hover:bg-primary/5 text-white font-extrabold transition-all uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-4 group/reg"
+          className="h-14 w-full border border-outline-variant/10 rounded-2xl hover:border-primary/40 hover:bg-primary/5 text-on-surface font-extrabold transition-all uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-4 group/reg"
           disabled={isLoading}
         >
            Formulate Identity

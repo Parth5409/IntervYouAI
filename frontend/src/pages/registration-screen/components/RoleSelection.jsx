@@ -62,7 +62,7 @@ const RoleSelection = ({ selectedRole, onSelect }) => {
               <div className="space-y-3">
                 <h3 className={cn(
                   "font-headline text-sm font-extrabold tracking-[0.3em] uppercase transition-colors",
-                  active ? "text-primary" : "text-on-surface-variant group-hover:text-white"
+                  active ? "text-primary" : "text-on-surface-variant group-hover:text-on-surface"
                 )}>
                   {role.title}
                 </h3>

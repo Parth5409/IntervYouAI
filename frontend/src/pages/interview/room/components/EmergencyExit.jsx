@@ -71,7 +71,7 @@ const EmergencyExit = ({
                 <div className="text-center py-12 space-y-8">
                   <div className="w-16 h-16 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin mx-auto" />
                   <div className="space-y-3">
-                    <h3 className="text-xl font-headline font-extrabold text-white uppercase tracking-widest">Saving Session</h3>
+                    <h3 className="text-xl font-headline font-extrabold text-on-surface">Saving Session</h3>
                     <p className="text-[11px] text-on-surface-variant font-bold uppercase tracking-[0.2em] opacity-40">Synchronizing neural bridge data...</p>
                   </div>
                 </div>
@@ -82,7 +82,7 @@ const EmergencyExit = ({
                   </div>
                   
                   <div className="space-y-4">
-                    <h3 className="text-3xl font-headline font-extrabold text-white tracking-tight">Terminate Session?</h3>
+                    <h3 className="text-3xl font-headline font-extrabold text-on-surface">Terminate Session?</h3>
                     <p className="text-[13px] text-on-surface-variant font-medium leading-relaxed max-w-sm mx-auto">
                       Confirming termination will end the current simulation. 
                       Partial progress will be committed to your permanent record.

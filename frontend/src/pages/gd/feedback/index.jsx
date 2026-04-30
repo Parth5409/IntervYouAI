@@ -48,7 +48,7 @@ const GDFredback = () => {
       <DashboardLayout>
         <div className="flex flex-col items-center justify-center py-20 gap-6">
           <div className="w-16 h-16 border-2 border-amber-500/20 border-t-amber-500 animate-spin" />
-          <p className="font-mono text-[10px] text-amber-500 uppercase tracking-[0.3em] animate-pulse">
+          <p className="font-mono text-[10px] text-amber-500 animate-pulse font-label font-medium text-on-surface-variant">
             ANALYZING_COLLECTIVE_LOGS...
           </p>
         </div>
@@ -59,13 +59,13 @@ const GDFredback = () => {
   if (!sessionData || !sessionData.feedback || !sessionData.context) {
     return (
       <DashboardLayout>
-        <div className="flex flex-col items-center justify-center py-20 gap-6 border-2 border-dashed border-slate-800">
+        <div className="flex flex-col items-center justify-center py-20 gap-6 border-2 border-dashed border-outline-variant/30">
           <Icon name="ServerCrash" size={48} className="text-slate-700" />
           <div className="text-center space-y-2">
-            <h2 className="font-mono font-bold text-slate-100 uppercase">FEEDBACK_STREAM_UNAVAILABLE</h2>
-            <p className="font-mono text-[10px] text-slate-500 uppercase">Could not retrieve analytics for this session</p>
+            <h2 className="font-mono font-bold text-on-surface">FEEDBACK_STREAM_UNAVAILABLE</h2>
+            <p className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Could not retrieve analytics for this session</p>
           </div>
-          <Button onClick={handleReturnToDashboard} className="bg-slate-800 text-slate-300 font-mono text-[10px] h-10 px-6 uppercase tracking-widest">
+          <Button onClick={handleReturnToDashboard} className="bg-surface-container-low text-slate-300 font-mono text-[10px] h-10 px-6 font-label font-medium text-on-surface-variant">
             Return_to_Dashboard
           </Button>
         </div>
@@ -79,18 +79,18 @@ const GDFredback = () => {
     <DashboardLayout>
       <div className="max-w-5xl mx-auto space-y-12 font-mono">
         {/* Header Navigation */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-6">
+        <div className="flex items-center justify-between border-b border-outline-variant/30 pb-6">
           <div>
-            <h1 className="text-3xl font-mono font-bold tracking-tighter uppercase flex items-center gap-3">
-              <span className="text-slate-500">{'>'}</span> DISCOURSE_ANALYSIS
+            <h1 className="text-3xl font-headline font-bold flex items-center gap-3">
+              <span className="text-on-surface-variant">{'>'}</span> DISCOURSE_ANALYSIS
             </h1>
-            <p className="text-slate-400 text-xs mt-2 uppercase tracking-widest">
+            <p className="text-on-surface-variant mt-2 text-xs font-label font-medium text-on-surface-variant">
               Multi-agent interaction debrief // Node_{sessionId?.slice(0, 8)}
             </p>
           </div>
           <Button
             onClick={handleReturnToDashboard}
-            className="bg-slate-900 border border-slate-800 text-slate-400 font-mono text-[10px] tracking-widest hover:text-slate-100 uppercase h-10 px-6"
+            className="bg-surface-container-low border border-outline-variant/30 text-on-surface-variant font-mono text-[10px] hover:text-on-surface h-10 px-6 font-label font-medium text-on-surface-variant"
           >
             <Icon name="ArrowLeft" size={14} className="mr-2" />
             BACK_TO_CENTER
@@ -98,13 +98,13 @@ const GDFredback = () => {
         </div>
 
         {/* Topic Banner */}
-        <div className="bg-slate-900 border border-slate-800 p-8 relative overflow-hidden group">
+        <div className="bg-surface-container-low border border-outline-variant/30 p-8 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-5">
             <Icon name="MessageSquare" size={64} className="text-amber-500" />
           </div>
           <div className="relative z-10 flex flex-col items-center text-center space-y-4">
             <span className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.3em]">DISCUSSION_TOPIC_VECTOR</span>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tighter uppercase max-w-3xl leading-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-on-surface tracking-tighter uppercase max-w-3xl leading-tight">
               {context?.topic || 'N/A'}
             </h2>
           </div>
@@ -116,15 +116,15 @@ const GDFredback = () => {
             <GDFeedbackScores feedback={feedback} />
             
             <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-4">
                 <Icon name="Zap" size={18} className="text-sky-500" />
-                <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">KEY_CONTRIBUTIONS_LOG</h3>
+                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">KEY_CONTRIBUTIONS_LOG</h3>
               </div>
               <div className="grid gap-4">
                 {(feedback.key_contributions || []).map((item, i) => (
-                  <div key={i} className="flex items-start gap-4 bg-slate-900/50 border border-slate-800 p-4 hover:border-sky-500/30 transition-colors group">
+                  <div key={i} className="flex items-start gap-4 bg-surface-container-low/50 border border-outline-variant/30 p-4 hover:border-sky-500/30 transition-colors group">
                     <span className="text-sky-500/50 text-[10px] mt-0.5">{String(i + 1).padStart(2, '0')}</span>
-                    <p className="text-[11px] text-slate-300 uppercase leading-relaxed tracking-tight group-hover:text-slate-100 transition-colors">{item}</p>
+                    <p className="text-[11px] text-slate-300 uppercase leading-relaxed tracking-tight group-hover:text-on-surface transition-colors">{item}</p>
                   </div>
                 ))}
               </div>
@@ -134,9 +134,9 @@ const GDFredback = () => {
           {/* Right Column: Strengths & Improvements */}
           <div className="space-y-12">
             <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-4">
                 <Icon name="ThumbsUp" size={18} className="text-emerald-500" />
-                <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">TACTICAL_STRENGTHS</h3>
+                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">TACTICAL_STRENGTHS</h3>
               </div>
               <div className="space-y-3">
                 {(feedback.strengths || []).map((item, i) => (
@@ -149,9 +149,9 @@ const GDFredback = () => {
             </div>
 
             <div className="space-y-6">
-              <div className="flex items-center gap-3 border-b border-slate-800 pb-4">
+              <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-4">
                 <Icon name="TrendingUp" size={18} className="text-amber-500" />
-                <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">OPTIMIZATION_TARGETS</h3>
+                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">OPTIMIZATION_TARGETS</h3>
               </div>
               <div className="space-y-3">
                 {(feedback.improvement_suggestions || []).map((item, i) => (
@@ -166,16 +166,16 @@ const GDFredback = () => {
         </div>
 
         {/* Overall Summary */}
-        <div className="space-y-6 pt-12 border-t border-slate-800">
+        <div className="space-y-6 pt-12 border-t border-outline-variant/30">
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-4 bg-emerald-500" />
-            <h3 className="text-xs font-bold text-slate-100 uppercase tracking-widest">MISSION_SUMMARY_LOG</h3>
+            <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">MISSION_SUMMARY_LOG</h3>
           </div>
-          <div className="bg-slate-950 border border-slate-800 p-8 relative overflow-hidden">
+          <div className="bg-surface-container-low border border-outline-variant/30 p-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-5">
-              <Icon name="FileText" size={80} className="text-slate-500" />
+              <Icon name="FileText" size={80} className="text-on-surface-variant" />
             </div>
-            <p className="text-xs text-slate-400 leading-loose uppercase tracking-tight relative z-10 max-w-4xl">
+            <p className="text-xs text-on-surface-variant leading-loose uppercase tracking-tight relative z-10 max-w-4xl">
               {feedback.overall_feedback}
             </p>
           </div>

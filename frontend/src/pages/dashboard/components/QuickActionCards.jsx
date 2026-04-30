@@ -1,80 +1,90 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/button';
+import { cn } from '../../../utils/cn';
 
 const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
   const actionCards = [
     {
       id: 'technical',
-      title: 'Technical Interview',
+      title: 'Technical Protocol',
       description: 'Practice coding problems and system design questions',
-      icon: 'Code',
-      color: 'bg-blue-100 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800',
-      iconColor: 'text-blue-600 dark:text-blue-400',
+      icon: 'ms:code',
+      accent: 'text-primary',
+      bg: 'bg-primary/5',
+      border: 'border-primary/10',
       action: () => onStartInterview('technical')
     },
     {
       id: 'hr',
-      title: 'HR Interview',
+      title: 'Cultural Alignment',
       description: 'Behavioral questions and company culture fit',
-      icon: 'Users',
-      color: 'bg-green-100 dark:bg-green-900/50 border-green-200 dark:border-green-800',
-      iconColor: 'text-green-600 dark:text-green-400',
+      icon: 'ms:groups',
+      accent: 'text-emerald-500',
+      bg: 'bg-emerald-500/5',
+      border: 'border-emerald-500/10',
       action: () => onStartInterview('hr')
     },
     {
       id: 'group',
-      title: 'Group Discussion',
+      title: 'Collective Logic',
       description: 'Practice group dynamics and communication skills',
-      icon: 'MessageCircle',
-      color: 'bg-purple-100 dark:bg-purple-900/50 border-purple-200 dark:border-purple-800',
-      iconColor: 'text-purple-600 dark:text-purple-400',
+      icon: 'ms:forum',
+      accent: 'text-amber-500',
+      bg: 'bg-amber-500/5',
+      border: 'border-amber-500/10',
       action: () => onStartInterview('group')
     },
     {
       id: 'salary',
-      title: 'Salary Negotiation',
+      title: 'Value Negotiation',
       description: 'Learn to negotiate compensation effectively',
-      icon: 'DollarSign',
-      color: 'bg-orange-100 dark:bg-orange-900/50 border-orange-200 dark:border-orange-800',
-      iconColor: 'text-orange-600 dark:text-orange-400',
+      icon: 'ms:payments',
+      accent: 'text-sky-500',
+      bg: 'bg-sky-500/5',
+      border: 'border-sky-500/10',
       action: () => onStartInterview('salary')
     }
   ];
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-foreground">Quick Actions</h2>
+    <div className="mb-10">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-headline font-bold text-white tracking-tight">Deployment Modes</h2>
         <Button
           variant="ghost"
           onClick={onViewHistory}
-          iconName="History"
-          iconPosition="left"
-          iconSize={16}
-          className="text-sm"
+          className="text-xs font-headline font-bold uppercase tracking-widest text-on-surface-variant hover:text-white"
         >
-          View All
+          View Log
         </Button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {actionCards?.map((card) => (
           <div
             key={card?.id}
-            className={`${card?.color} rounded-lg p-4 border cursor-pointer transition-all hover:shadow-md hover:scale-105`}
+            className={cn(
+              "bg-surface-container-low border border-outline-variant/30 rounded-2xl p-6 cursor-pointer transition-all duration-500 hover:border-primary/40 hover:-translate-y-1 shadow-xl group relative overflow-hidden",
+            )}
             onClick={card?.action}
           >
-            <div className="flex items-center space-x-3 mb-3">
-              <div className={`w-10 h-10 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center ${card?.iconColor}`}>
-                <Icon name={card?.icon} size={20} />
+            <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none", card.bg)} />
+            
+            <div className="flex flex-col gap-6 relative z-10">
+              <div className={cn(
+                "w-12 h-12 rounded-xl flex items-center justify-center border transition-all duration-500",
+                "bg-surface-container-highest border-outline-variant/20 group-hover:scale-110",
+                card.accent
+              )}>
+                <Icon name={card?.icon} size={24} />
               </div>
-              <div className="flex-1">
-                <h3 className="font-medium text-foreground text-sm">{card?.title}</h3>
+              <div>
+                <h3 className="font-headline font-bold text-white text-base mb-2 group-hover:text-primary transition-colors">{card?.title}</h3>
+                <p className="text-xs text-on-surface-variant font-body leading-relaxed line-clamp-2">
+                  {card?.description}
+                </p>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {card?.description}
-            </p>
           </div>
         ))}
       </div>

@@ -18,8 +18,8 @@ const LoginScreen = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="font-mono text-emerald-500 animate-pulse uppercase tracking-[0.3em] text-xs">
+      <div className="min-h-screen bg-surface-container-low flex items-center justify-center">
+        <div className="font-mono text-emerald-500 animate-pulse text-xs font-label font-medium text-on-surface-variant">
           Loading_System_Resources...
         </div>
       </div>

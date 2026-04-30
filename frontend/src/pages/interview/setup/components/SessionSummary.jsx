@@ -41,7 +41,7 @@ const SessionSummary = ({ interviewType, formData }) => {
         return {
           title: 'Standard Interview',
           icon: 'ms:play_arrow',
-          color: 'text-white',
+          color: 'text-on-surface',
           borderColor: 'border-outline-variant/10',
           duration: '30-45 MIN',
           desc: 'General assessment protocol.'
@@ -73,8 +73,8 @@ const SessionSummary = ({ interviewType, formData }) => {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
       <div className="space-y-2">
-        <h3 className="text-2xl font-extrabold text-white uppercase tracking-tight flex items-center gap-4">
-          <div className="w-1.5 h-8 bg-primary rounded-full shadow-[0_0_10px_rgba(255,145,90,0.5)]" />
+        <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-primary rounded-full shadow-sm" />
           Pre-Flight Check
         </h3>
         <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
@@ -96,7 +96,7 @@ const SessionSummary = ({ interviewType, formData }) => {
                 <Icon name={details.icon} size={36} className={details.color} />
               </div>
               <div className="space-y-1">
-                <h4 className="text-3xl font-extrabold text-white tracking-tighter uppercase leading-none">
+                <h4 className="text-3xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
                   {details.title}
                 </h4>
                 <p className="text-on-surface-variant text-sm font-body opacity-60 italic">{details.desc}</p>
@@ -115,7 +115,7 @@ const SessionSummary = ({ interviewType, formData }) => {
                     <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40 group-hover/item:opacity-70 transition-opacity">
                       {formatLabel(key)}
                     </p>
-                    <p className="text-base font-extrabold text-white tracking-tight truncate border-b border-white/5 pb-2 group-hover/item:border-primary/30 transition-all">
+                    <p className="text-base font-extrabold text-on-surface tracking-tight truncate border-b border-white/5 pb-2 group-hover/item:border-primary/30 transition-all">
                       {formatValue(key, value)}
                     </p>
                   </div>
@@ -167,7 +167,7 @@ const SessionSummary = ({ interviewType, formData }) => {
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-4 group/li">
                   <span className="text-primary font-extrabold text-xs mt-0.5 group-hover/li:translate-x-1 transition-transform">»</span>
-                  <span className="text-[10px] font-extrabold text-on-surface-variant/70 uppercase tracking-widest leading-relaxed group-hover/li:text-white transition-colors">{item}</span>
+                  <span className="text-[10px] font-extrabold text-on-surface-variant/70 uppercase tracking-widest leading-relaxed group-hover/li:text-on-surface transition-colors">{item}</span>
                 </li>
               ))}
             </ul>

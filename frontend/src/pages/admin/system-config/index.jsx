@@ -55,14 +55,14 @@ const SystemConfigPage = () => {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
-          <h1 className="text-2xl font-mono font-bold text-slate-100">SYSTEM_CONFIGURATION</h1>
-          <p className="text-xs font-mono text-slate-400">Organization-wide settings and parameters</p>
+          <h1 className="text-2xl font-mono font-bold text-on-surface">SYSTEM_CONFIGURATION</h1>
+          <p className="text-xs font-mono text-on-surface-variant">Organization-wide settings and parameters</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-slate-900/50 border border-slate-800 p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-surface-container-low/50 border border-outline-variant/30 p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="font-mono text-sm text-emerald-500 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">
+              <h3 className="font-mono text-sm text-emerald-500 border-b border-outline-variant/30 pb-2 mb-4">
                 Identity_Matrix
               </h3>
               <Input
@@ -76,12 +76,12 @@ const SystemConfigPage = () => {
                 name="code"
                 value={orgData.code}
                 disabled
-                className="opacity-50 cursor-not-allowed bg-slate-950"
+                className="opacity-50 cursor-not-allowed bg-surface-container-low"
               />
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-mono text-sm text-sky-500 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">
+              <h3 className="font-mono text-sm text-sky-500 border-b border-outline-variant/30 pb-2 mb-4">
                 Comms_Relay
               </h3>
               <Input
@@ -100,7 +100,7 @@ const SystemConfigPage = () => {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-mono text-sm text-amber-500 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">
+            <h3 className="font-mono text-sm text-amber-500 border-b border-outline-variant/30 pb-2 mb-4">
               Physical_Coordinates
             </h3>
             <Input
@@ -112,7 +112,7 @@ const SystemConfigPage = () => {
           </div>
 
           {message.text && (
-            <div className={`p-4 border ${message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'} font-mono text-xs`}>
+            <div className={`p-4 border ${message.type === 'success' ? 'bg-primary/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'} font-mono text-xs`}>
               {message.text}
             </div>
           )}

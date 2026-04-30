@@ -6,8 +6,8 @@ const GDSummary = ({ formData }) => {
   return (
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
       <div className="space-y-2">
-        <h3 className="text-2xl font-extrabold text-white uppercase tracking-tight flex items-center gap-4">
-          <div className="w-1.5 h-8 bg-amber-500 rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+        <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-amber-500 rounded-full shadow-sm" />
           Collective Debrief
         </h3>
         <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
@@ -26,7 +26,7 @@ const GDSummary = ({ formData }) => {
                 <Icon name="ms:forum" size={36} className="text-amber-500" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-3xl font-extrabold text-white tracking-tighter uppercase leading-none">
+                <h4 className="text-3xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
                   Collective Discourse
                 </h4>
                 <p className="text-on-surface-variant text-sm font-body opacity-60 italic">Multi-agent argumentative simulation.</p>
@@ -39,7 +39,7 @@ const GDSummary = ({ formData }) => {
 
             <div className="pt-12 border-t border-outline-variant/10 space-y-4 group/item">
               <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40 group-hover/item:opacity-70 transition-opacity">Discussion Topic Vector</p>
-              <p className="text-xl font-extrabold text-white tracking-tight leading-relaxed border-b border-white/5 pb-6 group-hover/item:border-amber-500/30 transition-all">
+              <p className="text-xl font-extrabold text-on-surface tracking-tight leading-relaxed border-b border-white/5 pb-6 group-hover/item:border-amber-500/30 transition-all">
                 {formData.topic}
               </p>
             </div>
@@ -88,7 +88,7 @@ const GDSummary = ({ formData }) => {
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-4 group/li">
                   <span className="text-amber-500 font-extrabold text-xs mt-0.5 group-hover/li:translate-x-1 transition-transform">»</span>
-                  <span className="text-[10px] font-extrabold text-on-surface-variant/70 uppercase tracking-widest leading-relaxed group-hover/li:text-white transition-colors">{item}</span>
+                  <span className="text-[10px] font-extrabold text-on-surface-variant/70 uppercase tracking-widest leading-relaxed group-hover/li:text-on-surface transition-colors">{item}</span>
                 </li>
               ))}
             </ul>

@@ -55,10 +55,10 @@ const VoiceControls = ({
           className={cn(
             "w-32 h-32 rounded-full border-2 flex flex-col items-center justify-center transition-all duration-700 relative z-10 overflow-hidden shadow-2xl",
             isRecording
-              ? "bg-error/10 border-error text-error scale-110 shadow-[0_0_50px_rgba(255,115,81,0.3)]"
+              ? "bg-error/10 border-error text-error scale-110 shadow-md"
               : (disabled || isAIPlaying)
                 ? "bg-surface-container-high/40 border-outline-variant/30 text-outline-variant cursor-not-allowed backdrop-blur-xl"
-                : "bg-surface-container-high/40 border-outline-variant text-on-surface hover:text-primary hover:border-primary hover:bg-primary/5 hover:scale-105 backdrop-blur-xl group-hover:shadow-[0_0_40px_rgba(255,145,90,0.1)]"
+                : "bg-surface-container-high/40 border-outline-variant text-on-surface hover:text-primary hover:border-primary hover:bg-primary/5 hover:scale-105 backdrop-blur-xl group-hover:shadow-sm"
           )}
         >
           {isTranscribing || isAIPlaying ? (
@@ -84,7 +84,7 @@ const VoiceControls = ({
           ) : (
             <>
               <Icon name={isRecording ? "ms:stop_circle" : "ms:mic"} size={44} className="mb-1" />
-              <span className="text-[9px] font-bold uppercase tracking-[0.2em] font-headline">{isRecording ? "Stop" : "Speak"}</span>
+              <span className="text-[9px] font-bold font-headline font-label font-medium text-on-surface-variant">{isRecording ? "Stop" : "Speak"}</span>
             </>
           )}
 
@@ -97,12 +97,12 @@ const VoiceControls = ({
       <div className="flex flex-col items-center gap-4">
         <div className="bg-surface-container-highest/50 backdrop-blur-2xl border border-outline-variant/10 rounded-2xl px-8 py-3 flex items-center gap-4 shadow-2xl">
           <div className={cn(
-            "w-2 h-2 rounded-full shadow-[0_0_10px_currentColor]",
+            "w-2 h-2 rounded-full shadow-md",
             isRecording ? "bg-error animate-pulse text-error" : isTranscribing ? "bg-sky-500 animate-bounce text-sky-500" : isAIPlaying ? "bg-primary animate-pulse text-primary" : "bg-emerald-500 text-emerald-500"
           )} />
           <span className={cn(
             "font-headline text-[11px] font-extrabold tracking-[0.25em] uppercase transition-colors",
-            isRecording ? "text-error" : isAIPlaying ? "text-primary" : "text-white"
+            isRecording ? "text-error" : isAIPlaying ? "text-primary" : "text-on-surface"
           )}>
             {getStatusText()}
           </span>
@@ -124,7 +124,7 @@ const VoiceControls = ({
             "h-12 px-6 rounded-2xl font-headline text-[10px] font-bold tracking-[0.1em] uppercase transition-all flex items-center gap-3 border",
             isMuted
               ? "bg-error/10 border-error/20 text-error"
-              : "bg-surface-container-high/40 border-outline-variant/10 text-on-surface-variant hover:text-white hover:border-outline-variant"
+              : "bg-surface-container-high/40 border-outline-variant/10 text-on-surface-variant hover:text-on-surface hover:border-outline-variant"
           )}
         >
           <Icon name={isMuted ? "ms:mic_off" : "ms:mic"} size={16} />
@@ -136,7 +136,7 @@ const VoiceControls = ({
         <button
           onClick={onReplayLastMessage}
           disabled={isAIPlaying || conversationHistory?.length === 0}
-          className="h-12 px-6 rounded-2xl border border-outline-variant/10 bg-surface-container-high/40 font-headline text-[10px] font-bold tracking-[0.1em] uppercase text-on-surface-variant hover:text-primary hover:border-primary/20 transition-all disabled:opacity-20 disabled:cursor-not-allowed flex items-center gap-3"
+          className="h-12 px-6 rounded-2xl border border-outline-variant/10 bg-surface-container-high/40 font-headline text-[10px] font-bold text-on-surface-variant hover:text-primary hover:border-primary/20 transition-all disabled:opacity-20 disabled:cursor-not-allowed flex items-center gap-3 font-label font-medium"
         >
           <Icon name="ms:replay" size={16} />
           Replay

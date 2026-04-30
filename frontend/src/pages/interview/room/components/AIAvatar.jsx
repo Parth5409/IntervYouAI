@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from '../../../../components/AppImage';
 import { cn } from '../../../../utils/cn';
 
@@ -25,32 +26,32 @@ const AIAvatar = ({
     <div className="flex flex-col items-center space-y-10">
       {/* Avatar Container */}
       <div className="relative group">
-        {/* Glow Effects */}
+        {/* Warm Glow Effects */}
         <div className={cn(
-          "absolute -inset-4 rounded-full blur-2xl transition-all duration-1000 opacity-20",
-          isSpeaking ? "bg-primary scale-110 opacity-40" : "bg-white/10"
+          "absolute -inset-6 rounded-full blur-3xl transition-all duration-1000 opacity-30",
+          isSpeaking ? "bg-primary/20 scale-110" : "bg-primary/5"
         )} />
         
         <div
           className={cn(
-            "relative z-10 overflow-hidden rounded-full border-2 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]",
+            "relative z-10 overflow-hidden rounded-full border-4 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-sm",
             sizeClasses[size],
             isSpeaking 
-              ? "border-primary shadow-[0_0_80px_rgba(255,145,90,0.3)] scale-105" 
-              : "border-outline-variant/30 opacity-80"
+              ? "border-primary scale-105" 
+              : "border-white"
           )}
         >
           <Image
             src={avatarImages[avatarType]}
-            alt="AI_SYSTEM_CORE"
+            alt="Interviewer AI"
             className={cn(
               "w-full h-full object-cover transition-all duration-1000",
-              isSpeaking ? "scale-110 grayscale-0" : "grayscale opacity-40"
+              isSpeaking ? "scale-110 grayscale-0" : "grayscale opacity-70"
             )}
           />
           
-          {/* Subtle Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-40" />
+          {/* Subtle Warm Overlay */}
+          <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
         </div>
 
         {/* Orbitals */}
@@ -62,7 +63,7 @@ const AIAvatar = ({
                 animate={{ rotate: 360, opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="absolute -inset-8 rounded-full border border-primary/20 border-dashed pointer-events-none"
+                className="absolute -inset-8 rounded-full border border-primary/30 border-dashed pointer-events-none"
               />
               <motion.div 
                 initial={{ rotate: 180, opacity: 0 }}
@@ -77,45 +78,44 @@ const AIAvatar = ({
       </div>
 
       {/* Identity Segment */}
-      <div className="text-center space-y-3 z-10">
-        <div className="flex items-center justify-center gap-3">
-          <span className="w-6 h-[1px] bg-outline-variant/50"></span>
-          <h3 className="font-headline font-extrabold text-white tracking-[0.3em] uppercase text-[10px]">
-            AI Analyst Node
+      <div className="text-center space-y-4 z-10">
+        <div className="flex items-center justify-center gap-4">
+          <span className="w-8 h-[1px] bg-outline/40"></span>
+          <h3 className="font-headline italic text-lg text-on-surface">
+            Interviewer AI
           </h3>
-          <span className="w-6 h-[1px] bg-outline-variant/50"></span>
+          <span className="w-8 h-[1px] bg-outline/40"></span>
         </div>
         
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex items-center gap-3 bg-surface-container-high/40 px-5 py-2 rounded-full border border-outline-variant/10 backdrop-blur-md shadow-xl">
+        <div className="flex flex-col items-center gap-6">
+          <div className="flex items-center gap-3 bg-surface-container/80 px-6 py-2 rounded-full border border-outline/20 backdrop-blur-md shadow-sm">
             <div className={cn(
               "w-2 h-2 rounded-full",
-              isSpeaking ? "bg-primary animate-pulse" : isActive ? "bg-white" : "bg-outline"
+              isSpeaking ? "bg-primary animate-pulse" : isActive ? "bg-emerald-500" : "bg-outline"
             )} />
-            <p className="font-body text-[11px] font-bold text-on-surface-variant uppercase tracking-widest leading-none">
-              {isSpeaking ? 'Transmitting Data' : isActive ? 'Listening Protocol' : 'Neural Link Idle'}
+            <p className="font-headline text-xs font-semibold text-on-surface leading-none">
+              {isSpeaking ? 'AI is Speaking' : isActive ? 'Listening...' : 'Ready'}
             </p>
           </div>
 
-          {/* Waveform Visualization */}
-          <div className="flex items-end justify-center gap-1.5 h-10 min-w-[200px]">
-            {[...Array(24)].map((_, i) => (
+          {/* Waveform Visualization - Warm Terracotta */}
+          <div className="flex items-end justify-center gap-1.5 h-12 min-w-[240px]">
+            {[...Array(32)].map((_, i) => (
               <motion.div
                 key={i}
                 initial={{ height: 4 }}
                 animate={{ 
-                  height: isSpeaking ? [4, 10 + Math.random() * 30, 4] : 4,
-                  opacity: isSpeaking ? 1 : 0.2
+                  height: isSpeaking ? [4, 8 + Math.random() * 36, 4] : 4,
+                  opacity: isSpeaking ? 0.8 : 0.2
                 }}
                 transition={{
                   repeat: Infinity,
-                  duration: 0.8,
-                  delay: i * 0.03,
+                  duration: 0.7,
+                  delay: i * 0.02,
                   ease: "easeInOut"
                 }}
                 className={cn(
-                  "w-[2px] rounded-full",
-                  isSpeaking ? "bg-primary" : "bg-outline"
+                  "w-[2px] rounded-full bg-primary"
                 )}
               />
             ))}

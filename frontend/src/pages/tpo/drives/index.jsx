@@ -204,10 +204,10 @@ const DriveManagementPage = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-mono font-bold text-slate-100 uppercase tracking-tighter">
+            <h1 className="text-2xl font-headline font-bold text-on-surface">
               Placement_Drive_Registry
             </h1>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-widest mt-1">
+            <p className="font-mono text-on-surface-variant mt-1 text-xs font-label font-medium text-on-surface-variant">
               Active recruitment nodes and campaign management
             </p>
           </div>
@@ -219,9 +219,9 @@ const DriveManagementPage = () => {
                 INITIALIZE_NEW_DRIVE
               </Button>
             </SheetTrigger>
-            <SheetContent className="bg-slate-950 border-l border-slate-800 text-slate-50 w-full sm:max-w-xl overflow-y-auto">
+            <SheetContent className="bg-surface-container-low border-l border-outline-variant/30 text-on-surface w-full sm:max-w-xl overflow-y-auto">
               <SheetHeader>
-                <SheetTitle className="text-slate-100 font-mono text-xl uppercase tracking-tighter">
+                <SheetTitle className="text-on-surface font-headline text-xl">
                   Define_Placement_Parameters
                 </SheetTitle>
               </SheetHeader>
@@ -237,13 +237,13 @@ const DriveManagementPage = () => {
                 />
 
                 <div className="space-y-2">
-                  <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
+                  <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
                     Job_Description (JD)
                   </label>
                   <textarea
                     name="jobDescription"
                     rows={8}
-                    className="w-full bg-slate-900 border border-slate-800 p-4 font-mono text-xs text-slate-200 focus:ring-1 focus:ring-emerald-500 outline-none"
+                    className="w-full bg-surface-container-low border border-outline-variant/30 p-4 font-mono text-xs text-on-surface focus:ring-1 focus:ring-emerald-500 outline-none"
                     placeholder="Paste full JD text here for AI skill extraction..."
                     value={formData.jobDescription}
                     onChange={handleInputChange}
@@ -284,7 +284,7 @@ const DriveManagementPage = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
+                  <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
                     Active_Pipeline_Modules
                   </label>
                   <div className="flex flex-wrap gap-3">
@@ -296,8 +296,8 @@ const DriveManagementPage = () => {
                         className={cn(
                           "px-4 py-2 font-mono text-[10px] border transition-colors",
                           formData.activeModules.includes(module)
-                            ? "bg-emerald-500/10 border-emerald-500 text-emerald-500"
-                            : "border-slate-800 text-slate-500 hover:border-slate-700"
+                            ? "bg-primary/10 border-emerald-500 text-emerald-500"
+                            : "border-outline-variant/30 text-on-surface-variant hover:border-outline-variant/30"
                         )}
                       >
                         {module.replace('_', ' ')}
@@ -308,8 +308,8 @@ const DriveManagementPage = () => {
 
                 {/* Technical Module Settings */}
                 {formData.activeModules.includes('TECHNICAL') && (
-                  <div className="p-4 border border-slate-800 bg-slate-900/30 space-y-4">
-                    <h3 className="text-xs font-mono font-bold text-emerald-500 uppercase tracking-widest">
+                  <div className="p-4 border border-outline-variant/30 bg-surface-container-low/30 space-y-4">
+                    <h3 className="font-mono font-bold text-emerald-500 text-xs font-label font-medium text-on-surface-variant">
                       [TECHNICAL_MODULE_CONFIG]
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -331,8 +331,8 @@ const DriveManagementPage = () => {
 
                 {/* HR & Salary Module Settings */}
                 {formData.activeModules.includes('HR_SALARY') && (
-                  <div className="p-4 border border-slate-800 bg-slate-900/30 space-y-4">
-                    <h3 className="text-xs font-mono font-bold text-sky-500 uppercase tracking-widest">
+                  <div className="p-4 border border-outline-variant/30 bg-surface-container-low/30 space-y-4">
+                    <h3 className="font-mono font-bold text-sky-500 text-xs font-label font-medium text-on-surface-variant">
                       [HR_SALARY_MODULE_CONFIG]
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -360,12 +360,12 @@ const DriveManagementPage = () => {
 
                 {/* GD Module Settings */}
                 {formData.activeModules.includes('GD') && (
-                  <div className="p-4 border border-slate-800 bg-slate-900/30 space-y-4">
-                    <h3 className="text-xs font-mono font-bold text-amber-500 uppercase tracking-widest">
+                  <div className="p-4 border border-outline-variant/30 bg-surface-container-low/30 space-y-4">
+                    <h3 className="font-mono font-bold text-amber-500 text-xs font-label font-medium text-on-surface-variant">
                       [GD_MODULE_CONFIG]
                     </h3>
                     <div className="space-y-3">
-                      <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
+                      <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
                         DISCUSSION_TOPIC_POOL
                       </label>
                       
@@ -373,7 +373,7 @@ const DriveManagementPage = () => {
                         <div key={index} className="flex gap-2">
                           <div className="relative flex-1">
                             <input
-                              className="w-full bg-slate-950 border border-slate-800 p-2 font-mono text-xs text-slate-200 focus:border-amber-500 outline-none transition-colors"
+                              className="w-full bg-surface-container-low border border-outline-variant/30 p-2 font-mono text-xs text-on-surface focus:border-amber-500 outline-none transition-colors"
                               placeholder={`Enter topic ${index + 1}...`}
                               value={topic}
                               onChange={(e) => handleGDTopicChange(index, e.target.value)}
@@ -383,7 +383,7 @@ const DriveManagementPage = () => {
                           <button
                             type="button"
                             onClick={() => handleRemoveGDTopic(index)}
-                            className="p-2 border border-slate-800 text-slate-500 hover:text-red-400 hover:border-red-500/30 transition-colors"
+                            className="p-2 border border-outline-variant/30 text-on-surface-variant hover:text-red-400 hover:border-red-500/30 transition-colors"
                           >
                             <Icon name="X" size={14} />
                           </button>
@@ -393,13 +393,13 @@ const DriveManagementPage = () => {
                       <button
                         type="button"
                         onClick={handleAddGDTopic}
-                        className="w-full py-2 border border-dashed border-slate-800 text-[10px] font-mono text-slate-500 hover:text-emerald-500 hover:border-emerald-500/30 transition-all uppercase tracking-widest flex items-center justify-center gap-2"
+                        className="w-full py-2 border border-dashed border-outline-variant/30 text-[10px] font-mono text-on-surface-variant hover:text-emerald-500 hover:border-emerald-500/30 transition-all flex items-center justify-center gap-2 font-label font-medium text-on-surface-variant"
                       >
                         <Icon name="Plus" size={12} />
                         ADD_NEW_TOPIC_NODE
                       </button>
 
-                      <p className="text-[8px] font-mono text-slate-500 uppercase tracking-tighter">
+                      <p className="text-[8px] font-mono text-on-surface-variant font-label font-medium text-on-surface-variant">
                         * ONE_TOPIC_WILL_BE_SELECTED_RANDOMLY_FOR_EACH_SESSION
                       </p>
                     </div>
@@ -408,7 +408,7 @@ const DriveManagementPage = () => {
 
                 {error && (
                   <div className="p-3 bg-red-500/10 border border-red-500/20">
-                    <p className="text-[10px] font-mono text-red-500 uppercase">{error}</p>
+                    <p className="text-[10px] font-mono text-red-500 font-label font-medium text-on-surface-variant">{error}</p>
                   </div>
                 )}
 
@@ -420,7 +420,7 @@ const DriveManagementPage = () => {
                   >
                     {isSubmitting ? 'ANALYZING_JD_AND_SAVING...' : 'COMMIT_PLACEMENT_DRIVE'}
                   </Button>
-                  <p className="text-[8px] font-mono text-slate-500 mt-4 text-center uppercase leading-relaxed">
+                  <p className="text-[8px] font-mono text-on-surface-variant mt-4 text-center leading-relaxed font-label font-medium text-on-surface-variant">
                     * AI engine will automatically extract technical skill vectors from the provided JD 
                     to customize interview context for each candidate.
                   </p>
@@ -433,22 +433,22 @@ const DriveManagementPage = () => {
         {/* Drives Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {isLoading ? (
-            <div className="col-span-full py-12 text-center text-slate-500 animate-pulse font-mono uppercase tracking-widest">
+            <div className="col-span-full py-12 text-center text-on-surface-variant animate-pulse font-mono">
               Syncing_Drive_Data...
             </div>
           ) : drives.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-slate-500 font-mono uppercase tracking-widest border border-dashed border-slate-800">
+            <div className="col-span-full py-12 text-center text-on-surface-variant font-mono border border-dashed border-outline-variant/30">
               No_Active_Drives_Found
             </div>
           ) : (
             drives.map((drive) => (
-              <div key={drive.id} className="bg-slate-900/50 border border-slate-800 p-6 space-y-4 hover:border-slate-700 transition-colors group">
+              <div key={drive.id} className="bg-surface-container-low/50 border border-outline-variant/30 p-6 space-y-4 hover:border-outline-variant/30 transition-colors group">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl font-mono font-bold text-slate-100 uppercase tracking-tighter">
+                    <h3 className="text-xl font-headline font-bold text-on-surface">
                       {drive.companyName}
                     </h3>
-                    <p className="text-[10px] font-mono text-slate-500 uppercase">
+                    <p className="text-[10px] font-mono text-on-surface-variant font-label font-medium text-on-surface-variant">
                       Created: {new Date(drive.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -458,7 +458,7 @@ const DriveManagementPage = () => {
                 </div>
 
                 <div className="h-24 overflow-hidden relative">
-                  <p className="text-xs text-slate-400 font-mono line-clamp-4 leading-relaxed">
+                  <p className="text-xs text-on-surface-variant font-mono line-clamp-4 leading-relaxed">
                     {drive.jobDescription}
                   </p>
                   <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-slate-900/90 to-transparent" />
@@ -466,20 +466,20 @@ const DriveManagementPage = () => {
 
                 <div className="flex flex-wrap gap-2">
                   {drive.skillsRequired?.slice(0, 4).map((skill) => (
-                    <span key={skill} className="px-2 py-0.5 bg-slate-800 text-slate-400 text-[8px] font-mono uppercase border border-slate-700">
+                    <span key={skill} className="px-2 py-0.5 bg-surface-container-low text-on-surface-variant text-[8px] font-mono border border-outline-variant/30 font-label font-medium text-on-surface-variant">
                       {skill}
                     </span>
                   ))}
                   {drive.skillsRequired?.length > 4 && (
-                    <span className="text-[8px] font-mono text-slate-600">+{drive.skillsRequired.length - 4} MORE</span>
+                    <span className="text-[8px] font-mono text-on-surface-variant">+{drive.skillsRequired.length - 4} MORE</span>
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-slate-800 flex gap-3">
+                <div className="pt-4 border-t border-outline-variant/30 flex gap-3">
                   <Button 
                     variant="outline"
                     onClick={() => handleAssign(drive.id)}
-                    className="flex-1 text-[10px] border-slate-800 text-slate-300 hover:bg-sky-500/5 hover:text-sky-400 hover:border-sky-500/30"
+                    className="flex-1 text-[10px] border-outline-variant/30 text-slate-300 hover:bg-sky-500/5 hover:text-sky-400 hover:border-sky-500/30"
                   >
                     ASSIGN_TO_STUDENTS <Icon name="Users" size={12} className="ml-2" />
                   </Button>
@@ -487,7 +487,7 @@ const DriveManagementPage = () => {
                     <AlertDialogTrigger asChild>
                       <Button 
                         variant="ghost"
-                        className="text-[10px] text-slate-500 hover:text-red-400"
+                        className="text-[10px] text-on-surface-variant hover:text-red-400"
                       >
                         <Icon name="Trash2" size={14} />
                       </Button>

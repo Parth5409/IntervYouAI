@@ -28,13 +28,13 @@ const SessionProgress = ({
         </div>
         <div className="flex items-end justify-between">
           <div className="space-y-1">
-            <h3 className="text-xl font-headline font-extrabold text-white tracking-tight uppercase">
+            <h3 className="text-xl font-headline font-extrabold text-on-surface">
               {currentPhase.replace(/_/g, ' ')}
             </h3>
             <p className="text-[10px] text-on-surface-variant font-medium uppercase tracking-widest opacity-60">System Synchronized</p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-headline font-extrabold text-white tracking-tighter tabular-nums leading-none">
+            <div className="text-3xl font-headline font-extrabold text-on-surface tabular-nums leading-none">
               {formatTime(sessionTime)}
             </div>
             <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-widest mt-2 opacity-40">Elapsed Time</p>
@@ -48,13 +48,13 @@ const SessionProgress = ({
         <div className="space-y-3">
           <div className="flex justify-between items-end">
             <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Temporal Progress</span>
-            <span className="text-[11px] text-white font-extrabold">{Math.round(progressPercentage)}%</span>
+            <span className="text-[11px] text-on-surface font-extrabold">{Math.round(progressPercentage)}%</span>
           </div>
           <div className="h-2 w-full bg-surface-container-high/30 rounded-full overflow-hidden border border-outline-variant/5">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${progressPercentage}%` }}
-              className="bg-primary h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(255,145,90,0.4)]"
+              className="bg-primary h-full rounded-full transition-all duration-1000 ease-out shadow-sm"
             />
           </div>
         </div>
@@ -63,13 +63,13 @@ const SessionProgress = ({
         <div className="space-y-3">
           <div className="flex justify-between items-end">
             <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Question Matrix</span>
-            <span className="text-[11px] text-white font-extrabold">{questionsAnswered} <span className="text-on-surface-variant opacity-40">/ {totalQuestions}</span></span>
+            <span className="text-[11px] text-on-surface font-extrabold">{questionsAnswered} <span className="text-on-surface-variant opacity-40">/ {totalQuestions}</span></span>
           </div>
           <div className="h-2 w-full bg-surface-container-high/30 rounded-full overflow-hidden border border-outline-variant/5">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${questionProgress}%` }}
-              className="bg-white h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+              className="bg-primary h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(255,145,90,0.4)]"
             />
           </div>
         </div>
@@ -85,7 +85,7 @@ const SessionProgress = ({
           <div key={i} className="bg-surface-container-high/40 border border-outline-variant/10 rounded-2xl p-4 text-center group hover:bg-surface-container-high transition-all">
             <p className="text-[8px] text-on-surface-variant uppercase font-bold tracking-widest mb-1 opacity-60">{stat.label}</p>
             <div className="flex items-baseline justify-center gap-0.5">
-              <p className="text-2xl font-headline font-extrabold text-white tabular-nums">{stat.val.toString().padStart(2, '0')}</p>
+              <p className="text-2xl font-headline font-extrabold text-on-surface tabular-nums">{stat.val.toString().padStart(2, '0')}</p>
               <span className="text-[8px] font-bold text-on-surface-variant uppercase opacity-40">{stat.unit}</span>
             </div>
           </div>

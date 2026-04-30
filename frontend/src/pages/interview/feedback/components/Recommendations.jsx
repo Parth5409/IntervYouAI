@@ -14,7 +14,7 @@ const Recommendations = ({ recommendations }) => {
         <div className="w-10 h-10 rounded-xl bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-primary">
           <Icon name="ms:target" size={20} />
         </div>
-        <h3 className="text-[11px] font-extrabold text-white uppercase tracking-[0.4em]">
+        <h3 className="text-[11px] font-extrabold text-on-surface uppercase tracking-[0.4em]">
           Strategic Neural Roadmap
         </h3>
       </div>
@@ -22,8 +22,8 @@ const Recommendations = ({ recommendations }) => {
       <div className="space-y-6 relative z-10">
         {recommendations.map((rec, index) => (
           <div key={index} className="flex items-start gap-5 group/item transition-all hover:translate-x-1">
-            <div className="mt-1.5 w-2 h-2 rounded-full bg-primary/20 group-hover/item:bg-primary group-hover/item:shadow-[0_0_8px_rgba(255,145,90,0.8)] transition-all shrink-0" />
-            <p className="text-sm font-body text-on-surface-variant leading-relaxed tracking-tight group-hover/item:text-white transition-colors uppercase italic font-medium opacity-70 group-hover/item:opacity-100">
+            <div className="mt-1.5 w-2 h-2 rounded-full bg-primary/20 group-hover/item:bg-primary group-hover/item:shadow-sm transition-all shrink-0" />
+            <p className="text-sm font-body text-on-surface-variant leading-relaxed tracking-tight group-hover/item:text-on-surface transition-colors uppercase italic font-medium opacity-70 group-hover/item:opacity-100">
               {rec}
             </p>
           </div>

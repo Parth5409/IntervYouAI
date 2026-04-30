@@ -1,6 +1,6 @@
 import React from 'react';
-
 import Button from '../../../components/ui/button';
+import Icon from '../../../components/AppIcon';
 
 const WelcomeSection = ({ user, onStartInterview }) => {
   const getGreeting = () => {
@@ -22,51 +22,38 @@ const WelcomeSection = ({ user, onStartInterview }) => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-primary to-accent rounded-lg p-6 text-white mb-6">
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-2">
-            {getGreeting()}, {user?.full_name || 'User'}!
+    <div className="bg-surface-container-low glass-border rounded-2xl p-10 relative overflow-hidden mb-8 group hover:border-primary/20 transition-all duration-500 shadow-2xl">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32 group-hover:bg-primary/10 transition-all duration-700" />
+      
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+             <span className="text-[10px] font-headline font-bold text-primary uppercase tracking-widest">Active_Preparation_Node</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-headline font-bold text-white tracking-tight">
+            {getGreeting()}, <span className="text-primary italic">{user?.full_name?.split(' ')[0] || 'User'}.</span>
           </h1>
-          <p className="text-primary-foreground/80 mb-1">
-            {getMotivationalMessage()}
+          <p className="text-on-surface-variant font-body text-lg max-w-xl leading-relaxed">
+            {getMotivationalMessage()} Your current readiness quotient is at <span className="text-white font-bold">85%</span>. Ready for optimization?
           </p>
-          {user?.careerGoal && (
-            <p className="text-sm text-primary-foreground/70">
-              Goal: {user?.careerGoal}
-            </p>
-          )}
         </div>
         
-        <div className="hidden md:flex items-center space-x-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold">12</div>
-            <div className="text-xs text-primary-foreground/70">Sessions</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold">85%</div>
-            <div className="text-xs text-primary-foreground/70">Avg Score</div>
-          </div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button
+            onClick={onStartInterview}
+            className="h-14 px-10 bg-primary text-black font-headline font-bold rounded-xl shadow-lg shadow-primary/10 hover:brightness-110 active:scale-95 transition-all flex items-center gap-3"
+          >
+            <Icon name="ms:play_circle" size={20} />
+            Start Session
+          </Button>
+          <Button
+            variant="outline"
+            className="h-14 px-10 border-outline-variant hover:border-white rounded-xl font-headline font-bold text-sm transition-all"
+          >
+            View Progress
+          </Button>
         </div>
-      </div>
-      <div className="mt-4 flex flex-col sm:flex-row gap-3">
-        <Button
-          variant="secondary"
-          onClick={onStartInterview}
-          iconName="Play"
-          iconPosition="left"
-          className="bg-white text-primary hover:bg-white/90"
-        >
-          Start New Interview
-        </Button>
-        <Button
-          variant="ghost"
-          iconName="TrendingUp"
-          iconPosition="left"
-          className="text-white border-white/20 hover:bg-white/10"
-        >
-          View Progress
-        </Button>
       </div>
     </div>
   );

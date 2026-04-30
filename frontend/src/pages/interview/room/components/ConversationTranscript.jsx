@@ -47,7 +47,7 @@ const ConversationTranscript = ({
               )}>
                 <span className={cn(
                   "text-[9px] font-bold tracking-[0.2em] uppercase",
-                  isUser ? "text-primary" : "text-white"
+                  isUser ? "text-primary" : "text-on-surface"
                 )}>
                   {isUser ? 'Candidate Response' : 'AI Analysis Agent'}
                 </span>
@@ -59,7 +59,7 @@ const ConversationTranscript = ({
               <div className={cn(
                 "p-5 rounded-2xl relative transition-all duration-500 shadow-xl",
                 isUser 
-                  ? 'bg-primary/5 border border-primary/20 text-white rounded-tr-none' 
+                  ? 'bg-primary/5 border border-primary/20 text-on-surface rounded-tr-none' 
                   : 'bg-surface-container-high/40 border border-outline-variant/10 text-on-surface rounded-tl-none backdrop-blur-md'
               )}>
                 <p className="text-[13px] leading-relaxed tracking-tight font-medium">
@@ -106,7 +106,7 @@ const ConversationTranscript = ({
               <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-[0.2em]">Context Weight</p>
             </div>
             <div className="flex items-baseline gap-1">
-              <p className="text-xl font-headline font-extrabold text-white leading-none">
+              <p className="text-xl font-headline font-extrabold text-on-surface leading-none">
                 {transcript.reduce((acc, msg) => acc + (msg?.text ? msg.text.split(' ').length : 0), 0)}
               </p>
               <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest opacity-40">Tokens</span>
@@ -118,8 +118,8 @@ const ConversationTranscript = ({
               <Icon name="ms:graphic_eq" size={14} className="text-primary opacity-60" />
             </div>
             <div className="flex items-center justify-end gap-3">
-              <span className="text-xs font-headline font-extrabold text-white tracking-widest leading-none">Synchronized</span>
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_8px_rgba(255,145,90,0.5)]" />
+              <span className="text-xs font-headline font-extrabold text-on-surface leading-none font-label font-medium text-on-surface-variant">Synchronized</span>
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-sm" />
             </div>
           </div>
         </div>

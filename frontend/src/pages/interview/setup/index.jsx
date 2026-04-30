@@ -255,7 +255,7 @@ const InterviewSetupWizard = () => {
                 <span className="text-[11px] font-extrabold tracking-[0.4em] text-primary uppercase">Protocol Selection</span>
                 <span className="w-12 h-[2px] bg-primary rounded-full"></span>
               </div>
-              <h2 className="text-5xl font-headline font-extrabold text-white tracking-tight uppercase">
+              <h2 className="text-5xl font-headline font-extrabold text-on-surface italic">
                 Initialize System
               </h2>
               <p className="text-on-surface-variant font-body text-base max-w-2xl mx-auto opacity-60 leading-relaxed">
@@ -284,7 +284,7 @@ const InterviewSetupWizard = () => {
               >
                 <div className="inline-flex items-center gap-3 px-6 py-3 bg-red-500/10 border border-red-500/20 rounded-2xl">
                   <Icon name="ms:error" size={18} className="text-red-500" />
-                  <p className="text-red-500 font-headline text-[10px] font-extrabold uppercase tracking-widest">
+                  <p className="text-red-500 font-headline text-[10px] font-extrabold font-label font-medium text-on-surface-variant">
                     {errors?.type}
                   </p>
                 </div>
@@ -324,7 +324,7 @@ const InterviewSetupWizard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-white relative overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-background text-on-surface relative overflow-hidden flex flex-col">
       {/* Dynamic Background Mesh */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
@@ -340,19 +340,19 @@ const InterviewSetupWizard = () => {
             <Icon name="ms:psychology_alt" size={28} className="text-on-primary" />
           </div>
           <div className="space-y-0.5">
-            <span className="font-headline font-extrabold tracking-tighter text-xl">
+            <span className="font-headline font-extrabold text-xl">
               MISSION_CONTROL
             </span>
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[9px] font-headline font-extrabold text-primary uppercase tracking-[0.3em]">AI_CORE_READY</span>
+              <span className="text-[9px] font-headline font-extrabold text-primary font-label font-medium text-on-surface-variant">AI_CORE_READY</span>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-8">
            <button 
             onClick={() => navigate('/dashboard')}
-            className="text-[10px] font-headline font-extrabold uppercase tracking-[0.2em] text-on-surface-variant hover:text-white transition-colors"
+            className="text-[10px] font-headline font-extrabold text-on-surface-variant hover:text-on-surface transition-colors font-label font-medium"
            >
              Abort Mission
            </button>
@@ -366,11 +366,11 @@ const InterviewSetupWizard = () => {
             <div className="flex justify-between items-end mb-6 px-1">
               <div className="space-y-1">
                 <span className="text-[10px] font-extrabold text-primary uppercase tracking-[0.4em]">Current Status</span>
-                <h3 className="font-headline text-lg font-extrabold text-white uppercase tracking-tight">
+                <h3 className="font-headline text-lg font-extrabold text-on-surface">
                   Phase {currentStep} <span className="text-on-surface-variant opacity-40 ml-2">//</span> <span className="italic text-primary ml-2">{stepLabels[currentStep - 1]}</span>
                 </h3>
               </div>
-              <span className="font-headline text-xs font-extrabold text-on-surface-variant uppercase tracking-widest tabular-nums opacity-60">
+              <span className="font-headline font-extrabold text-on-surface-variant tabular-nums opacity-60 text-xs font-label font-medium text-on-surface-variant">
                 L_VECTOR_{currentStep.toString().padStart(2, '0')}.{totalSteps}
               </span>
             </div>
@@ -383,7 +383,7 @@ const InterviewSetupWizard = () => {
                     animate={{ width: '100%' }}
                     className={cn(
                       "h-full flex-1 rounded-full transition-all duration-1000",
-                      i + 1 <= currentStep ? "bg-primary shadow-[0_0_15px_rgba(255,145,90,0.4)]" : "bg-outline-variant/10"
+                      i + 1 <= currentStep ? "bg-primary shadow-sm" : "bg-outline-variant/10"
                     )} 
                   />
                 ))}
@@ -404,7 +404,7 @@ const InterviewSetupWizard = () => {
                   variant="outline"
                   className="h-16 px-10 rounded-2xl group border-outline-variant/20 transition-all duration-500"
                 >
-                  <span className="flex items-center gap-4 font-headline text-[10px] font-extrabold uppercase tracking-[0.25em]">
+                  <span className="flex items-center gap-4 font-headline text-[10px] font-extrabold font-label font-medium text-on-surface-variant">
                     <Icon name="ms:arrow_back" size={20} className="group-hover:-translate-x-1 transition-transform" />
                     Decrement Phase
                   </span>
@@ -420,7 +420,7 @@ const InterviewSetupWizard = () => {
                   variant="primary"
                   className="h-16 px-10 rounded-2xl group shadow-[0_15px_30px_rgba(255,145,90,0.2)] transition-all duration-500"
                 >
-                  <span className="flex items-center gap-4 font-headline text-[10px] font-extrabold uppercase tracking-[0.25em]">
+                  <span className="flex items-center gap-4 font-headline text-[10px] font-extrabold font-label font-medium text-on-surface-variant">
                     Next Operation
                     <Icon name="ms:arrow_forward" size={20} className="group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -432,7 +432,7 @@ const InterviewSetupWizard = () => {
                   variant="primary"
                   className="h-20 px-12 rounded-[2rem] group shadow-[0_20px_40px_rgba(255,145,90,0.3)] transition-all duration-500"
                 >
-                  <span className="flex items-center gap-4 font-headline text-[11px] font-extrabold uppercase tracking-[0.3em]">
+                  <span className="flex items-center gap-4 font-headline text-[11px] font-extrabold">
                     {isLoading ? 'Calibrating...' : 'Initialize Mission'}
                     <Icon name="ms:rocket_launch" size={24} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
                   </span>

@@ -26,7 +26,7 @@ const SecurityBadges = () => {
             size={16} 
             className="text-on-surface-variant/20 group-hover:text-primary transition-colors"
           />
-          <span className="text-[10px] font-extrabold text-on-surface-variant/40 uppercase tracking-[0.2em] group-hover:text-white transition-colors">
+          <span className="text-[10px] font-extrabold text-on-surface-variant/40 uppercase tracking-[0.2em] group-hover:text-on-surface transition-colors">
             {feature?.text}
           </span>
         </div>

@@ -25,11 +25,11 @@ const GDTranscript = ({ messages = [], isLoading = false, participants = [] }) =
     analytical: { text: 'text-purple-500', bg: 'bg-purple-500/5', border: 'border-purple-500/20' },
     creative: { text: 'text-amber-500', bg: 'bg-amber-500/5', border: 'border-amber-500/20' },
     human: { text: 'text-emerald-500', bg: 'bg-emerald-500/5', border: 'border-emerald-500/20' },
-    moderator: { text: 'text-slate-400', bg: 'bg-slate-900', border: 'border-slate-800' }
+    moderator: { text: 'text-on-surface-variant', bg: 'bg-surface-container-low', border: 'border-outline-variant/30' }
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-950 font-mono">
+    <div className="flex flex-col h-full bg-surface-container-low font-mono">
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
         {messages.map((msg, index) => {
           const speaker = getSpeakerInfo(msg.speaker_id);
@@ -40,9 +40,9 @@ const GDTranscript = ({ messages = [], isLoading = false, participants = [] }) =
           if (isMod) {
             return (
               <div key={index} className="flex justify-center py-2">
-                <div className="bg-slate-900 border border-slate-800 px-4 py-1.5 flex items-center gap-3">
-                  <Icon name="Shield" size={12} className="text-slate-500" />
-                  <p className="text-[9px] text-slate-400 uppercase tracking-[0.2em]">{msg.message}</p>
+                <div className="bg-surface-container-low border border-outline-variant/30 px-4 py-1.5 flex items-center gap-3">
+                  <Icon name="Shield" size={12} className="text-on-surface-variant" />
+                  <p className="text-[9px] text-on-surface-variant uppercase tracking-[0.2em]">{msg.message}</p>
                 </div>
               </div>
             )
@@ -69,14 +69,14 @@ const GDTranscript = ({ messages = [], isLoading = false, participants = [] }) =
                 "max-w-[90%] p-4 border relative transition-all duration-300",
                 isUser 
                   ? 'bg-sky-500/5 border-sky-500/20 text-sky-50' 
-                  : 'bg-slate-900/50 border-slate-800 text-slate-300'
+                  : 'bg-surface-container-low/50 border-outline-variant/30 text-slate-300'
               )}>
                 <p className="text-[11px] leading-relaxed tracking-tight">{msg.message}</p>
                 
                 {/* Visual bit */}
                 <div className={cn(
                   "absolute -bottom-1 w-1 h-1",
-                  isUser ? "right-0 bg-sky-500" : "left-0 bg-slate-700"
+                  isUser ? "right-0 bg-sky-500" : "left-0 bg-surface-container-low"
                 )} />
               </div>
             </div>
@@ -89,7 +89,7 @@ const GDTranscript = ({ messages = [], isLoading = false, participants = [] }) =
                 AGENT_PROCESSING
               </span>
             </div>
-            <div className="bg-slate-900 border border-slate-800 p-4 w-20">
+            <div className="bg-surface-container-low border border-outline-variant/30 p-4 w-20">
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="w-1 h-3 bg-emerald-500/40 animate-waveform" style={{ animationDelay: `${i * 0.2}s` }} />
@@ -101,17 +101,17 @@ const GDTranscript = ({ messages = [], isLoading = false, participants = [] }) =
       </div>
 
       {/* Analytics Footer */}
-      <div className="p-4 border-t border-slate-800 bg-slate-900/30">
+      <div className="p-4 border-t border-outline-variant/30 bg-surface-container-low/30">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-[8px] text-slate-500 uppercase">Discussion_Integrity</p>
+            <p className="text-[8px] text-on-surface-variant uppercase">Discussion_Integrity</p>
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest">STABLE</span>
               <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse" />
             </div>
           </div>
           <div className="text-right">
-            <p className="text-[8px] text-slate-500 uppercase">Active_Agents</p>
+            <p className="text-[8px] text-on-surface-variant uppercase">Active_Agents</p>
             <p className="text-[10px] text-slate-300 font-bold tracking-widest">{participants.length + 1}</p>
           </div>
         </div>
