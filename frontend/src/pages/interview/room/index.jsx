@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import io from 'socket.io-client';
 import useAuth from '../../../hooks/useAuth';
 import { useAudioRecorder } from '../../../hooks/useAudioRecorder';
+import { useCamera } from '../../../hooks/useCamera';
 import api, { engineApi, getAiEngineDirectURL } from '../../../utils/api';
 
 import { playAudioFromBase64 } from '../../../utils/audioPlayer';
@@ -10,6 +11,8 @@ import { playAudioFromBase64 } from '../../../utils/audioPlayer';
 // Import Components
 import InterviewProgressNav from '../../../components/ui/InterviewProgressNav';
 import SessionControls from '../../../components/ui/SessionControls';
+import CameraPreview from '../../../components/ui/CameraPreview';
+import Icon from '../../../components/AppIcon';
 import AIAvatar from './components/AIAvatar';
 import ConversationTranscript from './components/ConversationTranscript';
 import VoiceControls from './components/VoiceControls';
@@ -33,10 +36,16 @@ const InterviewRoom = () => {
   const [isAIPlaying, setIsAIPlaying] = useState(false);
   const lastAudioRef = useRef(null);
 
-  // Custom hook for audio recording
+  // Custom hooks
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
+  const { stream, isActive: isCameraActive, error: cameraError, startCamera, stopCamera } = useCamera();
 
   // --- EFFECTS ---
+
+  useEffect(() => {
+    startCamera();
+    return () => stopCamera();
+  }, [startCamera, stopCamera]);
 
   useEffect(() => {
     if (!sessionId || !user?.id) return;
@@ -216,6 +225,17 @@ const InterviewRoom = () => {
           <div className="absolute top-10 left-10 flex items-center gap-4 z-20 bg-surface-container-high/40 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-outline-variant/10">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-md" />
             <span className="font-headline text-[10px] font-extrabold text-on-surface font-label font-medium text-on-surface-variant">Neural Link Active</span>
+          </div>
+
+          {/* Local Camera Feed - Tactical Floating Window */}
+          <div className="absolute top-10 right-10 z-20 w-48 aspect-video sm:w-64">
+             <CameraPreview 
+               stream={stream}
+               isActive={isCameraActive}
+               error={cameraError}
+               className="rounded-xl shadow-2xl border-outline-variant/20"
+               overlayLabel="STUDENT_CAM"
+             />
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center space-y-12 max-w-3xl w-full overflow-hidden">

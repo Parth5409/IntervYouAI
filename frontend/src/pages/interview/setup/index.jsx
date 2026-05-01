@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import DashboardLayout from '../../../components/ui/DashboardLayout';
 import InterviewProgressNav from '../../../components/ui/InterviewProgressNav';
 import Button from '../../../components/ui/button';
 import InterviewTypeCard from './components/InterviewTypeCard';
@@ -324,43 +325,9 @@ const InterviewSetupWizard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface relative overflow-hidden flex flex-col">
-      {/* Dynamic Background Mesh */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[150px] animate-pulse [animation-delay:2s]" />
-        <div className="absolute inset-0 opacity-[0.03]" 
-             style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-      </div>
-
-      {/* Header */}
-      <header className="h-24 border-b border-outline-variant/10 bg-surface-container-low/40 backdrop-blur-3xl flex items-center justify-between px-12 relative z-50 shrink-0">
-        <div className="flex items-center gap-6">
-          <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-[0_10px_20px_rgba(255,145,90,0.3)] rotate-3">
-            <Icon name="ms:psychology_alt" size={28} className="text-on-primary" />
-          </div>
-          <div className="space-y-0.5">
-            <span className="font-headline font-extrabold text-xl">
-              MISSION_CONTROL
-            </span>
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              <span className="text-[9px] font-headline font-extrabold text-primary font-label font-medium text-on-surface-variant">AI_CORE_READY</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-8">
-           <button 
-            onClick={() => navigate('/dashboard')}
-            className="text-[10px] font-headline font-extrabold text-on-surface-variant hover:text-on-surface transition-colors font-label font-medium"
-           >
-             Abort Mission
-           </button>
-        </div>
-      </header>
-
-      <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
-        <div className="container mx-auto px-6 py-20 max-w-6xl">
+    <DashboardLayout>
+      <div className="relative z-10">
+        <div className="container mx-auto px-6 py-10 max-w-6xl">
           {/* Progress Indicator */}
           <div className="mb-20 max-w-4xl mx-auto">
             <div className="flex justify-between items-end mb-6 px-1">
@@ -442,7 +409,7 @@ const InterviewSetupWizard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

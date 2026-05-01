@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import Icon from '../../../../components/AppIcon';
 import { cn } from '../../../../utils/cn';
 

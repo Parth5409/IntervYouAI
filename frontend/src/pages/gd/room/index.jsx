@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAudioRecorder } from '../../../hooks/useAudioRecorder';
+import { useCamera } from '../../../hooks/useCamera';
 import io from 'socket.io-client';
 import useAuth from '../../../hooks/useAuth';
 
@@ -37,6 +38,7 @@ const GDRoom = () => {
   const [isInterruptionWindow, setIsInterruptionWindow] = useState(false);
 
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
+  const { stream, isActive: isCameraActive, error: cameraError, startCamera, stopCamera } = useCamera();
 
   const startInterruption = useCallback(() => {
     setInterruptionTimer(5);
@@ -45,6 +47,11 @@ const GDRoom = () => {
   }, []);
 
   // --- EFFECTS ---
+
+  useEffect(() => {
+    startCamera();
+    return () => stopCamera();
+  }, [startCamera, stopCamera]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -239,7 +246,13 @@ const GDRoom = () => {
             
             <div className="w-full relative py-2 overflow-hidden flex items-center justify-center min-h-0">
               <div className="w-full max-h-full overflow-y-auto custom-scrollbar-hide">
-                <ParticipantsGrid participants={participants} activeSpeakerId={activeSpeakerId} />
+                <ParticipantsGrid 
+                  participants={participants} 
+                  activeSpeakerId={activeSpeakerId} 
+                  localStream={stream}
+                  isCameraActive={isCameraActive}
+                  cameraError={cameraError}
+                />
               </div>
               
               {/* Interruption Overlay */}

@@ -13,6 +13,7 @@ All core documentation files previously refined for AI readability have been mov
 - [Implementation Plan](.gemini/IMPLEMENTATION_PLAN.md)
 - [Technology Stack](.gemini/TECH_STACK.md)
 - [Product Requirements](.gemini/PRD.md)
+- [Video Integration Plan](.gemini/VIDEO_INTEGRATION_PLAN.md)
 
 ## 🛠 Agentic Skills
 The directory below contains specialized workflows and scripts designed for agentic AI to perform complex tasks within this codebase:
