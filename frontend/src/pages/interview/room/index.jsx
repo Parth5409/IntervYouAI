@@ -218,38 +218,38 @@ const InterviewRoom = () => {
 
       <InterviewProgressNav currentStep={2} totalSteps={3} isInterviewActive={true} />
       
-      <div className="flex-1 flex flex-col lg:flex-row relative z-10 overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row relative z-10 overflow-hidden pt-16">
         {/* Left: Main Interaction Zone */}
-        <div className="flex-1 relative flex flex-col items-center justify-between p-8 overflow-hidden">
+        <div className="flex-1 relative flex flex-col items-center justify-between p-6 sm:p-10 overflow-hidden">
           {/* Active Status Badge */}
-          <div className="absolute top-10 left-10 flex items-center gap-4 z-20 bg-surface-container-high/40 backdrop-blur-2xl px-5 py-2.5 rounded-2xl border border-outline-variant/10">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-md" />
-            <span className="font-headline text-[10px] font-extrabold text-on-surface font-label font-medium text-on-surface-variant">Neural Link Active</span>
+          <div className="absolute top-6 left-10 flex items-center gap-3 z-20 bg-white/[0.03] backdrop-blur-3xl px-4 py-2 rounded-xl border border-white/5 shadow-xl">
+            <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
+            <span className="font-headline text-[9px] font-black text-white uppercase tracking-widest">Interview in Progress</span>
           </div>
 
           {/* Local Camera Feed - Tactical Floating Window */}
-          <div className="absolute top-10 right-10 z-20 w-48 aspect-video sm:w-64">
+          <div className="absolute top-6 right-10 z-20 w-40 aspect-video sm:w-56">
              <CameraPreview 
                stream={stream}
                isActive={isCameraActive}
                error={cameraError}
-               className="rounded-xl shadow-2xl border-outline-variant/20"
-               overlayLabel="STUDENT_CAM"
+               className="rounded-2xl shadow-2xl border-white/10"
+               overlayLabel="Your Feed"
              />
           </div>
 
-          <div className="flex-1 flex flex-col items-center justify-center space-y-12 max-w-3xl w-full overflow-hidden">
+          <div className="flex-1 flex flex-col items-center justify-center space-y-6 max-w-4xl w-full overflow-hidden">
             <div className="flex-1 flex items-center justify-center min-h-0 w-full relative">
               {/* Orbital Avatar Nesting */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-[120%] aspect-square border-2 border-primary/5 rounded-full animate-[spin_20s_linear_infinite]" />
-                <div className="w-[140%] aspect-square border border-dashed border-primary/5 rounded-full animate-[spin_30s_linear_infinite_reverse]" />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-[100%] aspect-square border border-primary/5 rounded-full animate-[spin_20s_linear_infinite]" />
+                <div className="w-[110%] aspect-square border border-dashed border-primary/5 rounded-full animate-[spin_30s_linear_infinite_reverse]" />
               </div>
               
-              <AIAvatar isSpeaking={isAIPlaying} size="xlarge" isActive={isSessionActive && !isAIPlaying} />
+              <AIAvatar isSpeaking={isAIPlaying} size="large" isActive={isSessionActive && !isAIPlaying} />
             </div>
             
-            <div className="shrink-0 w-full flex justify-center py-6">
+            <div className="shrink-0 w-full flex justify-center py-4">
               <VoiceControls
                 isRecording={isRecording}
                 isMuted={isMuted}
@@ -266,8 +266,8 @@ const InterviewRoom = () => {
         </div>
 
         {/* Right: Tactical Sidebar */}
-        <div className="hidden lg:flex lg:w-[420px] xl:w-[480px] flex-col border-l border-outline-variant/10 bg-surface-container-high/30 backdrop-blur-3xl shrink-0 h-full shadow-[-20px_0_50px_rgba(0,0,0,0.3)]">
-          <div className="p-10 border-b border-outline-variant/10">
+        <div className="hidden lg:flex lg:w-[380px] xl:w-[420px] flex-col border-l border-white/5 bg-white/[0.02] backdrop-blur-3xl shrink-0 h-full shadow-2xl">
+          <div className="p-4 sm:p-6 border-b border-white/5 bg-white/[0.01]">
             <SessionProgress
               currentPhase={sessionDetails?.session_type || 'TECHNICAL_PROTOCOL'}
               sessionTime={sessionTime}
@@ -277,18 +277,18 @@ const InterviewRoom = () => {
           </div>
           
           <div className="flex-1 overflow-hidden flex flex-col">
-            <div className="px-10 py-5 flex items-center justify-between border-b border-outline-variant/5">
+            <div className="px-6 py-3 flex items-center justify-between border-b border-white/5 bg-white/[0.01]">
               <div className="flex items-center gap-3">
-                <Icon name="ms:history" size={16} className="text-primary" />
-                <span className="font-headline text-[11px] text-on-surface font-extrabold">Transcript stream</span>
+                <Icon name="ms:history" size={14} className="text-primary" />
+                <span className="font-headline text-[10px] text-white font-black uppercase tracking-widest">Transcript stream</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="font-body text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Live Sync</span>
-                <div className="w-1 h-1 bg-emerald-500 rounded-full" />
+                <span className="font-body text-[8px] text-secondary font-black uppercase tracking-widest">Live Sync</span>
+                <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
               </div>
             </div>
             
-            <div className="flex-1 relative overflow-hidden px-4">
+            <div className="flex-1 relative overflow-hidden">
               <ConversationTranscript 
                 transcript={conversationHistory} 
                 isLoading={isAISpeaking || isTranscribing} 

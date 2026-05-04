@@ -16,9 +16,9 @@ const FeedbackSections = ({
   };
 
   const sections = [
-    { key: 'technical_score', title: 'Technical Integrity', icon: 'ms:code', description: 'Subject matter domain expertise' },
-    { key: 'communication_score', title: 'Communication Reach', icon: 'ms:record_voice_over', description: 'Clarity & vocal transmission' },
-    { key: 'confidence_score', title: 'Confidence Vector', icon: 'ms:psychology', description: 'Self-assurance & stability' }
+    { key: 'technical_score', title: 'Technical Skills', icon: 'ms:code', description: 'Subject matter domain expertise' },
+    { key: 'communication_score', title: 'Communication Skills', icon: 'ms:record_voice_over', description: 'Clarity & vocal transmission' },
+    { key: 'confidence_score', title: 'Confidence Level', icon: 'ms:psychology', description: 'Self-assurance & stability' }
   ].filter(section => feedback?.[section.key] !== null && feedback?.[section.key] !== undefined);
 
   return (
@@ -26,7 +26,7 @@ const FeedbackSections = ({
       <div className="flex items-center justify-between border-b border-outline-variant/10 pb-6">
         <h2 className="text-[11px] font-extrabold text-on-surface uppercase tracking-[0.4em] flex items-center gap-4">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          Diagnostic Core
+          Performance Details
         </h2>
       </div>
 
@@ -102,7 +102,7 @@ const FeedbackSections = ({
                         <div className="space-y-6">
                           <div className="flex items-center gap-3">
                             <div className="w-2 h-2 rounded-full bg-sky-500" />
-                            <h4 className="text-[10px] font-extrabold text-sky-500 uppercase tracking-[0.3em]">Optimization Nodes</h4>
+                            <h4 className="text-[10px] font-extrabold text-sky-500 uppercase tracking-[0.3em]">Areas for Improvement</h4>
                           </div>
                           <div className="space-y-3">
                             {improvements.map((improvement, index) => (
@@ -120,7 +120,7 @@ const FeedbackSections = ({
                         <div className="space-y-6 border-t border-outline-variant/10 pt-10">
                           <div className="flex items-center gap-3">
                             <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                            <h4 className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em]">Neural Narrative Audit</h4>
+                            <h4 className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em]">Detailed Feedback</h4>
                           </div>
                           <div className="glass-card p-10 rounded-[2rem] border border-outline-variant/10 relative overflow-hidden group/audit">
                             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover/audit:opacity-20 transition-opacity duration-1000">

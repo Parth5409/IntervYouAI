@@ -62,7 +62,7 @@ const SystemConfigPage = () => {
         <form onSubmit={handleSubmit} className="bg-surface-container-low/50 border border-outline-variant/30 p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="font-mono text-sm text-emerald-500 border-b border-outline-variant/30 pb-2 mb-4">
+              <h3 className="font-mono text-sm text-secondary border-b border-outline-variant/30 pb-2 mb-4">
                 Identity_Matrix
               </h3>
               <Input
@@ -112,7 +112,7 @@ const SystemConfigPage = () => {
           </div>
 
           {message.text && (
-            <div className={`p-4 border ${message.type === 'success' ? 'bg-primary/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'} font-mono text-xs`}>
+            <div className={`p-4 border ${message.type === 'success' ? 'bg-primary/10 border-secondary/20 text-secondary' : 'bg-red-500/10 border-red-500/20 text-red-500'} font-mono text-xs`}>
               {message.text}
             </div>
           )}

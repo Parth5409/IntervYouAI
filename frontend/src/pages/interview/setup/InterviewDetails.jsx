@@ -7,7 +7,7 @@ import Icon from '../../../components/AppIcon';
 import api, { engineApi } from '../../../utils/api';
 import { cn } from '../../../utils/cn';
 
-const MissionBrief = () => {
+const InterviewDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [drive, setDrive] = useState(null);
@@ -32,7 +32,7 @@ const MissionBrief = () => {
         }
       } catch (err) {
         console.error('Failed to fetch drive details:', err);
-        setError('CRITICAL_ERROR: Failed to fetch mission parameters.');
+        setError('Error: Failed to fetch interview details.');
       } finally {
         setIsLoading(false);
       }
@@ -41,7 +41,7 @@ const MissionBrief = () => {
     fetchDriveDetails();
   }, [location.state, navigate]);
 
-  const handleStartMission = async () => {
+  const handleStartInterview = async () => {
     if (!selectedRound || !drive) return;
     
     setIsStarting(true);
@@ -69,12 +69,12 @@ const MissionBrief = () => {
         const sessionId = data.data.id;
         const roomPath = selectedRound === 'GD' ? `/gd/room/${sessionId}` : `/interview/room/${sessionId}`;
         navigate(roomPath, {
-          state: { interviewType: selectedRound.toLowerCase(), sessionId: sessionId, missionMode: true }
+          state: { interviewType: selectedRound.toLowerCase(), sessionId: sessionId, interviewMode: true }
         });
       }
     } catch (err) {
-      console.error('Failed to start mission:', err);
-      setError('UPLINK_FAILURE: AI execution node rejected the mission request.');
+      console.error('Failed to start interview:', err);
+      setError('Connection Error: Failed to start the interview session.');
     } finally {
       setIsStarting(false);
     }
@@ -95,7 +95,7 @@ const MissionBrief = () => {
             className="absolute inset-0 bg-primary shadow-sm" 
           />
         </div>
-        <p className="mt-10 text-primary font-extrabold text-[10px] tracking-[0.5em] uppercase animate-pulse">Synchronizing Mission Node...</p>
+        <p className="mt-10 text-primary font-extrabold text-[10px] tracking-[0.5em] uppercase animate-pulse">Loading Details...</p>
       </div>
     );
   }
@@ -116,7 +116,7 @@ const MissionBrief = () => {
             variant="primary"
             className="w-full h-20 rounded-2xl bg-red-500 hover:bg-red-600 font-extrabold text-[12px] tracking-[0.2em]"
           >
-            Return to Command Center
+            Return to Dashboard
           </Button>
         </div>
       </div>
@@ -128,12 +128,12 @@ const MissionBrief = () => {
       <div className="relative z-10">
         <main className="flex-1 container mx-auto max-w-7xl px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-16 z-10 overflow-hidden">
           <div className="lg:col-span-2 space-y-12 h-full flex flex-col">
-            {/* Mission Stats Grid */}
+            {/* Interview Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
               {[
-                { label: 'Target Entity', val: drive.companyName, icon: 'ms:business', color: 'text-primary' },
-                { label: 'Valuation Range', val: `${drive.minLpa} - ${drive.maxLpa} LPA`, icon: 'ms:payments', color: 'text-on-surface' },
-                { label: 'Protocol Stages', val: `${drive.activeModules?.length || 0} SECTIONS`, icon: 'ms:account_tree', color: 'text-primary' },
+                { label: 'Company', val: drive.companyName, icon: 'ms:business', color: 'text-primary' },
+                { label: 'Salary Range', val: `${drive.minLpa} - ${drive.maxLpa} LPA`, icon: 'ms:payments', color: 'text-on-surface' },
+                { label: 'Interview Rounds', val: `${drive.activeModules?.length || 0} ROUNDS`, icon: 'ms:account_tree', color: 'text-primary' },
               ].map((stat, i) => (
                 <motion.div 
                   key={i}
@@ -153,13 +153,13 @@ const MissionBrief = () => {
               ))}
             </div>
 
-            {/* Mission Parameters Card */}
+            {/* Interview Details Card */}
             <div className="bg-surface-container-high/40 backdrop-blur-3xl rounded-[3rem] border border-outline-variant/10 shadow-2xl overflow-hidden flex-1 flex flex-col relative group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl pointer-events-none transition-all duration-1000 group-hover:bg-primary/10" />
               <div className="px-10 py-8 border-b border-outline-variant/10 flex items-center justify-between shrink-0 bg-surface-container-high/60">
                 <div className="flex items-center gap-4">
                   <Icon name="ms:description" size={24} className="text-primary" />
-                  <span className="text-sm font-extrabold uppercase tracking-[0.2em] text-on-surface">Execution Parameters</span>
+                  <span className="text-sm font-extrabold uppercase tracking-[0.2em] text-on-surface">Job Description</span>
                 </div>
                 <div className="flex gap-2">
                   <div className="w-2 h-2 rounded-full bg-primary/40" />
@@ -180,9 +180,9 @@ const MissionBrief = () => {
               <div className="space-y-2">
                 <h3 className="text-2xl font-extrabold tracking-tight uppercase flex items-center gap-4 text-on-surface">
                   <div className="w-2 h-8 bg-primary rounded-full" />
-                  Mission Pipeline
+                  Interview Rounds
                 </h3>
-                <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40 ml-12">Deployment Sequence</p>
+                <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40 ml-12">Select Round</p>
               </div>
               
               <div className="space-y-6">
@@ -222,17 +222,17 @@ const MissionBrief = () => {
                 <div className="flex gap-4 items-start bg-primary/5 p-6 rounded-3xl border border-primary/10">
                   <Icon name="ms:info" size={20} className="text-primary shrink-0" />
                   <p className="text-[11px] font-bold text-on-surface-variant leading-loose uppercase tracking-widest opacity-60 italic">
-                    Warning: AI profiles will calibrate to your input latencies and semantic patterns. maintain parity.
+                    Note: The AI will adjust its questions based on your responses. Good luck!
                   </p>
                 </div>
                 <Button 
-                  onClick={handleStartMission}
+                  onClick={handleStartInterview}
                   loading={isStarting}
                   variant="primary"
                   className="w-full h-24 rounded-[2.5rem] shadow-[0_20px_50px_rgba(255,145,90,0.3)] hover:shadow-[0_25px_60px_rgba(255,145,90,0.4)] transition-all duration-700"
                 >
                   <span className="flex items-center justify-center gap-4 font-extrabold text-[12px] tracking-[0.4em] uppercase">
-                    Initialize Round
+                    Start Round
                     <Icon name="ms:bolt" size={24} className="animate-pulse" />
                   </span>
                 </Button>
@@ -243,9 +243,9 @@ const MissionBrief = () => {
                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary opacity-80">Sync Status: Ready</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary opacity-80">Status: Ready</span>
                   </div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant opacity-40">Uplink 100%</span>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant opacity-40">Ready to start</span>
                </div>
                <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
                   <motion.div 
@@ -263,4 +263,4 @@ const MissionBrief = () => {
   );
 };
 
-export default MissionBrief;
+export default InterviewDetails;

@@ -7,7 +7,7 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
   const actionCards = [
     {
       id: 'technical',
-      title: 'Technical Protocol',
+      title: 'Technical Interview',
       description: 'Practice coding problems and system design questions',
       icon: 'ms:code',
       accent: 'text-primary',
@@ -17,17 +17,17 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
     },
     {
       id: 'hr',
-      title: 'Cultural Alignment',
+      title: 'HR Interview',
       description: 'Behavioral questions and company culture fit',
       icon: 'ms:groups',
-      accent: 'text-emerald-500',
-      bg: 'bg-emerald-500/5',
-      border: 'border-emerald-500/10',
+      accent: 'text-secondary',
+      bg: 'bg-secondary/5',
+      border: 'border-secondary/10',
       action: () => onStartInterview('hr')
     },
     {
       id: 'group',
-      title: 'Collective Logic',
+      title: 'Group Discussion',
       description: 'Practice group dynamics and communication skills',
       icon: 'ms:forum',
       accent: 'text-amber-500',
@@ -37,7 +37,7 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
     },
     {
       id: 'salary',
-      title: 'Value Negotiation',
+      title: 'Salary Negotiation',
       description: 'Learn to negotiate compensation effectively',
       icon: 'ms:payments',
       accent: 'text-sky-500',
@@ -50,13 +50,13 @@ const QuickActionCards = ({ onStartInterview, onViewHistory }) => {
   return (
     <div className="mb-10">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-headline font-bold text-white tracking-tight">Deployment Modes</h2>
+        <h2 className="text-xl font-headline font-bold text-white tracking-tight">Interview Modes</h2>
         <Button
           variant="ghost"
           onClick={onViewHistory}
           className="text-xs font-headline font-bold uppercase tracking-widest text-on-surface-variant hover:text-white"
         >
-          View Log
+          History
         </Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

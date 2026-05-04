@@ -49,7 +49,7 @@ const GDFredback = () => {
         <div className="flex flex-col items-center justify-center py-20 gap-6">
           <div className="w-16 h-16 border-2 border-amber-500/20 border-t-amber-500 animate-spin" />
           <p className="font-mono text-[10px] text-amber-500 animate-pulse font-label font-medium text-on-surface-variant">
-            ANALYZING_COLLECTIVE_LOGS...
+            Analyzing session data...
           </p>
         </div>
       </DashboardLayout>
@@ -62,11 +62,11 @@ const GDFredback = () => {
         <div className="flex flex-col items-center justify-center py-20 gap-6 border-2 border-dashed border-outline-variant/30">
           <Icon name="ServerCrash" size={48} className="text-slate-700" />
           <div className="text-center space-y-2">
-            <h2 className="font-mono font-bold text-on-surface">FEEDBACK_STREAM_UNAVAILABLE</h2>
+            <h2 className="font-mono font-bold text-on-surface">Feedback unavailable</h2>
             <p className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Could not retrieve analytics for this session</p>
           </div>
           <Button onClick={handleReturnToDashboard} className="bg-surface-container-low text-slate-300 font-mono text-[10px] h-10 px-6 font-label font-medium text-on-surface-variant">
-            Return_to_Dashboard
+            Return to Dashboard
           </Button>
         </div>
       </DashboardLayout>
@@ -82,10 +82,10 @@ const GDFredback = () => {
         <div className="flex items-center justify-between border-b border-outline-variant/30 pb-6">
           <div>
             <h1 className="text-3xl font-headline font-bold flex items-center gap-3">
-              <span className="text-on-surface-variant">{'>'}</span> DISCOURSE_ANALYSIS
+              <span className="text-on-surface-variant">{'>'}</span> Discussion Analysis
             </h1>
             <p className="text-on-surface-variant mt-2 text-xs font-label font-medium text-on-surface-variant">
-              Multi-agent interaction debrief // Node_{sessionId?.slice(0, 8)}
+              Group discussion feedback // Session {sessionId?.slice(0, 8)}
             </p>
           </div>
           <Button
@@ -93,7 +93,7 @@ const GDFredback = () => {
             className="bg-surface-container-low border border-outline-variant/30 text-on-surface-variant font-mono text-[10px] hover:text-on-surface h-10 px-6 font-label font-medium text-on-surface-variant"
           >
             <Icon name="ArrowLeft" size={14} className="mr-2" />
-            BACK_TO_CENTER
+            Back to Dashboard
           </Button>
         </div>
 
@@ -103,7 +103,7 @@ const GDFredback = () => {
             <Icon name="MessageSquare" size={64} className="text-amber-500" />
           </div>
           <div className="relative z-10 flex flex-col items-center text-center space-y-4">
-            <span className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.3em]">DISCUSSION_TOPIC_VECTOR</span>
+            <span className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.3em]">Discussion Topic</span>
             <h2 className="text-xl sm:text-2xl font-bold text-on-surface tracking-tighter uppercase max-w-3xl leading-tight">
               {context?.topic || 'N/A'}
             </h2>
@@ -118,7 +118,7 @@ const GDFredback = () => {
             <div className="space-y-6">
               <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-4">
                 <Icon name="Zap" size={18} className="text-sky-500" />
-                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">KEY_CONTRIBUTIONS_LOG</h3>
+                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">Key Contributions</h3>
               </div>
               <div className="grid gap-4">
                 {(feedback.key_contributions || []).map((item, i) => (
@@ -135,14 +135,14 @@ const GDFredback = () => {
           <div className="space-y-12">
             <div className="space-y-6">
               <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-4">
-                <Icon name="ThumbsUp" size={18} className="text-emerald-500" />
-                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">TACTICAL_STRENGTHS</h3>
+                <Icon name="ThumbsUp" size={18} className="text-secondary" />
+                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">Strengths</h3>
               </div>
               <div className="space-y-3">
                 {(feedback.strengths || []).map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-emerald-500/5 border border-emerald-500/20 p-3">
-                    <div className="w-1 h-1 bg-emerald-500 mt-1.5 shrink-0" />
-                    <p className="text-[10px] text-emerald-100/80 uppercase leading-relaxed tracking-tighter">{item}</p>
+                  <div key={i} className="flex items-start gap-3 bg-secondary/5 border border-secondary/20 p-3">
+                    <div className="w-1 h-1 bg-secondary mt-1.5 shrink-0" />
+                    <p className="text-[10px] text-secondary-fixed/80 uppercase leading-relaxed tracking-tighter">{item}</p>
                   </div>
                 ))}
               </div>
@@ -151,7 +151,7 @@ const GDFredback = () => {
             <div className="space-y-6">
               <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-4">
                 <Icon name="TrendingUp" size={18} className="text-amber-500" />
-                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">OPTIMIZATION_TARGETS</h3>
+                <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">Areas for Improvement</h3>
               </div>
               <div className="space-y-3">
                 {(feedback.improvement_suggestions || []).map((item, i) => (
@@ -168,8 +168,8 @@ const GDFredback = () => {
         {/* Overall Summary */}
         <div className="space-y-6 pt-12 border-t border-outline-variant/30">
           <div className="flex items-center gap-3">
-            <div className="w-1.5 h-4 bg-emerald-500" />
-            <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">MISSION_SUMMARY_LOG</h3>
+            <div className="w-1.5 h-4 bg-secondary" />
+            <h3 className="font-bold text-on-surface text-xs font-label font-medium text-on-surface-variant">Overall Summary</h3>
           </div>
           <div className="bg-surface-container-low border border-outline-variant/30 p-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-5">

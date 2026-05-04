@@ -60,7 +60,7 @@ const StudentProfilePage = () => {
     if (!file) return;
 
     if (file.type !== 'application/pdf') {
-      alert('ERR_INVALID_FORMAT: ONLY_PDF_ALLOWED');
+      alert('Invalid format: Only PDF files are allowed');
       return;
     }
 
@@ -92,7 +92,7 @@ const StudentProfilePage = () => {
       console.log('Resume processed successfully');
     } catch (error) {
       console.error('Failed to upload resume:', error);
-      alert('ERR_UPLOAD_FAILED: RESUME_LINK_FAILURE');
+      alert('Upload failed: Could not link resume to profile');
     } finally {
       setIsUploadingResume(false);
     }
@@ -132,78 +132,78 @@ const StudentProfilePage = () => {
         <div className="flex items-center justify-between border-b border-outline-variant/30 pb-6">
           <div>
             <h1 className="text-3xl font-headline font-bold flex items-center gap-3">
-              <span className="text-on-surface-variant">{'>'}</span> PROFILE_DECRYPTED
+              <span className="text-on-surface-variant">{'>'}</span> YOUR PROFILE
             </h1>
-            <p className="text-on-surface-variant font-mono mt-2 text-xs font-label font-medium text-on-surface-variant">
-              Authorized Personnel Only // Biometric data secure
+            <p className="text-on-surface-variant font-headline mt-2 text-xs font-bold uppercase tracking-widest opacity-60">
+              Manage your personal information and credentials
             </p>
           </div>
           {!isEditing ? (
             <Button 
               onClick={() => setIsEditing(true)}
-              className="bg-emerald-500 text-slate-950 font-bold hover:bg-emerald-400"
+              className="bg-primary text-white font-black hover:bg-primary/80 px-8 h-12 rounded-xl shadow-lg uppercase tracking-widest text-xs"
             >
-              EDIT_PROTOCOL <Icon name="Edit" size={16} className="ml-2" />
+              EDIT PROFILE <Icon name="ms:edit" size={18} className="ml-2" />
             </Button>
           ) : (
             <div className="flex gap-4">
               <Button 
                 onClick={() => setIsEditing(false)}
-                className="bg-surface-container-low text-on-surface font-bold hover:bg-surface-container-low"
+                className="bg-white/5 text-white font-black hover:bg-white/10 px-8 h-12 rounded-xl border border-white/5 uppercase tracking-widest text-xs"
               >
-                ABORT
+                CANCEL
               </Button>
               <Button 
                 onClick={handleSave}
                 loading={isSaving}
-                className="bg-emerald-500 text-slate-950 font-bold hover:bg-emerald-400"
+                className="bg-primary text-white font-black hover:bg-primary/80 px-8 h-12 rounded-xl shadow-lg uppercase tracking-widest text-xs"
               >
-                COMMIT_CHANGES
+                SAVE CHANGES
               </Button>
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Avatar Section */}
-          <div className="md:col-span-1 space-y-6">
+          <div className="md:col-span-1 space-y-8">
             <div className="relative group">
-              <div className="w-full aspect-square border-2 border-outline-variant/30 bg-surface-container-low flex items-center justify-center relative overflow-hidden">
+              <div className="w-full aspect-square border-2 border-white/5 bg-white/[0.02] rounded-[2.5rem] flex items-center justify-center relative overflow-hidden shadow-2xl transition-all hover:border-primary/40">
                 {profileImageUrl ? (
                   <img src={profileImageUrl} alt="Avatar" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                 ) : (
-                  <Icon name="User" size={80} className="text-slate-700" />
+                  <Icon name="ms:person" size={80} className="text-on-surface-variant/20" />
                 )}
-                <div className="absolute inset-0 border-[1px] border-emerald-500/20 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               {isEditing && (
-                <div className="mt-4">
-                  <label className="block w-full text-center py-2 border border-emerald-500/30 text-emerald-500 font-mono text-[10px] cursor-pointer hover:bg-emerald-500/5 transition-colors font-label font-medium text-on-surface-variant">
-                    UPDATE_IMAGE
+                <div className="mt-6">
+                  <label className="block w-full text-center py-3 border border-primary/30 text-primary font-headline text-[10px] font-black cursor-pointer hover:bg-primary/5 transition-all rounded-xl uppercase tracking-widest">
+                    CHANGE IMAGE
                     <input type="file" className="hidden" />
                   </label>
                 </div>
               )}
             </div>
 
-            <div className="bg-surface-container-low/50 border border-outline-variant/30 p-6 space-y-4">
-              <h3 className="font-mono font-bold text-on-surface-variant border-b border-outline-variant/30 pb-2 text-xs font-label font-medium text-on-surface-variant">Status_Report</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between font-mono text-[10px]">
-                  <span className="text-on-surface-variant">CLEARANCE:</span>
-                  <span className="text-emerald-500">LEVEL_01_STUDENT</span>
+            <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-8 space-y-6 shadow-xl">
+              <h3 className="font-headline font-black text-on-surface-variant border-b border-white/5 pb-4 text-[10px] uppercase tracking-widest italic opacity-40">Account Status</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between font-headline text-[10px] font-black uppercase tracking-widest">
+                  <span className="text-on-surface-variant/40">ROLE:</span>
+                  <span className="text-primary">STUDENT</span>
                 </div>
-                <div className="flex justify-between font-mono text-[10px]">
-                  <span className="text-on-surface-variant">IDENTITY:</span>
-                  <span className="text-slate-300">VERIFIED</span>
+                <div className="flex justify-between font-headline text-[10px] font-black uppercase tracking-widest">
+                  <span className="text-on-surface-variant/40">STATUS:</span>
+                  <span className="text-secondary">VERIFIED</span>
                 </div>
-                <div className="flex justify-between font-mono text-[10px] gap-2">
-                  <span className="text-on-surface-variant shrink-0">ORGANIZATION:</span>
-                  <span className="text-sky-500 text-right">{user?.organizationName || 'GLOBAL'}</span>
+                <div className="flex justify-between font-headline text-[10px] font-black uppercase tracking-widest gap-4">
+                  <span className="text-on-surface-variant/40 shrink-0">ORGANIZATION:</span>
+                  <span className="text-white text-right truncate">{user?.organizationName || 'GLOBAL'}</span>
                 </div>
-                <div className="flex justify-between font-mono text-[10px]">
-                  <span className="text-on-surface-variant">ORG_CODE:</span>
-                  <span className="text-emerald-500">{user?.organizationCode || 'GLOBAL_ACCESS'}</span>
+                <div className="flex justify-between font-headline text-[10px] font-black uppercase tracking-widest">
+                  <span className="text-on-surface-variant/40">ORG_CODE:</span>
+                  <span className="text-secondary">{user?.organizationCode || 'GLOBAL_ACCESS'}</span>
                 </div>
               </div>
             </div>
@@ -211,71 +211,71 @@ const StudentProfilePage = () => {
 
           {/* Form Section */}
           <div className="md:col-span-2 space-y-8">
-            <div className="bg-surface-container-low/50 border border-outline-variant/30 p-8 space-y-6 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
+            <div className="bg-white/[0.02] border border-white/5 p-10 rounded-[2.5rem] space-y-8 relative overflow-hidden shadow-2xl">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 blur-[100px] rounded-full -mr-24 -mt-24 pointer-events-none" />
               
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Full_Name</label>
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Full Name</label>
                   <input 
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                    className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white focus:border-primary/40 focus:ring-0 outline-none transition-all disabled:opacity-40"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Career_Goal</label>
+                <div className="space-y-3">
+                  <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Career Goal</label>
                   <input 
                     name="careerGoal"
                     value={formData.careerGoal}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                    className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white focus:border-primary/40 focus:ring-0 outline-none transition-all disabled:opacity-40"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">PRN (Registration_No)</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">PRN (Registration No)</label>
                     <input 
                       name="prn"
                       value={formData.prn}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="e.g. 2021000123"
-                      className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                      className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white focus:border-primary/40 focus:ring-0 outline-none transition-all disabled:opacity-40"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Branch / Dept</label>
+                  <div className="space-y-3">
+                    <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Branch / Dept</label>
                     <input 
                       name="branch"
                       value={formData.branch}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="e.g. Computer Science"
-                      className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                      className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white focus:border-primary/40 focus:ring-0 outline-none transition-all disabled:opacity-40"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Semester</label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="space-y-3">
+                    <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Semester</label>
                     <input 
                       name="currentSemester"
                       value={formData.currentSemester}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="e.g. 6th"
-                      className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                      className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white focus:border-primary/40 focus:ring-0 outline-none transition-all disabled:opacity-40"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Current_CGPA</label>
+                  <div className="space-y-3">
+                    <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Current CGPA</label>
                     <input 
                       name="currentCgpa"
                       type="number"
@@ -284,11 +284,11 @@ const StudentProfilePage = () => {
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="e.g. 8.5"
-                      className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                      className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white focus:border-primary/40 focus:ring-0 outline-none transition-all disabled:opacity-40"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Passing_Year</label>
+                  <div className="space-y-3">
+                    <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Passing Year</label>
                     <input 
                       name="passingYear"
                       type="number"
@@ -296,28 +296,28 @@ const StudentProfilePage = () => {
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       placeholder="e.g. 2025"
-                      className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                      className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white focus:border-primary/40 focus:ring-0 outline-none transition-all disabled:opacity-40"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Email_Endpoint</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Email Address</label>
                     <input 
                       value={user?.email}
                       disabled
-                      className="w-full bg-surface-container-low/50 border border-outline-variant/30 p-3 font-mono text-sm opacity-50 cursor-not-allowed"
+                      className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white/40 cursor-not-allowed"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Comm_Link (Phone)</label>
+                  <div className="space-y-3">
+                    <label className="font-headline text-[10px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">Phone Number</label>
                     <input 
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                       disabled={!isEditing}
-                      className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-sm focus:border-emerald-500 outline-none transition-colors disabled:opacity-50"
+                      className="w-full bg-white/5 border border-white/5 rounded-2xl p-4 font-headline text-sm text-white focus:border-primary/40 focus:ring-0 outline-none transition-all disabled:opacity-40"
                     />
                   </div>
                 </div>
@@ -325,29 +325,29 @@ const StudentProfilePage = () => {
             </div>
 
             {/* Resume Section */}
-            <div className="bg-surface-container-low/50 border border-outline-variant/30 p-8 space-y-4">
-              <h3 className="font-mono font-bold text-on-surface flex items-center gap-2 text-xs font-label font-medium text-on-surface-variant">
-                <Icon name="FileText" size={16} className="text-sky-500" />
-                Resource_Attachment (Resume)
+            <div className="bg-white/[0.02] border border-white/5 p-10 rounded-[2.5rem] space-y-6 shadow-2xl">
+              <h3 className="font-headline font-black text-white flex items-center gap-3 text-sm uppercase tracking-widest">
+                <Icon name="ms:description" size={24} className="text-primary" />
+                Resume Attachment
               </h3>
               
               {resumeInfo ? (
-                <div className="flex items-center justify-between border border-outline-variant/30 bg-surface-container-low p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
-                      <Icon name="FileText" size={20} className="text-sky-500" />
+                <div className="flex items-center justify-between border border-white/5 bg-white/5 rounded-2xl p-6 transition-all hover:bg-white/[0.08]">
+                  <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 bg-primary/10 flex items-center justify-center rounded-xl border border-primary/20 shadow-inner">
+                      <Icon name="ms:picture_as_pdf" size={28} className="text-primary" />
                     </div>
                     <div>
-                      <p className="font-mono text-xs font-bold text-on-surface">{resumeInfo.name}</p>
-                      <p className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">Linked_to_profile</p>
+                      <p className="font-headline text-sm font-black text-white italic tracking-tight">{resumeInfo.name}</p>
+                      <p className="font-headline text-[10px] text-on-surface-variant/40 font-black uppercase tracking-widest mt-1">Linked to profile</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button className="h-8 px-3 text-[10px] font-mono bg-surface-container-low hover:bg-surface-container-low" onClick={() => window.open(resumeInfo.url, '_blank')}>VIEW</Button>
+                  <div className="flex gap-4">
+                    <Button className="h-10 px-6 text-[10px] font-headline font-black uppercase tracking-widest bg-white text-black hover:bg-primary hover:text-white rounded-xl transition-all shadow-lg" onClick={() => window.open(resumeInfo.url, '_blank')}>VIEW</Button>
                     {isEditing && (
                       <Button 
                         onClick={() => fileInputRef.current?.click()}
-                        className="h-8 px-3 text-[10px] font-mono bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20"
+                        className="h-10 px-6 text-[10px] font-headline font-black uppercase tracking-widest bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 rounded-xl transition-all"
                         loading={isUploadingResume}
                       >
                         REPLACE
@@ -356,15 +356,15 @@ const StudentProfilePage = () => {
                   </div>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-outline-variant/30 p-12 text-center space-y-4">
-                  <Icon name="UploadCloud" size={40} className="mx-auto text-slate-700" />
-                  <p className="font-mono text-[10px] text-on-surface-variant font-label font-medium text-on-surface-variant">No assets detected // Upload required</p>
+                <div className="border-2 border-dashed border-white/10 p-16 text-center space-y-6 rounded-[2.5rem] bg-white/[0.01]">
+                  <Icon name="ms:cloud_upload" size={60} className="mx-auto text-on-surface-variant/20" />
+                  <p className="font-headline text-[10px] text-on-surface-variant/40 font-black uppercase tracking-widest">No resume uploaded</p>
                   <Button 
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-primary/10 text-emerald-500 border border-emerald-500/20 hover:bg-primary/10 font-mono text-[10px] font-label font-medium text-on-surface-variant"
+                    className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 font-headline text-[10px] font-black px-8 h-12 rounded-xl uppercase tracking-widest transition-all"
                     loading={isUploadingResume}
                   >
-                    {isUploadingResume ? 'UPLOADING...' : 'INITIALIZE_UPLOAD'}
+                    {isUploadingResume ? 'UPLOADING...' : 'UPLOAD RESUME'}
                   </Button>
                 </div>
               )}

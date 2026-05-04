@@ -91,11 +91,11 @@ const InterviewFeedback = () => {
               Session Data Unavailable
             </h2>
             <p className="text-on-surface-variant font-extrabold text-[10px] uppercase tracking-[0.4em] opacity-40">
-              The requested mission log could not be retrieved from the void
+              The requested interview data could not be retrieved
             </p>
           </div>
           <Button onClick={handleReturnToDashboard} variant="default" className="h-12 px-8 uppercase tracking-widest text-[11px] font-extrabold">
-            Back to Command Center
+            Back to Dashboard
           </Button>
         </div>
       </DashboardLayout>
@@ -111,11 +111,11 @@ const InterviewFeedback = () => {
             <div className="flex items-center gap-4">
               <div className="w-2 h-8 bg-primary rounded-full" />
               <h1 className="text-4xl font-extrabold tracking-tighter uppercase leading-none text-gradient">
-                Mission Debrief
+                Interview Feedback
               </h1>
             </div>
             <p className="text-[10px] text-on-surface-variant uppercase tracking-[0.25em] ml-6 font-bold">
-              KINETIC INTELLIGENCE // Neural Path Analysis // Sequence {sessionId?.slice(0, 8)}
+              PERFORMANCE ANALYSIS // Sequence {sessionId?.slice(0, 8)}
             </p>
           </div>
           <Button
@@ -124,7 +124,7 @@ const InterviewFeedback = () => {
             className="h-12 px-8 uppercase tracking-widest text-[10px] font-extrabold gap-3 self-start md:self-center bg-surface-container-low border-outline-variant/20 hover:border-primary/50 transition-all"
           >
             <Icon name="ms:arrow_back" size={18} />
-            Command Center
+            Dashboard
           </Button>
         </div>
 
@@ -155,7 +155,7 @@ const InterviewFeedback = () => {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-full blur-[80px]" />
                 <h4 className="text-[11px] font-extrabold text-primary uppercase tracking-[0.4em] flex items-center gap-3">
                   <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  Deployment Suite
+                  Actions
                 </h4>
                 <div className="flex flex-col gap-4">
                   <Button
@@ -164,7 +164,7 @@ const InterviewFeedback = () => {
                     className="w-full h-14 uppercase tracking-widest text-[11px] font-extrabold gap-3"
                   >
                      <Icon name="ms:rocket_launch" size={18} />
-                    Initiate New Session
+                    Start New Interview
                   </Button>
                   <Button
                     onClick={() => window.print()}
@@ -172,7 +172,7 @@ const InterviewFeedback = () => {
                     className="w-full h-14 uppercase tracking-widest text-[11px] font-extrabold gap-3"
                   >
                      <Icon name="ms:description" size={18} />
-                    Download Intelligence Log
+                    Download Report
                   </Button>
                 </div>
               </div>
@@ -180,8 +180,8 @@ const InterviewFeedback = () => {
               {/* Technical Metadata widget */}
               <div className="bg-surface-container-highest/30 p-8 rounded-[2.5rem] border border-outline-variant/10">
                 <div className="space-y-4">
-                   <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">System Core Version</p>
-                   <p className="text-xs font-extrabold text-on-surface tracking-widest">INTERVYOU-AI-V2.5.0-ALPHA</p>
+                   <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Platform Version</p>
+                   <p className="text-xs font-extrabold text-on-surface tracking-widest">INTERVYOU-AI-V2.5.0</p>
                    <div className="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
                      <span className="text-[9px] font-extrabold text-primary uppercase tracking-[0.2em]">Validated by</span>
                      <div className="flex gap-2">

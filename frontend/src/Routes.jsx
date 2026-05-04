@@ -9,7 +9,7 @@ import StudentDrivesPage from './pages/student/StudentDrivesPage';
 import TpoDashboard from './pages/dashboard/TpoDashboard';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import InterviewSetupWizard from './pages/interview/setup';
-import MissionBrief from './pages/interview/setup/MissionBrief';
+import InterviewDetails from './pages/interview/setup/InterviewDetails';
 import InterviewRoom from './pages/interview/room';
 import GDRoom from './pages/gd/room';
 import NotFound from './pages/NotFound';
@@ -24,6 +24,7 @@ import TpoManagementPage from './pages/admin/tpo-management';
 import SystemConfigPage from './pages/admin/system-config';
 import StudentDirectoryPage from './pages/tpo/students';
 import DriveManagementPage from './pages/tpo/drives';
+import TpoReportsPage from './pages/tpo/reports';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -157,10 +158,10 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path="/interview/mission/:driveId"
+          path="/interview/details/:driveId"
           element={
             <ProtectedRoute allowedRoles={['ROLE_STUDENT']}>
-              <MissionBrief />
+              <InterviewDetails />
             </ProtectedRoute>
           }
         />
@@ -229,6 +230,15 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedRoles={['ROLE_TPO']}>
               <DriveManagementPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tpo/reports"
+          element={
+            <ProtectedRoute allowedRoles={['ROLE_TPO']}>
+              <TpoReportsPage />
             </ProtectedRoute>
           }
         />

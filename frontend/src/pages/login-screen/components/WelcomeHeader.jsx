@@ -10,7 +10,7 @@ const WelcomeHeader = () => {
         </h2>
       </div>
       <p className="text-on-surface-variant font-extrabold text-[10px] uppercase tracking-[0.4em] opacity-40 ml-5">
-        Establishing Secure Uplink...
+        Connecting...
       </p>
     </div>
   );

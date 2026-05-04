@@ -15,7 +15,7 @@ const Recommendations = ({ recommendations }) => {
           <Icon name="ms:target" size={20} />
         </div>
         <h3 className="text-[11px] font-extrabold text-on-surface uppercase tracking-[0.4em]">
-          Strategic Neural Roadmap
+          Personalized Recommendations
         </h3>
       </div>
 

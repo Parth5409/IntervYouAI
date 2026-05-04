@@ -5,7 +5,7 @@ html.dark {
 body {
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Poppins', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #080808;
@@ -19,57 +19,76 @@ body {
 
 /* Glass surfaces */
 .glass {
-  background: rgba(20, 20, 20, 0.4);
-  backdrop-filter: blur(16px);
+  background: rgba(10, 10, 20, 0.4);
+  backdrop-filter: blur(24px) saturate(180%);
 }
 .glass-card {
-  background: rgba(17, 17, 17, 0.4);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  background: rgba(15, 15, 25, 0.4);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 .glass-panel {
-  background: rgba(17, 17, 17, 0.6);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 15, 25, 0.6);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Ghost borders */
-.glass-border { border: 1px solid rgba(255, 255, 255, 0.05); }
+.glass-border { border: 1px solid rgba(255, 255, 255, 0.06); }
 .premium-border { border: 1px solid rgba(255, 255, 255, 0.04); }
 
 /* Ambient background effects */
 .glow-mesh {
-  background: radial-gradient(circle at 50% 50%, rgba(255, 145, 90, 0.05) 0%, transparent 70%);
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
+  animation: meshFlow 20s ease-in-out infinite alternate;
 }
+
+@keyframes meshFlow {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
 .subtle-grid {
-  background-size: 40px 40px;
+  background-size: 60px 60px;
   background-image:
-    linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
 }
-.bg-grid-subtle {
-  background-image: radial-gradient(#262626 0.5px, transparent 0.5px);
-  background-size: 24px 24px;
+
+.noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.05;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Ffilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* Text gradient (brand wordmark) */
 .text-gradient {
-  background: linear-gradient(135deg, #FF915A, #FF7A31);
+  background: linear-gradient(135deg, #6366f1, #06b6d4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 /* Circular score ring */
 .circular-progress {
-  background: conic-gradient(from 0deg, #ff915a 0%, #ff7a31 82%, #1c1c1c 82%);
+  background: conic-gradient(from 0deg, #6366f1 0%, #06b6d4 82%, #111111 82%);
 }
 
 /* Audio waveform bars */
 .waveform-bar {
-  width: 3px;
-  background-color: #FF915A;
+  width: 4px;
+  background: linear-gradient(to top, #6366f1, #06b6d4);
   border-radius: 999px;
-  transition: height 0.2s ease;
+  transition: height 0.1s ease;
 }
 
 /* Subtle hover for list rows */
@@ -77,3 +96,14 @@ body {
 
 /* Text wrapping */
 .text-balance { text-wrap: balance; }
+
+/* Remove arrows from number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}

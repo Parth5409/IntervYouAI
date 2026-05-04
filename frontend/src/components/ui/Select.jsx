@@ -3,6 +3,7 @@
 import * as React from "react"
 import { ChevronDown, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from "framer-motion"
 
 const Select = React.forwardRef(({ className, options = [], value, onChange, placeholder, label, error, ...props }, ref) => {
   const [isOpen, setIsOpen] = React.useState(false)

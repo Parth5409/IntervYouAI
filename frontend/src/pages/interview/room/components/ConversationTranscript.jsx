@@ -25,21 +25,25 @@ const ConversationTranscript = ({
   };
 
   return (
-    <div className={cn("flex flex-col h-full bg-background font-body", className)}>
+    <div className={cn("flex flex-col h-full bg-transparent font-body", className)}>
+      <div className="noise opacity-5" />
       {/* Transcript Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar scroll-smooth"
+        className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar scroll-smooth"
       >
         {transcript.map((message, index) => {
           if (!message) return null;
           const isUser = message.type === 'user';
           return (
-            <div
+            <motion.div
               key={message.id || index}
+              initial={{ opacity: 0, x: isUser ? 20 : -20, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
-                "flex flex-col gap-3 group animate-in fade-in slide-in-from-bottom-2 duration-500",
-                isUser ? 'items-end ml-12' : 'items-start mr-12'
+                "flex flex-col gap-2 group",
+                isUser ? 'items-end ml-8' : 'items-start mr-8'
               )}
             >
               <div className={cn(
@@ -47,80 +51,89 @@ const ConversationTranscript = ({
                 isUser ? "flex-row-reverse" : "flex-row"
               )}>
                 <span className={cn(
-                  "text-[9px] font-bold tracking-[0.2em] uppercase",
-                  isUser ? "text-primary" : "text-on-surface"
+                  "text-[8px] font-black tracking-[0.2em] uppercase",
+                  isUser ? "text-primary" : "text-white"
                 )}>
-                  {isUser ? 'Candidate Response' : 'AI Analysis Agent'}
+                  {isUser ? 'USER_INPUT' : 'AI_RESPONSE'}
                 </span>
-                <span className="text-[9px] text-on-surface-variant font-medium opacity-40">
+                <span className="text-[8px] text-white/10 font-black uppercase tracking-widest">
                   {formatTime(message.timestamp)}
                 </span>
               </div>
               
               <div className={cn(
-                "p-5 rounded-2xl relative transition-all duration-500 shadow-xl",
+                "p-4 rounded-2xl relative transition-all duration-700 shadow-xl overflow-hidden",
                 isUser 
-                  ? 'bg-primary/5 border border-primary/20 text-on-surface rounded-tr-none' 
-                  : 'bg-surface-container-high/40 border border-outline-variant/10 text-on-surface rounded-tl-none backdrop-blur-md'
+                  ? 'bg-primary/5 border border-primary/20 text-white rounded-tr-none' 
+                  : 'bg-white/[0.02] border border-white/5 text-white rounded-tl-none backdrop-blur-2xl'
               )}>
-                <p className="text-[13px] leading-relaxed tracking-tight font-medium">
+                <div className={cn(
+                  "absolute top-0 w-8 h-0.5",
+                  isUser ? "right-0 bg-primary" : "left-0 bg-secondary"
+                )} />
+                <p className="text-xs leading-relaxed tracking-tight font-medium">
                   {message.text}
                 </p>
               </div>
-            </div>
+            </motion.div>
           );
         })}
 
         {/* Loading Indicator */}
         {isLoading && (
-          <div className="flex flex-col gap-3 items-start animate-pulse">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col gap-2 items-start"
+          >
             <div className="flex items-center gap-3 px-1">
-              <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-primary">
-                AI Synthesis
+              <span className="text-[8px] font-black tracking-[0.2em] uppercase text-primary animate-pulse">
+                AI_SYNTH
               </span>
-              <span className="text-[9px] text-on-surface-variant font-medium opacity-40">
-                Live Feed
+              <span className="text-[8px] text-white/10 font-black uppercase tracking-widest">
+                LIVE_FEED
               </span>
             </div>
-            <div className="bg-surface-container-high/40 border border-outline-variant/10 p-5 rounded-2xl rounded-tl-none backdrop-blur-md min-w-[80px]">
-              <div className="flex gap-1.5 items-end h-3">
-                {[0, 1, 2, 3].map((i) => (
+            <div className="bg-white/[0.02] border border-white/5 p-4 rounded-2xl rounded-tl-none backdrop-blur-2xl min-w-[80px] shadow-xl relative overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 animate-pulse" />
+              <div className="flex gap-1 items-end h-3 relative z-10">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
                   <motion.div 
                     key={i} 
-                    animate={{ height: [4, 12, 4] }}
-                    transition={{ repeat: Infinity, duration: 0.8, delay: i * 0.1 }}
+                    animate={{ height: [3, 12, 3] }}
+                    transition={{ repeat: Infinity, duration: 0.6, delay: i * 0.1 }}
                     className="w-[3px] bg-primary/40 rounded-full" 
                   />
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
 
       {/* Analytics Footer */}
-      <div className="p-8 border-t border-outline-variant/10 bg-surface-container-low/30 backdrop-blur-lg">
-        <div className="grid grid-cols-2 gap-8">
+      <div className="p-6 border-t border-white/5 bg-white/[0.01] backdrop-blur-2xl">
+        <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Icon name="ms:description" size={14} className="text-on-surface-variant opacity-40" />
-              <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-[0.2em]">Context Weight</p>
+              <Icon name="ms:description" size={14} className="text-white/20" />
+              <p className="text-[8px] text-white/20 font-black uppercase tracking-[0.2em]">WEIGHT</p>
             </div>
-            <div className="flex items-baseline gap-1">
-              <p className="text-xl font-headline font-extrabold text-on-surface leading-none">
+            <div className="flex items-baseline gap-1.5">
+              <p className="text-2xl font-headline font-black text-white leading-none tracking-tighter">
                 {transcript.reduce((acc, msg) => acc + (msg?.text ? msg.text.split(' ').length : 0), 0)}
               </p>
-              <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest opacity-40">Tokens</span>
+              <span className="text-[8px] font-black text-primary uppercase tracking-[0.1em] italic">TKNS</span>
             </div>
           </div>
           <div className="space-y-2 text-right">
             <div className="flex items-center justify-end gap-2">
-              <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-[0.2em]">Feed Fidelity</p>
-              <Icon name="ms:graphic_eq" size={14} className="text-primary opacity-60" />
+              <p className="text-[8px] text-white/20 font-black uppercase tracking-[0.2em]">FIDELITY</p>
+              <Icon name="ms:graphic_eq" size={14} className="text-secondary opacity-60" />
             </div>
             <div className="flex items-center justify-end gap-3">
-              <span className="text-xs font-headline font-extrabold text-on-surface leading-none font-label font-medium text-on-surface-variant">Synchronized</span>
-              <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-sm" />
+              <span className="text-[10px] font-headline font-black text-white leading-none uppercase tracking-widest italic">SYNC</span>
+              <div className="w-2 h-2 bg-secondary rounded-full animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />
             </div>
           </div>
         </div>

@@ -12,58 +12,60 @@ const SessionHeader = ({ sessionData }) => {
   const sessionDate = sessionData?.created_at || new Date().toISOString();
 
   const getScoreColor = (score) => {
-    if (score >= 90) return 'text-primary';
-    if (score >= 80) return 'text-sky-500';
-    if (score >= 70) return 'text-amber-500';
-    return 'text-error';
+    if (score >= 90) return 'text-primary shadow-primary/20';
+    if (score >= 80) return 'text-secondary shadow-secondary/20';
+    if (score >= 70) return 'text-tertiary shadow-tertiary/20';
+    return 'text-error shadow-error/20';
   };
 
   const performanceMetrics = [
     { key: 'technical', label: 'Technical Accuracy', score: feedback?.technical_score, icon: 'ms:code' },
-    { key: 'communication', label: 'Communication Reach', score: feedback?.communication_score, icon: 'ms:record_voice_over' },
-    { key: 'confidence', label: 'Confidence Vector', score: feedback?.confidence_score, icon: 'ms:psychology' },
+    { key: 'communication', label: 'Communication Skills', score: feedback?.communication_score, icon: 'ms:record_voice_over' },
+    { key: 'confidence', label: 'Confidence Level', score: feedback?.confidence_score, icon: 'ms:psychology' },
   ].filter(metric => metric.score !== null && metric.score !== undefined);
 
   return (
-    <div className="bg-surface-container-high/40 backdrop-blur-3xl border border-outline-variant/10 p-12 rounded-[3.5rem] relative overflow-hidden group shadow-2xl">
-      <div className="absolute -top-48 -right-48 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none group-hover:bg-primary/10 transition-all duration-1000" />
+    <div className="bg-white/[0.01] backdrop-blur-3xl border border-white/5 p-16 rounded-[4rem] relative overflow-hidden group shadow-2xl">
+      <div className="noise opacity-5" />
+      <div className="absolute -top-48 -right-48 w-full max-w-lg h-96 bg-primary/5 rounded-full blur-[160px] pointer-events-none group-hover:bg-primary/10 transition-all duration-1000" />
+      <div className="absolute -bottom-48 -left-48 w-full max-w-lg h-96 bg-secondary/5 rounded-full blur-[160px] pointer-events-none group-hover:bg-secondary/10 transition-all duration-1000" />
       
-      <div className="flex flex-col lg:flex-row gap-16 relative z-10 items-center">
+      <div className="flex flex-col lg:flex-row gap-24 relative z-10 items-center">
         {/* Main Score Orbital */}
         <div className="relative shrink-0 flex flex-col items-center group/score">
-          <div className="w-48 h-48 relative flex items-center justify-center">
+          <div className="w-64 h-64 relative flex items-center justify-center">
             {/* Background Rings */}
-            <div className="absolute inset-0 border-4 border-outline-variant/10 rounded-full" />
-            <div className="absolute inset-4 border border-outline-variant/5 rounded-full" />
+            <div className="absolute inset-0 border-2 border-white/5 rounded-full" />
+            <div className="absolute inset-8 border border-white/5 rounded-full" />
             
             {/* Animated Orbitals */}
             <motion.div 
                animate={{ rotate: 360 }}
-               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-               className="absolute inset-[-8px] border-t-2 border-primary/20 rounded-full"
+               transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+               className="absolute inset-[-12px] border-t-2 border-primary/40 rounded-full"
             />
             <motion.div 
                animate={{ rotate: -360 }}
-               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-               className="absolute inset-[-16px] border-b-2 border-sky-500/10 rounded-full"
+               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+               className="absolute inset-[-24px] border-b-2 border-secondary/20 rounded-full"
             />
 
             {/* Main Score Value */}
-            <div className="bg-[#111111] w-36 h-36 rounded-full flex flex-col items-center justify-center shadow-md border border-outline-variant/10">
-              <span className={cn("text-5xl font-extrabold tracking-tighter leading-none mb-1", getScoreColor(overallScore))}>
+            <div className="bg-background/80 w-44 h-44 rounded-full flex flex-col items-center justify-center shadow-2xl border border-white/10 backdrop-blur-xl">
+              <span className={cn("text-7xl font-black tracking-tighter leading-none mb-1 italic", getScoreColor(overallScore).split(' ')[0])}>
                 {overallScore}
               </span>
-              <span className="text-[9px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Score Index</span>
+              <span className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em]">OVERALL SCORE</span>
             </div>
             
             {/* Glowing Dot on Progress */}
-            <div 
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-sm z-20"
-              style={{ transform: `rotate(${(overallScore / 100) * 360}deg) translateY(-88px)` }}
+            <motion.div 
+              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full shadow-[0_0_20px_rgba(99,102,241,0.8)] z-20"
+              style={{ rotate: `${(overallScore / 100) * 360}deg`, transformOrigin: '0 128px' }}
             />
           </div>
 
-          <div className="mt-8 flex gap-2">
+          <div className="mt-12 flex gap-3">
             {[...Array(5)].map((_, i) => (
               <motion.div 
                 key={i}
@@ -71,8 +73,8 @@ const SessionHeader = ({ sessionData }) => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.1 }}
                 className={cn(
-                  "w-10 h-1.5 rounded-full",
-                  i < Math.round(overallScore/20) ? "bg-primary shadow-sm" : "bg-outline-variant/20"
+                  "w-12 h-2 rounded-full",
+                  i < Math.round(overallScore/20) ? "bg-gradient-to-r from-primary to-secondary shadow-lg" : "bg-white/5"
                 )} 
               />
             ))}
@@ -80,47 +82,47 @@ const SessionHeader = ({ sessionData }) => {
         </div>
 
         {/* Identity & Context Panel */}
-        <div className="flex-1 space-y-10 text-center lg:text-left">
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
-              <span className="px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-extrabold tracking-[0.3em] uppercase">
-                {sessionType} PROTOCOL
+        <div className="flex-1 space-y-12 text-center lg:text-left">
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6">
+              <span className="px-6 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black tracking-[0.4em] uppercase animate-pulse">
+                {sessionType} INTERVIEW
               </span>
-              <div className="h-0.5 w-12 bg-outline-variant/20 hidden md:block" />
-              <div className="flex items-center gap-3 text-on-surface-variant opacity-40">
-                 <Icon name="ms:event" size={16} />
-                 <span className="text-[10px] font-extrabold tracking-widest uppercase">{new Date(sessionDate).toLocaleDateString()}</span>
+              <div className="h-[1px] w-16 bg-white/5 hidden md:block" />
+              <div className="flex items-center gap-4 text-on-surface-variant/40">
+                 <Icon name="ms:event" size={18} />
+                 <span className="text-[10px] font-black tracking-[0.3em] uppercase italic">{new Date(sessionDate).toLocaleDateString()}</span>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <h2 className="text-4xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
-                {companyName} SIMULATION
+            <div className="space-y-4">
+              <h2 className="text-6xl font-black text-white tracking-tighter uppercase leading-none">
+                {companyName} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary italic">SESSION</span>
               </h2>
-              <p className="text-xl font-body text-on-surface-variant/70 italic tracking-tight">
-                Evaluating path for <span className="text-on-surface font-extrabold not-italic uppercase tracking-normal">{jobRole}</span>
+              <p className="text-2xl font-body text-on-surface-variant/60 italic tracking-tight">
+                Performance analysis for <span className="text-white font-black not-italic uppercase tracking-normal">{jobRole}</span>
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="flex items-center gap-5 justify-center lg:justify-start group/meta transition-all hover:translate-x-1">
-              <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-on-surface-variant/40 group-hover/meta:text-primary transition-colors">
-                <Icon name="ms:shield_with_heart" size={24} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="flex items-center gap-6 justify-center lg:justify-start group/meta transition-all hover:translate-x-2">
+              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 group-hover/meta:text-primary group-hover/meta:bg-primary/5 transition-all duration-500 border border-white/5 shadow-inner">
+                <Icon name="ms:shield_with_heart" size={28} />
               </div>
-              <div className="space-y-1">
-                <p className="text-[9px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em] opacity-40">Security Clearance</p>
-                <p className="text-sm font-extrabold text-on-surface tracking-widest uppercase">LEVEL_ALPHA_4</p>
+              <div className="space-y-1.5">
+                <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em]">Status</p>
+                <p className="text-sm font-black text-white tracking-widest uppercase italic">COMPLETED</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-5 justify-center lg:justify-start group/meta transition-all hover:translate-x-1">
-              <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-on-surface-variant/40 group-hover/meta:text-sky-500 transition-colors">
-                <Icon name="ms:bolt" size={24} />
+            <div className="flex items-center gap-6 justify-center lg:justify-start group/meta transition-all hover:translate-x-2">
+              <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-white/20 group-hover/meta:text-secondary group-hover/meta:bg-secondary/5 transition-all duration-500 border border-white/5 shadow-inner">
+                <Icon name="ms:bolt" size={28} />
               </div>
-              <div className="space-y-1">
-                <p className="text-[9px] font-extrabold text-on-surface-variant uppercase tracking-[0.2em] opacity-40">Neural Processing</p>
-                <p className="text-sm font-extrabold text-on-surface tracking-widest uppercase">REAL_TIME_AUDIT</p>
+              <div className="space-y-1.5">
+                <p className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-[0.3em]">Analysis</p>
+                <p className="text-sm font-black text-white tracking-widest uppercase italic">VERIFIED</p>
               </div>
             </div>
           </div>
@@ -128,29 +130,31 @@ const SessionHeader = ({ sessionData }) => {
       </div>
 
       {/* Primary Metrics Strip */}
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-12 pt-12 border-t border-outline-variant/10">
+      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-16 pt-16 border-t border-white/5">
         {performanceMetrics.map((metric, idx) => (
           <motion.div 
             key={metric.key} 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 + (idx * 0.1) }}
-            className="space-y-4 group/metric"
+            className="space-y-6 group/metric"
           >
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <Icon name={metric.icon} size={18} className="text-on-surface-variant/40 group-hover/metric:text-primary transition-colors" />
-                <span className="text-[10px] font-extrabold text-on-surface-variant/60 uppercase tracking-[0.3em] group-hover/metric:text-on-surface-variant transition-colors">{metric.label}</span>
+            <div className="flex justify-between items-center px-2">
+              <div className="flex items-center gap-4">
+                <Icon name={metric.icon} size={20} className="text-white/20 group-hover/metric:text-primary transition-colors" />
+                <span className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.4em] group-hover/metric:text-on-surface-variant transition-colors">{metric.label}</span>
               </div>
-              <span className={cn("text-sm font-extrabold tracking-widest", getScoreColor(metric.score))}>{metric.score}%</span>
+              <span className={cn("text-lg font-black tracking-widest italic", getScoreColor(metric.score).split(' ')[0])}>{metric.score}%</span>
             </div>
-            <div className="h-2 w-full bg-outline-variant/10 rounded-full overflow-hidden">
+            <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden p-0.5 border border-white/5">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${metric.score}%` }}
-                transition={{ duration: 1.5, ease: "easeOut", delay: 0.8 }}
-                className={cn("h-full rounded-full shadow-md", getScoreColor(metric.score).replace('text', 'bg'))}
-              />
+                transition={{ duration: 2, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
+                className={cn("h-full rounded-full shadow-2xl relative", getScoreColor(metric.score).replace('text', 'bg').split(' ')[0])}
+              >
+                <div className="absolute inset-0 bg-white/20 animate-pulse" />
+              </motion.div>
             </div>
           </motion.div>
         ))}

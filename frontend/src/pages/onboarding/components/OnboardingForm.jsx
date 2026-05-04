@@ -198,7 +198,7 @@ const OnboardingForm = () => {
         </label>
         <textarea
           name="skills"
-          className="w-full rounded-none border border-outline-variant/30 bg-surface-container-low px-4 py-2 text-on-surface font-mono text-sm ring-offset-background placeholder:text-slate-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-50 transition-colors min-h-[80px]"
+          className="w-full rounded-none border border-outline-variant/30 bg-surface-container-low px-4 py-2 text-on-surface font-mono text-sm ring-offset-background placeholder:text-slate-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-secondary disabled:cursor-not-allowed disabled:opacity-50 transition-colors min-h-[80px]"
           placeholder="JAVA, PYTHON, REACT, SPRING_BOOT..."
           value={formData.skills}
           onChange={handleInputChange}
@@ -231,7 +231,7 @@ const OnboardingForm = () => {
             disabled={isLoading}
           />
           <div className="flex flex-col items-center justify-center space-y-2">
-            <Icon name="Upload" size={24} className="text-on-surface-variant group-hover:text-emerald-500 transition-colors" />
+            <Icon name="Upload" size={24} className="text-on-surface-variant group-hover:text-secondary transition-colors" />
             <span className="text-xs font-mono text-on-surface-variant group-hover:text-on-surface transition-colors">
               {resume ? resume.name : 'DRAG_DROP OR CLICK_TO_UPLOAD'}
             </span>
@@ -256,7 +256,7 @@ const OnboardingForm = () => {
         className="w-full h-12"
         disabled={isLoading}
       >
-        {isLoading ? 'INITIALIZING_PROFILE...' : 'COMPLETE_SETUP'}
+        {isLoading ? 'SETTING UP PROFILE...' : 'COMPLETE SETUP'}
       </Button>
     </form>
   );

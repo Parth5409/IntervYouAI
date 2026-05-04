@@ -29,8 +29,7 @@ const WelcomeSection = ({ user, onStartInterview }) => {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-             <span className="text-[10px] font-headline font-bold text-primary uppercase tracking-widest">Active_Preparation_Node</span>
-          </div>
+             <span className="text-[10px] font-headline font-bold text-primary uppercase tracking-widest">Active Preparation</span>          </div>
           <h1 className="text-4xl md:text-5xl font-headline font-bold text-white tracking-tight">
             {getGreeting()}, <span className="text-primary italic">{user?.full_name?.split(' ')[0] || 'User'}.</span>
           </h1>

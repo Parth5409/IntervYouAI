@@ -8,10 +8,10 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
   const [loadingTopics, setLoadingTopics] = useState(false);
 
   const durations = [
-    { value: "15", label: "15 Minutes (Blitz)" },
-    { value: "20", label: "20 Minutes (Standard)" },
-    { value: "30", label: "30 Minutes (Extended)" },
-    { value: "45", label: "45 Minutes (Marathon)" }
+    { value: "15", label: "15 Minutes" },
+    { value: "20", label: "20 Minutes" },
+    { value: "30", label: "30 Minutes" },
+    { value: "45", label: "45 Minutes" }
   ];
 
   useEffect(() => {
@@ -46,18 +46,18 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
       <div className="space-y-2">
         <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
           <div className="w-1.5 h-8 bg-amber-500 rounded-full shadow-sm" />
-          Collective Discourse
+          Group Discussion Setup
         </h3>
         <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
-          Simulating Multi-Agent Interaction Dynamics
+          Configure your group discussion session
         </p>
       </div>
 
       <div className="space-y-12">
         <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl space-y-8">
           <Select
-            label="Discourse Topic (Vector)"
-            placeholder={loadingTopics ? "Syncing Modules..." : "Select Subject"}
+            label="Discussion Topic"
+            placeholder={loadingTopics ? "Loading..." : "Select Subject"}
             options={topics}
             value={formData?.topic}
             onChange={handleFieldChange('topic')}
@@ -77,7 +77,7 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
                     <Icon name="ms:info" size={20} />
                   </div>
                   <div className="space-y-2">
-                    <p className="text-[10px] font-extrabold text-amber-500 uppercase tracking-[0.3em] opacity-60">Mission Parameters</p>
+                    <p className="text-[10px] font-extrabold text-amber-500 uppercase tracking-[0.3em] opacity-60">Discussion Details</p>
                     <p className="font-body text-sm text-on-surface-variant leading-relaxed opacity-80">{selectedTopic?.description}</p>
                   </div>
                 </div>
@@ -89,7 +89,7 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
         <div className="grid gap-12 md:grid-cols-2">
           <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
             <Select
-              label="Temporal Window"
+              label="Session Duration"
               placeholder="Select Duration"
               options={durations}
               value={formData?.duration}
@@ -110,19 +110,19 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
           <div className="space-y-4 max-w-md">
             <h4 className="text-[11px] font-extrabold text-amber-500 uppercase tracking-[0.5em] flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-              Evaluation Matrix
+              Skill Assessment
             </h4>
             <p className="font-body text-base text-on-surface-variant opacity-70 leading-relaxed">
-              Discourse metrics are captured across multi-agent synchronization and argumentative structure analysis.
+              Our AI evaluates your communication skills, team collaboration, and ability to construct logical arguments.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 flex-1">
             {[
-              { text: 'Multi-Agent Synchronization', icon: 'ms:sync' },
-              { text: 'Argumentative Structure Root', icon: 'ms:account_tree' },
-              { text: 'Cooperative Logic Tracking', icon: 'ms:hub' },
-              { text: 'Facilitative Influence Score', icon: 'ms:stars' }
+              { text: 'Communication Skills', icon: 'ms:sync' },
+              { text: 'Logical Reasoning', icon: 'ms:account_tree' },
+              { text: 'Team Collaboration', icon: 'ms:hub' },
+              { text: 'Leadership Impact', icon: 'ms:stars' }
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-5 group/item transition-all hover:translate-x-2">
                 <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-amber-500 border border-outline-variant/10 group-hover/item:bg-amber-500 group-hover/item:text-on-surface transition-all duration-500 shadow-md">

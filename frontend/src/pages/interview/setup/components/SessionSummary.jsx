@@ -12,21 +12,21 @@ const SessionSummary = ({ interviewType, formData }) => {
     switch (interviewType) {
       case 'technical':
         return {
-          title: 'Technical Simulation',
+          title: 'Technical Interview',
           icon: 'ms:code',
           color: 'text-primary',
           borderColor: 'border-primary/20',
           duration: '45-60 MIN',
-          desc: 'Full-stack technical competencies & logic audit.'
+          desc: 'Assess your technical skills and problem-solving.'
         };
       case 'hr':
         return {
-          title: 'Behavioral Simulation',
+          title: 'Behavioral Interview',
           icon: 'ms:groups',
           color: 'text-sky-500',
           borderColor: 'border-sky-500/20',
           duration: '30-45 MIN',
-          desc: 'Cultural alignment & soft-skill vector analysis.'
+          desc: 'Assess your behavioral skills and culture fit.'
         };
       case 'salary-negotiation':
         return {
@@ -35,7 +35,7 @@ const SessionSummary = ({ interviewType, formData }) => {
           color: 'text-primary',
           borderColor: 'border-primary/20',
           duration: '20-30 MIN',
-          desc: 'Tactical financial lever & leverage optimization.'
+          desc: 'Practice negotiating your compensation.'
         };
       default:
         return {
@@ -44,7 +44,7 @@ const SessionSummary = ({ interviewType, formData }) => {
           color: 'text-on-surface',
           borderColor: 'border-outline-variant/10',
           duration: '30-45 MIN',
-          desc: 'General assessment protocol.'
+          desc: 'General interview assessment.'
         };
     }
   };
@@ -53,14 +53,14 @@ const SessionSummary = ({ interviewType, formData }) => {
 
   const formatLabel = (key) => {
     const labelMap = {
-      jobRole: 'Target Specialization',
-      company: 'Corporate Alignment',
-      experienceLevel: 'Experience Tier',
-      industry: 'Sector Classification',
-      difficulty: 'Complexity Matrix',
-      max_questions: 'Instructional Density',
-      salaryRange: 'Valuation Window',
-      negotiationStyle: 'Tactical Style'
+      jobRole: 'Job Role',
+      company: 'Company',
+      experienceLevel: 'Experience Level',
+      industry: 'Industry',
+      difficulty: 'Difficulty',
+      max_questions: 'Number of Questions',
+      salaryRange: 'Salary Range',
+      negotiationStyle: 'Negotiation Style'
     };
     return labelMap?.[key] || key.toUpperCase();
   };
@@ -75,10 +75,10 @@ const SessionSummary = ({ interviewType, formData }) => {
       <div className="space-y-2">
         <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
           <div className="w-1.5 h-8 bg-primary rounded-full shadow-sm" />
-          Pre-Flight Check
+          Interview Summary
         </h3>
         <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
-          Verifying Simulation Parameters for Initialization
+          Review your interview settings
         </p>
       </div>
 
@@ -101,7 +101,7 @@ const SessionSummary = ({ interviewType, formData }) => {
                 </h4>
                 <p className="text-on-surface-variant text-sm font-body opacity-60 italic">{details.desc}</p>
                 <div className="flex items-center gap-4 mt-3">
-                  <span className="font-extrabold text-[9px] text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Est. Runtime:</span>
+                  <span className="font-extrabold text-[9px] text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Duration:</span>
                   <span className="font-extrabold text-[10px] text-primary tracking-[0.2em] bg-primary/10 px-3 py-1 rounded-full">{details.duration}</span>
                 </div>
               </div>
@@ -131,13 +131,13 @@ const SessionSummary = ({ interviewType, formData }) => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-full blur-[80px]" />
             <h4 className="text-[11px] font-extrabold text-sky-500 uppercase tracking-[0.4em] flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-              Environment Status
+              System Status
             </h4>
             <div className="space-y-6">
               {[
-                { icon: 'ms:mic', label: 'Audio Stream', status: 'VERIFIED', color: 'text-primary' },
-                { icon: 'ms:wifi', label: 'Neural Link', status: '84ms LATENCY', color: 'text-primary' },
-                { icon: 'ms:memory', label: 'AI Core Uplink', status: 'SYNCHRONIZED', color: 'text-primary' }
+                { icon: 'ms:mic', label: 'Microphone', status: 'VERIFIED', color: 'text-primary' },
+                { icon: 'ms:wifi', label: 'Connection', status: 'STABLE', color: 'text-primary' },
+                { icon: 'ms:memory', label: 'AI Engine', status: 'READY', color: 'text-primary' }
               ].map((req, i) => (
                 <div key={i} className="flex items-center justify-between border-b border-outline-variant/5 pb-4 last:border-0 last:pb-0 group/req">
                   <div className="flex items-center gap-4">
@@ -156,14 +156,14 @@ const SessionSummary = ({ interviewType, formData }) => {
              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px]" />
             <h4 className="text-[11px] font-extrabold text-primary uppercase tracking-[0.4em] flex items-center gap-3">
               <Icon name="ms:security" size={20} className="group-hover:rotate-12 transition-transform duration-700" />
-              Safety Protocols
+              Session Guidelines
             </h4>
             <ul className="space-y-6">
               {[
-                'Silent Perimeter Established',
-                'Vocal Clarity Auto-Verified',
-                'Background Node Termination',
-                'Stable Uplink Maintenance'
+                'Use a quiet environment',
+                'Speak clearly into mic',
+                'Minimize background noise',
+                'Maintain stable connection'
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-4 group/li">
                   <span className="text-primary font-extrabold text-xs mt-0.5 group-hover/li:translate-x-1 transition-transform">»</span>

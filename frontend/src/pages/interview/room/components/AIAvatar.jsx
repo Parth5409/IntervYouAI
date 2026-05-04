@@ -23,99 +23,127 @@ const AIAvatar = ({
   };
 
   return (
-    <div className="flex flex-col items-center space-y-10">
+    <div className="flex flex-col items-center space-y-6">
+      <div className="noise opacity-10" />
       {/* Avatar Container */}
       <div className="relative group">
-        {/* Warm Glow Effects */}
+        {/* Advanced Aurora Glow Effects */}
         <div className={cn(
-          "absolute -inset-6 rounded-full blur-3xl transition-all duration-1000 opacity-30",
-          isSpeaking ? "bg-primary/20 scale-110" : "bg-primary/5"
+          "absolute -inset-10 rounded-full blur-[80px] transition-all duration-1000 opacity-20",
+          isSpeaking ? "bg-primary/40 scale-125" : "bg-primary/10"
+        )} />
+        <div className={cn(
+          "absolute -inset-6 rounded-full blur-[40px] transition-all duration-1000 opacity-10",
+          isSpeaking ? "bg-secondary/40 scale-110" : "bg-secondary/5"
         )} />
         
-        <div
+        <motion.div
+          animate={isSpeaking ? { 
+            scale: [1, 1.02, 1],
+            y: [0, -2, 0]
+          } : {}}
+          transition={{ repeat: Infinity, duration: 2 }}
           className={cn(
-            "relative z-10 overflow-hidden rounded-full border-4 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-sm",
+            "relative z-10 overflow-hidden rounded-3xl border-2 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-2xl",
             sizeClasses[size],
             isSpeaking 
-              ? "border-primary scale-105" 
-              : "border-white"
+              ? "border-primary/50 shadow-primary/20 scale-105" 
+              : "border-white/10"
           )}
         >
           <Image
             src={avatarImages[avatarType]}
             alt="Interviewer AI"
             className={cn(
-              "w-full h-full object-cover transition-all duration-1000",
-              isSpeaking ? "scale-110 grayscale-0" : "grayscale opacity-70"
+              "w-full h-full object-cover transition-all duration-1000 contrast-110",
+              isSpeaking ? "scale-105 grayscale-0 brightness-110" : "grayscale opacity-60"
             )}
           />
           
-          {/* Subtle Warm Overlay */}
-          <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
-        </div>
+          {/* Holographic Scanline Effect */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-transparent h-16 w-full animate-[scan_3s_linear_infinite] opacity-30 pointer-events-none" />
+          
+          {/* Aurora Tint Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-secondary/10 pointer-events-none mix-blend-overlay" />
+        </motion.div>
 
-        {/* Orbitals */}
+        {/* Tactical Orbitals */}
         <AnimatePresence>
-          {isSpeaking && (
+          {isActive && (
             <>
               <motion.div 
                 initial={{ rotate: 0, opacity: 0 }}
                 animate={{ rotate: 360, opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="absolute -inset-8 rounded-full border border-primary/30 border-dashed pointer-events-none"
+                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                className="absolute -inset-8 rounded-[3.5rem] border border-primary/20 border-dashed pointer-events-none"
               />
               <motion.div 
                 initial={{ rotate: 180, opacity: 0 }}
-                animate={{ rotate: -180, opacity: 1 }}
+                animate={{ rotate: -180, opacity: 0.5 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                className="absolute -inset-12 rounded-full border border-primary/10 pointer-events-none"
+                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                className="absolute -inset-14 rounded-[4.5rem] border border-white/5 pointer-events-none"
               />
+              {/* Dynamic Visuals */}
+              {[0, 90, 180, 270].map((angle, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ 
+                    rotate: 360,
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{ 
+                    rotate: { duration: 15, repeat: Infinity, ease: "linear" },
+                    scale: { duration: 2, repeat: Infinity, delay: i * 0.5 }
+                  }}
+                  style={{ rotate: angle }}
+                  className="absolute -inset-8 flex items-start justify-center"
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
+                </motion.div>
+              ))}
             </>
           )}
         </AnimatePresence>
       </div>
 
       {/* Identity Segment */}
-      <div className="text-center space-y-4 z-10">
-        <div className="flex items-center justify-center gap-4">
-          <span className="w-8 h-[1px] bg-outline/40"></span>
-          <h3 className="font-headline italic text-lg text-on-surface">
-            Interviewer AI
-          </h3>
-          <span className="w-8 h-[1px] bg-outline/40"></span>
-        </div>
-        
-        <div className="flex flex-col items-center gap-6">
-          <div className="flex items-center gap-3 bg-surface-container/80 px-6 py-2 rounded-full border border-outline/20 backdrop-blur-md shadow-sm">
+      <div className="text-center space-y-4 z-10 w-full max-w-sm">
+        <div className="flex flex-col items-center gap-4">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-3 px-6 py-2 rounded-full bg-white/[0.03] border border-white/5 backdrop-blur-2xl shadow-xl relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className={cn(
-              "w-2 h-2 rounded-full",
-              isSpeaking ? "bg-primary animate-pulse" : isActive ? "bg-emerald-500" : "bg-outline"
+              "w-1.5 h-1.5 rounded-full shadow-lg",
+              isSpeaking ? "bg-primary animate-pulse shadow-primary/50" : isActive ? "bg-secondary shadow-secondary/50" : "bg-white/20"
             )} />
-            <p className="font-headline text-xs font-semibold text-on-surface leading-none">
-              {isSpeaking ? 'AI is Speaking' : isActive ? 'Listening...' : 'Ready'}
+            <p className="font-headline text-[9px] font-black text-white uppercase tracking-[0.3em] leading-none relative z-10">
+              {isSpeaking ? 'AI_VOCAL_SYNTH' : isActive ? 'LISTENING' : 'IDLE'}
             </p>
-          </div>
+          </motion.div>
 
-          {/* Waveform Visualization - Warm Terracotta */}
-          <div className="flex items-end justify-center gap-1.5 h-12 min-w-[240px]">
+          {/* High-Fidelity Waveform */}
+          <div className="flex items-end justify-center gap-1 h-10 w-full">
             {[...Array(32)].map((_, i) => (
               <motion.div
                 key={i}
-                initial={{ height: 4 }}
+                initial={{ height: 3 }}
                 animate={{ 
-                  height: isSpeaking ? [4, 8 + Math.random() * 36, 4] : 4,
-                  opacity: isSpeaking ? 0.8 : 0.2
+                  height: isSpeaking ? [3, 6 + Math.random() * 32, 3] : 3,
+                  opacity: isSpeaking ? 1 : 0.1
                 }}
                 transition={{
                   repeat: Infinity,
-                  duration: 0.7,
-                  delay: i * 0.02,
+                  duration: 0.5,
+                  delay: i * 0.01,
                   ease: "easeInOut"
                 }}
                 className={cn(
-                  "w-[2px] rounded-full bg-primary"
+                  "w-[2px] rounded-full bg-gradient-to-t from-primary to-secondary"
                 )}
               />
             ))}

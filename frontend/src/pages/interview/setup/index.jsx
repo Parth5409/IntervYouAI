@@ -47,52 +47,52 @@ const InterviewSetupWizard = () => {
     }
   }, [location.state]);
 
-  const stepLabels = ['Selection', 'Parameters', 'Deployment'];
+  const stepLabels = ['Selection', 'Setup', 'Start'];
   const totalSteps = 3;
 
   const interviewTypes = [
     {
       type: 'technical',
-      title: 'Technical Protocol',
+      title: 'Technical Interview',
       description: 'Practice coding challenges, system design, and technical problem-solving with AI-powered scenarios.',
       icon: 'ms:code',
       features: [
-        'Data Structure Analysis',
-        'Architecture Review',
-        'Logic Verification'
+        'Coding Challenges',
+        'System Design',
+        'Logic Review'
       ]
     },
     {
       type: 'hr',
-      title: 'Cultural Alignment',
+      title: 'HR Interview',
       description: 'Master behavioral questions, company culture discussions, and professional communication skills.',
       icon: 'ms:groups',
       features: [
-        'Behavioral Profiling',
-        'Values Assessment',
-        'Vision Discussion'
+        'Behavioral Questions',
+        'Company Culture',
+        'Soft Skills'
       ]
     },
     {
       type: 'group-discussion',
-      title: 'Collective Logic',
+      title: 'Group Discussion',
       description: 'Enhance communication, leadership, and collaborative problem-solving in simulated group settings.',
       icon: 'ms:forum',
       features: [
-        'Priority Conflict Resolution',
-        'Collaborative Reasoning',
-        'Dynamic Interaction'
+        'Debate & Reasoning',
+        'Team Collaboration',
+        'Communication Skills'
       ]
     },
     {
       type: 'salary-negotiation',
-      title: 'Value Negotiation',
+      title: 'Salary Negotiation',
       description: 'Learn effective negotiation strategies for compensation, benefits, and contract terms.',
       icon: 'ms:payments',
       features: [
-        'Parity Assessment',
-        'Benefits Structuring',
-        'Closing Protocols'
+        'Market Rate Analysis',
+        'Benefits Discussion',
+        'Closing the Deal'
       ]
     }
   ];
@@ -126,31 +126,31 @@ const InterviewSetupWizard = () => {
     switch (step) {
       case 1:
         if (!selectedType) {
-          newErrors.type = 'Protocol selection required';
+          newErrors.type = 'Please select an interview type';
         }
         break;
 
       case 2:
         if (selectedType === 'technical') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
-          if (!formData?.company) newErrors.company = 'Company designation is required';
-          if (!formData?.difficulty) newErrors.difficulty = 'Difficulty calibration is required';
-          if (!formData?.max_questions) newErrors.max_questions = 'Question count is required';
+          if (!formData?.company) newErrors.company = 'Company is required';
+          if (!formData?.difficulty) newErrors.difficulty = 'Difficulty is required';
+          if (!formData?.max_questions) newErrors.max_questions = 'Number of questions is required';
         } else if (selectedType === 'hr') {
-          if (!formData?.jobRole) newErrors.jobRole = 'Target role is required';
-          if (!formData?.company) newErrors.company = 'Designation is required';
-          if (!formData?.experienceLevel) newErrors.experienceLevel = 'Seniority level is required';
-          if (!formData?.industry) newErrors.industry = 'Sector selection is required';
+          if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
+          if (!formData?.company) newErrors.company = 'Company is required';
+          if (!formData?.experienceLevel) newErrors.experienceLevel = 'Experience level is required';
+          if (!formData?.industry) newErrors.industry = 'Industry selection is required';
         } else if (selectedType === 'group-discussion') {
-          if (!formData?.topic) newErrors.topic = 'Discussion subject is required';
-          if (!formData?.duration) newErrors.duration = 'Timeline constraints required';
+          if (!formData?.topic) newErrors.topic = 'Discussion topic is required';
+          if (!formData?.duration) newErrors.duration = 'Duration is required';
         } else if (selectedType === 'salary-negotiation') {
-          if (!formData?.jobRole) newErrors.jobRole = 'Role designation is required';
-          if (!formData?.company) newErrors.company = 'Entity designation is required';
-          if (!formData?.experienceLevel) newErrors.experienceLevel = 'Experience depth is required';
-          if (!formData?.industry) newErrors.industry = 'Industry segment is required';
-          if (!formData?.salaryRange) newErrors.salaryRange = 'Target bracket is required';
-          if (!formData?.negotiationStyle) newErrors.negotiationStyle = 'Negotiation strategy required';
+          if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
+          if (!formData?.company) newErrors.company = 'Company is required';
+          if (!formData?.experienceLevel) newErrors.experienceLevel = 'Experience level is required';
+          if (!formData?.industry) newErrors.industry = 'Industry is required';
+          if (!formData?.salaryRange) newErrors.salaryRange = 'Target salary is required';
+          if (!formData?.negotiationStyle) newErrors.negotiationStyle = 'Negotiation style is required';
         }
         break;
 
@@ -239,7 +239,7 @@ const InterviewSetupWizard = () => {
       }
     } catch (error) {
       console.error("Failed to start interview session:", error);
-      setErrors({ api: error.response?.data?.detail || "SYNTAX_ERROR: AI Core rejected the parameters." });
+      setErrors({ api: error.response?.data?.detail || "Failed to start interview. Please try again." });
     } finally {
       setIsLoading(false);
     }
@@ -253,14 +253,14 @@ const InterviewSetupWizard = () => {
             <div className="text-center space-y-4">
               <div className="flex items-center justify-center gap-4 mb-2">
                 <span className="w-12 h-[2px] bg-primary rounded-full"></span>
-                <span className="text-[11px] font-extrabold tracking-[0.4em] text-primary uppercase">Protocol Selection</span>
+                <span className="text-[11px] font-extrabold tracking-[0.4em] text-primary uppercase">Select Mode</span>
                 <span className="w-12 h-[2px] bg-primary rounded-full"></span>
               </div>
               <h2 className="text-5xl font-headline font-extrabold text-on-surface italic">
-                Initialize System
+                Get Started
               </h2>
               <p className="text-on-surface-variant font-body text-base max-w-2xl mx-auto opacity-60 leading-relaxed">
-                Choose the behavioral or technical paradigm for this practice session. Each protocol features specialized AI personas.
+                Choose the interview mode you want to practice. Each mode features specialized AI interviewers.
               </p>
             </div>
             <div className="grid gap-8 md:grid-cols-2">
@@ -332,13 +332,13 @@ const InterviewSetupWizard = () => {
           <div className="mb-20 max-w-4xl mx-auto">
             <div className="flex justify-between items-end mb-6 px-1">
               <div className="space-y-1">
-                <span className="text-[10px] font-extrabold text-primary uppercase tracking-[0.4em]">Current Status</span>
+                <span className="text-[10px] font-extrabold text-primary uppercase tracking-[0.4em]">Step Progress</span>
                 <h3 className="font-headline text-lg font-extrabold text-on-surface">
-                  Phase {currentStep} <span className="text-on-surface-variant opacity-40 ml-2">//</span> <span className="italic text-primary ml-2">{stepLabels[currentStep - 1]}</span>
+                  Step {currentStep} <span className="text-on-surface-variant opacity-40 ml-2">//</span> <span className="italic text-primary ml-2">{stepLabels[currentStep - 1]}</span>
                 </h3>
               </div>
               <span className="font-headline font-extrabold text-on-surface-variant tabular-nums opacity-60 text-xs font-label font-medium text-on-surface-variant">
-                L_VECTOR_{currentStep.toString().padStart(2, '0')}.{totalSteps}
+                {currentStep} / {totalSteps}
               </span>
             </div>
             <div className="h-3 w-full bg-surface-container-high/40 rounded-full p-1 border border-outline-variant/5">
@@ -373,7 +373,7 @@ const InterviewSetupWizard = () => {
                 >
                   <span className="flex items-center gap-4 font-headline text-[10px] font-extrabold font-label font-medium text-on-surface-variant">
                     <Icon name="ms:arrow_back" size={20} className="group-hover:-translate-x-1 transition-transform" />
-                    Decrement Phase
+                    Back
                   </span>
                 </Button>
               )}
@@ -385,11 +385,11 @@ const InterviewSetupWizard = () => {
                   onClick={handleNext}
                   disabled={currentStep === 1 && !selectedType}
                   variant="primary"
-                  className="h-16 px-10 rounded-2xl group shadow-[0_15px_30px_rgba(255,145,90,0.2)] transition-all duration-500"
+                  className="h-20 px-12 rounded-2xl group shadow-[0_15px_30px_rgba(255,145,90,0.2)] transition-all duration-500 bg-primary text-white"
                 >
-                  <span className="flex items-center gap-4 font-headline text-[10px] font-extrabold font-label font-medium text-on-surface-variant">
-                    Next Operation
-                    <Icon name="ms:arrow_forward" size={20} className="group-hover:translate-x-1 transition-transform" />
+                  <span className="flex items-center gap-4 font-headline text-sm font-extrabold uppercase tracking-widest">
+                    Next Step
+                    <Icon name="ms:arrow_forward" size={24} className="group-hover:translate-x-1 transition-transform" />
                   </span>
                 </Button>
               ) : (
@@ -400,7 +400,7 @@ const InterviewSetupWizard = () => {
                   className="h-20 px-12 rounded-[2rem] group shadow-[0_20px_40px_rgba(255,145,90,0.3)] transition-all duration-500"
                 >
                   <span className="flex items-center gap-4 font-headline text-[11px] font-extrabold">
-                    {isLoading ? 'Calibrating...' : 'Initialize Mission'}
+                    {isLoading ? 'Loading...' : 'Start Interview'}
                     <Icon name="ms:rocket_launch" size={24} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
                   </span>
                 </Button>

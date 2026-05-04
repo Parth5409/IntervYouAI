@@ -7,8 +7,8 @@ import LoginPrompt from './components/LoginPrompt';
 const RegistrationScreen = () => {
   return (
     <AuthLayout 
-      title="Manifest Identity" 
-      subtitle="Initialize your presence in the workspace"
+      title="Create Account" 
+      subtitle="Join IntervYou.AI and start your journey"
     >
       <RegistrationForm />
     </AuthLayout>

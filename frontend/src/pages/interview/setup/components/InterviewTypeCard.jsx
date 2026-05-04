@@ -47,7 +47,7 @@ const InterviewTypeCard = ({
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-6 right-8 z-20"
           >
-            <div className="bg-primary text-on-primary px-3 py-1 rounded-full font-headline text-[9px] font-extrabold shadow-lg font-label font-medium text-on-surface-variant">
+            <div className="bg-primary text-white px-4 py-1.5 rounded-full font-headline text-xs font-black shadow-lg uppercase tracking-widest">
               Selected
             </div>
           </motion.div>

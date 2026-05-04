@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAudioRecorder } from '../../../hooks/useAudioRecorder';
 import { useCamera } from '../../../hooks/useCamera';
 import io from 'socket.io-client';
@@ -198,9 +199,9 @@ const GDRoom = () => {
       <div className="min-h-screen bg-surface-container-low flex flex-col items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
         <div className="relative z-10 flex flex-col items-center gap-6">
-          <div className="w-16 h-16 border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
-          <p className="font-mono text-[10px] text-emerald-500 animate-pulse font-label font-medium text-on-surface-variant">
-            INITIALIZING_MULTI_AGENT_ENVIRONMENT...
+          <div className="w-16 h-16 border-2 border-secondary/20 border-t-secondary animate-spin" />
+          <p className="font-mono text-[10px] text-secondary animate-pulse font-label font-medium text-on-surface-variant">
+            Setting up discussion room...
           </p>
         </div>
       </div>
@@ -208,44 +209,60 @@ const GDRoom = () => {
   }
 
   return (
-    <div className="h-screen bg-surface-container-low text-on-surface flex flex-col relative overflow-hidden">
+    <div className="h-screen bg-surface-container-low text-on-surface flex flex-col relative overflow-hidden font-headline">
       {/* Blueprint Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b,1px,transparent_1px),linear-gradient(to_bottom,#1e293b,1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000,70%,transparent_100%)] opacity-20 pointer-events-none" />
 
-      <header className="h-16 border-b border-outline-variant/30 bg-surface-container-low/50 backdrop-blur-md flex items-center justify-between px-8 relative z-10 shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 bg-amber-500 flex items-center justify-center shrink-0">
-            <Icon name="Users" size={20} className="text-slate-950" />
+      <header className="h-16 border-b border-white/10 bg-white/[0.02] backdrop-blur-xl flex items-center justify-between px-10 relative z-30 shrink-0">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-4"
+        >
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+            <Icon name="ms:groups" size={24} className="text-white" />
           </div>
-          <span className="font-mono font-bold text-lg truncate max-w-[200px] sm:max-w-none">
-            INTERVYOU.AI {'//'} COLLECTIVE_NODE
-          </span>
-        </div>
-        <div className="flex items-center gap-6">
+          <div className="flex flex-col">
+            <span className="font-headline font-black text-base text-white tracking-tight leading-none">
+              INTERVYOU.AI <span className="text-primary">//</span> DISCUSSION ROOM
+            </span>
+            <span className="font-headline text-[9px] text-on-surface-variant font-black uppercase tracking-[0.2em] mt-1 opacity-60">Group Discussion Active</span>
+          </div>
+        </motion.div>
+        
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-8"
+        >
           <div className="hidden md:flex flex-col items-end">
-            <span className="text-[8px] font-mono text-on-surface-variant font-label font-medium text-on-surface-variant">Temporal_Marker</span>
-            <span className="text-xs font-mono font-bold text-amber-500 font-label font-medium text-on-surface-variant">
+            <span className="text-[9px] font-headline text-on-surface-variant/40 font-black uppercase tracking-widest italic">Time Elapsed</span>
+            <span className="text-sm font-headline font-black text-primary tabular-nums">
               {new Date(sessionTime * 1000).toISOString().substr(14, 5)}
             </span>
           </div>
-          <div className="w-px h-8 bg-surface-container-low" />
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-[10px] font-mono text-emerald-500/80 hidden sm:inline font-label font-medium text-on-surface-variant">Stream_Live</span>
+          <div className="w-px h-8 bg-white/10" />
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-secondary animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
+            <span className="text-[10px] font-headline font-black text-white uppercase tracking-widest">Live</span>
           </div>
-        </div>
+        </motion.div>
       </header>
 
       <div className="flex-1 flex flex-col lg:flex-row relative z-10 overflow-hidden">
         {/* Left: Collective Zone */}
-        <div className="flex-1 relative flex flex-col items-center justify-between p-4 sm:p-6 overflow-hidden">
-          <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center gap-4 sm:gap-8 overflow-hidden">
-            <div className="shrink-0">
+        <div className="flex-1 relative flex flex-col items-center justify-between p-8 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center gap-12 overflow-hidden"
+          >
+            <div className="shrink-0 flex justify-center">
               <DiscussionTopic topic={sessionDetails?.context?.topic || 'Loading...'} />
             </div>
             
-            <div className="w-full relative py-2 overflow-hidden flex items-center justify-center min-h-0">
-              <div className="w-full max-h-full overflow-y-auto custom-scrollbar-hide">
+            <div className="w-full relative py-4 overflow-hidden flex items-center justify-center min-h-0">
+              <div className="w-full max-h-full overflow-y-auto custom-scrollbar-hide pb-20">
                 <ParticipantsGrid 
                   participants={participants} 
                   activeSpeakerId={activeSpeakerId} 
@@ -258,19 +275,27 @@ const GDRoom = () => {
               {/* Interruption Overlay */}
               {isInterruptionWindow && interruptionTimer > 0 && (
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-                  <div className="bg-surface-container-low/95 border border-amber-500/50 p-6 backdrop-blur-2xl flex flex-col items-center gap-4 shadow-md min-w-[220px]">
-                    <span className="font-mono text-[10px] text-amber-500 font-label font-medium text-on-surface-variant">Interruption_Window_Open</span>
-                    <div className="text-6xl font-headline font-bold text-on-surface animate-pulse italic">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="bg-white/5 border border-primary/20 p-8 rounded-[2.5rem] backdrop-blur-3xl flex flex-col items-center gap-6 shadow-2xl min-w-[280px]"
+                  >
+                    <span className="font-headline text-[10px] text-primary font-black uppercase tracking-[0.3em]">Your Turn to Speak</span>
+                    <div className="text-7xl font-headline font-black text-white animate-pulse italic tracking-tighter">
                       0{interruptionTimer}
                     </div>
-                    <p className="font-mono text-[8px] text-on-surface-variant font-label font-medium text-on-surface-variant">Activate Mic to Interject</p>
-                  </div>
+                    <p className="font-headline text-[9px] text-on-surface-variant font-black uppercase tracking-widest">Activate Mic to Speak</p>
+                  </motion.div>
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="shrink-0 py-4 w-full flex justify-center bg-gradient-to-t from-slate-950 via-slate-950 to-transparent">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="shrink-0 py-8 w-full flex justify-center relative z-20"
+          >
             <VoiceControls
               isRecording={isRecording}
               isMuted={isMuted}
@@ -282,17 +307,17 @@ const GDRoom = () => {
               isTranscribing={isTranscribing}
               conversationHistory={messages}
             />
-          </div>
+          </motion.div>
         </div>
 
         {/* Right: Transcription Zone */}
-        <div className="hidden lg:flex lg:w-[380px] xl:w-[450px] flex-col border-l border-outline-variant/30 bg-surface-container-low/50 backdrop-blur-xl shrink-0 h-full">
-          <div className="px-6 py-3 bg-surface-container-low/50 border-b border-outline-variant/30 flex items-center justify-between">
+        <div className="hidden lg:flex lg:w-[380px] xl:w-[420px] flex-col border-l border-white/5 bg-white/[0.02] backdrop-blur-3xl shrink-0 h-full shadow-2xl">
+          <div className="px-6 py-2 bg-white/[0.03] border-b border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-1.5 h-1.5 bg-emerald-500" />
-              <span className="font-mono text-[9px] text-on-surface-variant font-label font-medium text-on-surface-variant">MULTI_AGENT_LOG</span>
+              <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.5)]" />
+              <span className="font-headline text-[9px] text-white font-black uppercase tracking-widest">Discussion Transcript</span>
             </div>
-            <span className="font-mono text-[9px] text-on-surface-variant font-label font-medium text-on-surface-variant">Buffer_Active</span>
+            <span className="font-headline text-[8px] text-on-surface-variant/40 font-black uppercase tracking-widest italic">Live Feed</span>
           </div>
           <div className="flex-1 relative overflow-hidden">
             <GDTranscript 

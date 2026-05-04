@@ -33,14 +33,14 @@ const CameraPreview = ({
   return (
     <div className={cn(
       "relative bg-slate-900 border border-outline-variant/30 overflow-hidden flex items-center justify-center transition-all duration-500 group min-h-[120px]",
-      isActive && !error ? "border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "opacity-80",
+      isActive && !error ? "border-secondary/50 shadow-[0_0_20px_rgba(6,182,212,0.1)]" : "opacity-80",
       className
     )}>
       {/* Corner Brackets - Blueprint Aesthetic */}
-      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-emerald-500/60 z-30" />
-      <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-emerald-500/60 z-30" />
-      <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-emerald-500/60 z-30" />
-      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-emerald-500/60 z-30" />
+      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-secondary/60 z-30" />
+      <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-secondary/60 z-30" />
+      <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-secondary/60 z-30" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-secondary/60 z-30" />
 
       {isActive && !error ? (
         <div className="w-full h-full relative">
@@ -54,14 +54,14 @@ const CameraPreview = ({
           />
           
           {/* Scanning Line Overlay */}
-          <div className="absolute inset-0 bg-emerald-500/5 overflow-hidden pointer-events-none z-10">
-            <div className="w-full h-1/2 bg-gradient-to-b from-transparent via-emerald-500/10 to-transparent animate-scan" />
+          <div className="absolute inset-0 bg-secondary/5 overflow-hidden pointer-events-none z-10">
+            <div className="w-full h-1/2 bg-gradient-to-b from-transparent via-secondary/10 to-transparent animate-scan" />
           </div>
 
           {showStatus && (
             <div className="absolute top-3 left-3 flex items-center gap-2 z-20">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-              <span className="text-[8px] font-mono text-emerald-500 font-bold tracking-tighter uppercase bg-slate-950/80 px-1.5 py-0.5 border border-emerald-500/20 rounded-sm">
+              <div className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
+              <span className="text-[8px] font-mono text-secondary font-bold tracking-tighter uppercase bg-slate-950/80 px-1.5 py-0.5 border border-secondary/20 rounded-sm">
                 {overlayLabel}
               </span>
             </div>

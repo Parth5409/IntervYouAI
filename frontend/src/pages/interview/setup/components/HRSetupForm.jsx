@@ -9,9 +9,9 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
   const [loadingCompanies, setLoadingCompanies] = useState(false);
 
   const experienceLevels = [
-    { value: "entry", label: "Early Career (0-2Y)" },
-    { value: "mid", label: "Professional Tier (3-5Y)" },
-    { value: "expert", label: "Executive Level (5Y+)" }
+    { value: "entry", label: "Early Career (0-2 Years)" },
+    { value: "mid", label: "Experienced (3-5 Years)" },
+    { value: "expert", label: "Senior Level (5+ Years)" }
   ];
 
   const industries = [
@@ -54,18 +54,18 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
       <div className="space-y-2">
         <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
           <div className="w-1.5 h-8 bg-sky-500 rounded-full shadow-md" />
-          Behavioral Protocol
+          HR Interview Setup
         </h3>
         <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
-          Defining Cultural & Soft Skill Alignment
+          Configure your behavioral interview
         </p>
       </div>
 
       <div className="space-y-12">
         <div className="grid gap-12 md:grid-cols-2">
           <Input
-            label="Vector Target (Role)"
-            placeholder="E.G. PROJECT MANAGER"
+            label="Job Role"
+            placeholder="e.g. Project Manager"
             value={formData?.jobRole || ''}
             onChange={(e) => handleFieldChange('jobRole')(e.target.value)}
             error={errors?.jobRole}
@@ -74,8 +74,8 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
           />
 
           <Select
-            label="Target Entity"
-            placeholder={loadingCompanies ? "Syncing..." : "Select Corporate Database"}
+            label="Company"
+            placeholder={loadingCompanies ? "Loading..." : "Select Company"}
             options={companies}
             value={formData?.company}
             onChange={handleFieldChange('company')}
@@ -86,8 +86,8 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
         <div className="grid gap-12 md:grid-cols-2">
           <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
             <Select
-              label="Experience Tier"
-              placeholder="Select Seniority"
+              label="Experience Level"
+              placeholder="Select Level"
               options={experienceLevels}
               value={formData?.experienceLevel}
               onChange={handleFieldChange('experienceLevel')}
@@ -98,7 +98,7 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
 
           <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
             <Select
-              label="Sector Classification"
+              label="Industry"
               placeholder="Select Industry"
               options={industries}
               value={formData?.industry}
@@ -119,19 +119,19 @@ const HRSetupForm = ({ formData, onChange, errors }) => {
           <div className="space-y-4 max-w-md">
             <h4 className="text-[11px] font-extrabold text-sky-500 uppercase tracking-[0.5em] flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-              Psychometric Focus Modules
+              Soft Skills Assessment
             </h4>
             <p className="font-body text-base text-on-surface-variant opacity-70 leading-relaxed">
-              Our AI evaluates non-deterministic patterns in communication, situational leadership, and cultural vector alignment.
+              Our AI evaluates your communication skills, leadership potential, and cultural fit within the organization.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 flex-1">
             {[
-              { text: 'Situational Reaction Mapping', icon: 'ms:psychology' },
-              { text: 'Core Value Alignment', icon: 'ms:verified_user' },
-              { text: 'Leadership Vector Analysis', icon: 'ms:leaderboard' },
-              { text: 'Conflict Resolution Logic', icon: 'ms:handshake' }
+              { text: 'Behavioral Analysis', icon: 'ms:psychology' },
+              { text: 'Cultural Fit Check', icon: 'ms:verified_user' },
+              { text: 'Leadership Assessment', icon: 'ms:leaderboard' },
+              { text: 'Communication Skills', icon: 'ms:handshake' }
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-5 group/item transition-all hover:translate-x-2">
                 <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-sky-500 border border-outline-variant/10 group-hover/item:bg-sky-500 group-hover/item:text-on-surface transition-all duration-500 shadow-md">

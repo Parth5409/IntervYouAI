@@ -12,7 +12,7 @@ const SocialSharing = ({ sessionData, achievements }) => {
   
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success('Simulation link secured to clipboard');
+    toast.success('Interview link copied to clipboard');
   };
 
   const handleShare = (platform) => {
@@ -41,10 +41,10 @@ const SocialSharing = ({ sessionData, achievements }) => {
          <div className="space-y-3">
            <h4 className="text-[11px] font-extrabold text-sky-500 uppercase tracking-[0.4em] flex items-center gap-3">
              <div className="w-2 h-2 rounded-full bg-sky-500" />
-             Broadcast Presence
+             Share Results
            </h4>
            <p className="text-sm font-body text-on-surface-variant leading-relaxed">
-             Export your mission results to the professional network.
+             Share your interview results with your network.
            </p>
          </div>
 
@@ -83,7 +83,7 @@ const SocialSharing = ({ sessionData, achievements }) => {
             className="w-full h-12 flex items-center justify-center gap-3 text-[10px] font-extrabold text-on-surface-variant/40 hover:text-on-surface uppercase tracking-[0.2em] border border-dashed border-outline-variant/20 rounded-2xl transition-all hover:border-primary/40 group/copy"
          >
             <Icon name="ms:content_copy" size={16} className="group-hover/copy:scale-110 transition-transform" />
-            Secure Access Link
+            Copy link
          </button>
        </div>
     </div>

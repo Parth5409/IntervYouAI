@@ -39,13 +39,13 @@ const LoginForm = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData?.email) {
-      newErrors.email = 'Secure identification required';
+      newErrors.email = 'Email address is required';
     } else if (!/\S+@\S+\.\S+/?.test(formData?.email)) {
-      newErrors.email = 'Invalid identity protocol format';
+      newErrors.email = 'Please enter a valid email address';
     }
     
     if (!formData?.password) {
-      newErrors.password = 'Authentication key required';
+      newErrors.password = 'Password is required';
     }
     
     setErrors(newErrors);
@@ -72,64 +72,66 @@ const LoginForm = () => {
       navigate('/dashboard');
     } catch (error) {
       setErrors({
-        general: error.response?.data?.detail || 'Invalid identification. Access denied by system core.'
+        general: error.response?.data?.detail || 'Login failed. Please check your credentials.'
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-10">
-      <AnimatePresence>
-        {errors?.general && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0, y: -20 }}
-            animate={{ opacity: 1, height: 'auto', y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -20 }}
-            className="bg-error/10 border border-error/20 p-5 rounded-2xl flex items-start gap-4"
-          >
-            <div className="w-8 h-8 rounded-xl bg-error/20 flex items-center justify-center text-error animate-pulse shrink-0">
-               <Icon name="ms:security" size={18} />
-            </div>
-            <div>
-              <p className="text-[10px] text-error font-extrabold font-headline font-label font-medium text-on-surface-variant">Access Interrupted</p>
-              <p className="text-xs text-error/70 mt-1 font-body leading-relaxed">{errors?.general}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="space-y-8">
+    return (
+    <form onSubmit={handleSubmit} className="space-y-12">
+    <AnimatePresence>
+      {errors?.general && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          className="bg-error/5 border border-error/20 p-6 rounded-[2rem] flex items-start gap-5 relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-error/5 animate-pulse" />
+          <div className="w-10 h-10 rounded-2xl bg-error/20 flex items-center justify-center text-error shrink-0 relative z-10">
+             <Icon name="ms:security" size={20} />
+          </div>
+          <div className="relative z-10">
+            <p className="text-[10px] text-error font-black font-headline uppercase tracking-widest">Login Error</p>
+            <p className="text-xs text-error/70 mt-1.5 font-bold leading-relaxed">{errors?.general}</p>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+      <div className="space-y-10">
         <Input
-          label="Identity Protocol"
+          label="Email Address"
           type="email"
           name="email"
-          placeholder="Identification email..."
+          placeholder="Enter your email..."
           value={formData?.email}
           onChange={handleInputChange}
           error={errors?.email}
           required
           disabled={isLoading}
-          leftElement={<Icon name="ms:alternate_email" size={20} className="text-on-surface-variant/40" />}
+          className="bg-white/[0.02] border-white/5 focus:border-primary/40 focus:bg-white/[0.04] transition-all duration-500 rounded-2xl h-14"
+          leftElement={<Icon name="ms:alternate_email" size={22} className="text-on-surface-variant/20" />}
         />
 
         <Input
-          label="Access Key"
+          label="Password"
           type={showPassword ? "text" : "password"}
           name="password"
-          placeholder="Secure authentication key..."
+          placeholder="Enter your password..."
           value={formData?.password}
           onChange={handleInputChange}
           error={errors?.password}
           required
           disabled={isLoading}
-          leftElement={<Icon name="ms:key" size={20} className="text-on-surface-variant/40" />}
+          className="bg-white/[0.02] border-white/5 focus:border-secondary/40 focus:bg-white/[0.04] transition-all duration-500 rounded-2xl h-14"
+          leftElement={<Icon name="ms:key" size={22} className="text-on-surface-variant/20" />}
           rightElement={
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-on-surface-variant/40 hover:text-primary transition-colors focus:outline-none"
+              className="text-on-surface-variant/20 hover:text-primary transition-colors focus:outline-none pr-4"
               disabled={isLoading}
             >
               <Icon name={showPassword ? "ms:visibility_off" : "ms:visibility"} size={20} />
@@ -138,9 +140,9 @@ const LoginForm = () => {
         />
       </div>
 
-      <div className="flex items-center justify-between px-1">
-        <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="relative flex items-center h-5">
+      <div className="flex items-center justify-between px-2">
+        <div className="flex items-center gap-4 group cursor-pointer">
+          <div className="relative flex items-center">
             <input
               type="checkbox"
               name="rememberMe"
@@ -148,49 +150,52 @@ const LoginForm = () => {
               checked={formData?.rememberMe}
               onChange={handleInputChange}
               disabled={isLoading}
-              className="w-4 h-4 rounded border-outline-variant/30 bg-surface-container-highest/20 text-primary focus:ring-primary/20 transition-all cursor-pointer"
+              className="w-5 h-5 rounded-lg border-white/10 bg-white/[0.02] text-primary focus:ring-primary/20 transition-all cursor-pointer"
             />
           </div>
-          <label htmlFor="rememberMe" className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest group-hover:text-on-surface transition-colors cursor-pointer opacity-40 group-hover:opacity-100">
-            Persistent Link
+          <label htmlFor="rememberMe" className="text-[10px] font-black text-on-surface-variant/40 uppercase tracking-[0.2em] group-hover:text-primary transition-colors cursor-pointer">
+            Remember Me
           </label>
         </div>
         
         <button
           type="button"
-          onClick={() => toast.info('Initiating clearance recovery.')}
-          className="text-[10px] font-extrabold text-primary hover:text-on-surface transition-all font-headline group/link font-label font-medium text-on-surface-variant"
+          onClick={() => toast.info('Password recovery process started.')}
+          className="text-[10px] font-black text-primary hover:text-white transition-all font-headline group/link uppercase tracking-[0.2em]"
           disabled={isLoading}
         >
-          Lost Access?
-          <div className="h-px w-0 group-hover/link:w-full bg-primary transition-all duration-300" />
+          Forgot Password?
+          <div className="h-[1px] w-0 group-hover/link:w-full bg-primary transition-all duration-500 mt-0.5" />
         </button>
       </div>
 
       <Button
         type="submit"
         variant="primary"
-        className="w-full h-16 group"
+        className="w-full h-20 rounded-[2rem] group relative overflow-hidden shadow-2xl shadow-primary/20 transition-all duration-700 hover:scale-[1.02] active:scale-[0.98]"
         disabled={isLoading}
       >
-        <span className="flex items-center gap-4 text-[11px] font-extrabold uppercase tracking-[0.4em]">
-          {isLoading ? 'Decrypting Clearance...' : 'Sign In'}
-          {!isLoading && <Icon name="ms:arrow_forward" size={18} className="group-hover:translate-x-2 transition-transform duration-500" />}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary group-hover:opacity-100 transition-opacity" />
+        <span className="flex items-center justify-center gap-6 text-[11px] font-black uppercase tracking-[0.5em] text-white relative z-10">
+          {isLoading ? 'Verifying...' : 'LOGIN'}
+          {!isLoading && <Icon name="ms:arrow_forward" size={22} className="group-hover:translate-x-3 transition-transform duration-700" />}
         </span>
       </Button>
 
-      <div className="text-center pt-10 border-t border-outline-variant/10 flex flex-col gap-6">
-        <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">
-          New to the Nexus?
+      <div className="text-center pt-12 border-t border-white/5 flex flex-col gap-8">
+        <p className="text-[10px] font-black text-on-surface-variant/20 uppercase tracking-[0.4em]">
+          New to IntervYou.AI?
         </p>
         <button
           type="button"
           onClick={() => navigate('/register')}
-          className="h-14 w-full border border-outline-variant/10 rounded-2xl hover:border-primary/40 hover:bg-primary/5 text-on-surface font-extrabold transition-all uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-4 group/reg"
+          className="h-16 w-full border border-white/5 rounded-2xl hover:border-secondary/40 hover:bg-secondary/5 text-white font-black transition-all uppercase tracking-[0.3em] text-[10px] flex items-center justify-center gap-5 group/reg"
           disabled={isLoading}
         >
-           Formulate Identity
-           <Icon name="ms:add_circle" size={18} className="text-primary group-hover/reg:rotate-90 transition-transform duration-500" />
+           Create Account
+           <div className="p-1.5 rounded-lg bg-secondary/10 group-hover/reg:bg-secondary group-hover/reg:rotate-90 transition-all duration-500">
+            <Icon name="ms:add" size={18} className="text-secondary group-hover/reg:text-black" />
+           </div>
         </button>
       </div>
     </form>

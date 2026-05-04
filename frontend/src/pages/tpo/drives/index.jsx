@@ -181,21 +181,21 @@ const DriveManagementPage = () => {
   const handleAssign = async (driveId) => {
     try {
       await api.post(`/drives/${driveId}/assign`);
-      toast.success('DRIVE_ASSIGNED_TO_ELIGIBLE_CANDIDATES');
+      toast.success('Drive assigned to eligible candidates');
     } catch (error) {
       console.error("Failed to assign drive", error);
-      toast.error('ASSIGNMENT_FAILED');
+      toast.error('Assignment failed');
     }
   };
 
   const handleDelete = async (driveId) => {
     try {
       await api.delete(`/drives/${driveId}`);
-      toast.success('PLACEMENT_DRIVE_DELETED_SUCCESSFULLY');
+      toast.success('Placement drive deleted successfully');
       fetchDrives();
     } catch (error) {
       console.error("Failed to delete drive", error);
-      toast.error('DELETION_FAILED');
+      toast.error('Deletion failed');
     }
   };
 
@@ -205,24 +205,24 @@ const DriveManagementPage = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-headline font-bold text-on-surface">
-              Placement_Drive_Registry
+              Drive Registry
             </h1>
             <p className="font-mono text-on-surface-variant mt-1 text-xs font-label font-medium text-on-surface-variant">
-              Active recruitment nodes and campaign management
+              Active recruitment drives and management
             </p>
           </div>
           
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
-              <Button className="bg-emerald-500 text-slate-950 font-bold hover:bg-emerald-400">
+              <Button className="bg-secondary text-slate-950 font-bold hover:bg-secondary-fixed">
                 <Icon name="Plus" size={16} className="mr-2" />
-                INITIALIZE_NEW_DRIVE
+                ADD NEW DRIVE
               </Button>
             </SheetTrigger>
             <SheetContent className="bg-surface-container-low border-l border-outline-variant/30 text-on-surface w-full sm:max-w-xl overflow-y-auto">
               <SheetHeader>
                 <SheetTitle className="text-on-surface font-headline text-xl">
-                  Define_Placement_Parameters
+                  New Drive Details
                 </SheetTitle>
               </SheetHeader>
               
@@ -237,14 +237,13 @@ const DriveManagementPage = () => {
                 />
 
                 <div className="space-y-2">
-                  <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
-                    Job_Description (JD)
+                  <label className="font-mono text-[11px] font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block">
+                    Job Description
                   </label>
                   <textarea
                     name="jobDescription"
-                    rows={8}
-                    className="w-full bg-surface-container-low border border-outline-variant/30 p-4 font-mono text-xs text-on-surface focus:ring-1 focus:ring-emerald-500 outline-none"
-                    placeholder="Paste full JD text here for AI skill extraction..."
+                    className="w-full bg-surface-container-lowest/50 border border-outline-variant rounded-xl p-4 text-on-surface placeholder:text-outline/40 font-body text-sm min-h-[150px] focus:outline-none input-focus-glow transition-all"
+                    placeholder="Paste JD here for AI skill extraction..."
                     value={formData.jobDescription}
                     onChange={handleInputChange}
                     required
@@ -260,32 +259,35 @@ const DriveManagementPage = () => {
                   value={formData.minCgpa}
                   onChange={handleInputChange}
                   required
+                  className="bg-white/5 border-white/10 focus:border-primary/50"
                 />
 
                 <div className="grid grid-cols-2 gap-4">
                   <Input
-                    label="Min LPA"
+                    label="Minimum LPA"
                     name="minLpa"
                     type="number"
                     step="0.1"
                     placeholder="e.g. 10.0"
                     value={formData.minLpa}
                     onChange={handleInputChange}
+                    className="bg-white/5 border-white/10 focus:border-primary/50"
                   />
                   <Input
-                    label="Max LPA"
+                    label="Maximum LPA"
                     name="maxLpa"
                     type="number"
                     step="0.1"
                     placeholder="e.g. 15.0"
                     value={formData.maxLpa}
                     onChange={handleInputChange}
+                    className="bg-white/5 border-white/10 focus:border-primary/50"
                   />
                 </div>
 
                 <div className="space-y-4">
-                  <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
-                    Active_Pipeline_Modules
+                  <label className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block">
+                    Active Interview Modules
                   </label>
                   <div className="flex flex-wrap gap-3">
                     {['TECHNICAL', 'HR_SALARY', 'GD'].map(module => (
@@ -294,10 +296,10 @@ const DriveManagementPage = () => {
                         type="button"
                         onClick={() => handleModuleToggle(module)}
                         className={cn(
-                          "px-4 py-2 font-mono text-[10px] border transition-colors",
+                          "px-4 py-2 text-[10px] font-black border transition-all rounded-xl uppercase tracking-widest",
                           formData.activeModules.includes(module)
-                            ? "bg-primary/10 border-emerald-500 text-emerald-500"
-                            : "border-outline-variant/30 text-on-surface-variant hover:border-outline-variant/30"
+                            ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                            : "bg-white/5 border-white/10 text-on-surface-variant hover:border-white/20 hover:bg-white/10"
                         )}
                       >
                         {module.replace('_', ' ')}
@@ -305,14 +307,12 @@ const DriveManagementPage = () => {
                     ))}
                   </div>
                 </div>
-
                 {/* Technical Module Settings */}
                 {formData.activeModules.includes('TECHNICAL') && (
-                  <div className="p-4 border border-outline-variant/30 bg-surface-container-low/30 space-y-4">
-                    <h3 className="font-mono font-bold text-emerald-500 text-xs font-label font-medium text-on-surface-variant">
-                      [TECHNICAL_MODULE_CONFIG]
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-6 border border-white/5 bg-white/[0.02] rounded-[2rem] space-y-4 shadow-xl">
+                    <h3 className="font-headline font-black text-secondary text-[10px] uppercase tracking-widest italic opacity-60">
+                      Technical Config
+                    </h3>                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Select
                         label="Complexity Level"
                         value={formData.config.technical.difficulty}
@@ -324,18 +324,17 @@ const DriveManagementPage = () => {
                         type="number"
                         value={formData.config.technical.questions}
                         onChange={(e) => handleConfigChange('technical', 'questions', parseInt(e.target.value))}
-                      />
-                    </div>
+                        className="bg-white/5 border-white/10 focus:border-primary/50"
+                      />                    </div>
                   </div>
                 )}
 
                 {/* HR & Salary Module Settings */}
                 {formData.activeModules.includes('HR_SALARY') && (
-                  <div className="p-4 border border-outline-variant/30 bg-surface-container-low/30 space-y-4">
-                    <h3 className="font-mono font-bold text-sky-500 text-xs font-label font-medium text-on-surface-variant">
-                      [HR_SALARY_MODULE_CONFIG]
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-6 border border-white/5 bg-white/[0.02] rounded-[2rem] space-y-4 shadow-xl">
+                    <h3 className="font-headline font-black text-sky-400 text-[10px] uppercase tracking-widest italic opacity-60">
+                      HR & Salary Config
+                    </h3>                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Select
                         label="Interviewer Persona"
                         value={formData.config.hr_salary.difficulty}
@@ -354,33 +353,31 @@ const DriveManagementPage = () => {
                       type="number"
                       value={formData.config.hr_salary.questions}
                       onChange={(e) => handleConfigChange('hr_salary', 'questions', parseInt(e.target.value))}
-                    />
-                  </div>
+                      className="bg-white/5 border-white/10 focus:border-primary/50"
+                    />                  </div>
                 )}
 
                 {/* GD Module Settings */}
                 {formData.activeModules.includes('GD') && (
-                  <div className="p-4 border border-outline-variant/30 bg-surface-container-low/30 space-y-4">
-                    <h3 className="font-mono font-bold text-amber-500 text-xs font-label font-medium text-on-surface-variant">
-                      [GD_MODULE_CONFIG]
-                    </h3>
-                    <div className="space-y-3">
-                      <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
-                        DISCUSSION_TOPIC_POOL
+                  <div className="p-6 border border-white/5 bg-white/[0.02] rounded-[2rem] space-y-4 shadow-xl">
+                    <h3 className="font-headline font-black text-amber-400 text-[10px] uppercase tracking-widest italic opacity-60">
+                      GD Config
+                    </h3>                    <div className="space-y-3">
+                      <label className="text-[11px] font-semibold text-on-surface-variant uppercase tracking-widest mb-2 block">
+                        Discussion Topic Pool
                       </label>
                       
                       {formData.config.gd.topics.map((topic, index) => (
                         <div key={index} className="flex gap-2">
                           <div className="relative flex-1">
                             <input
-                              className="w-full bg-surface-container-low border border-outline-variant/30 p-2 font-mono text-xs text-on-surface focus:border-amber-500 outline-none transition-colors"
+                              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-on-surface focus:border-amber-400/50 outline-none transition-all placeholder:text-white/10"
                               placeholder={`Enter topic ${index + 1}...`}
                               value={topic}
                               onChange={(e) => handleGDTopicChange(index, e.target.value)}
                             />
                             <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/20" />
-                          </div>
-                          <button
+                          </div>                          <button
                             type="button"
                             onClick={() => handleRemoveGDTopic(index)}
                             className="p-2 border border-outline-variant/30 text-on-surface-variant hover:text-red-400 hover:border-red-500/30 transition-colors"
@@ -393,22 +390,20 @@ const DriveManagementPage = () => {
                       <button
                         type="button"
                         onClick={handleAddGDTopic}
-                        className="w-full py-2 border border-dashed border-outline-variant/30 text-[10px] font-mono text-on-surface-variant hover:text-emerald-500 hover:border-emerald-500/30 transition-all flex items-center justify-center gap-2 font-label font-medium text-on-surface-variant"
+                        className="w-full py-3 border border-dashed border-white/10 rounded-xl text-[10px] font-black text-on-surface-variant hover:text-secondary hover:border-secondary/30 transition-all flex items-center justify-center gap-2 uppercase tracking-widest bg-white/[0.01]"
                       >
                         <Icon name="Plus" size={12} />
-                        ADD_NEW_TOPIC_NODE
+                        ADD NEW TOPIC
                       </button>
-
-                      <p className="text-[8px] font-mono text-on-surface-variant font-label font-medium text-on-surface-variant">
-                        * ONE_TOPIC_WILL_BE_SELECTED_RANDOMLY_FOR_EACH_SESSION
-                      </p>
-                    </div>
+                      <p className="text-[8px] font-black text-on-surface-variant/40 uppercase tracking-widest italic">
+                        * One topic will be randomly selected for each session
+                      </p>                    </div>
                   </div>
                 )}
 
                 {error && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20">
-                    <p className="text-[10px] font-mono text-red-500 font-label font-medium text-on-surface-variant">{error}</p>
+                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">{error}</p>
                   </div>
                 )}
 
@@ -416,16 +411,14 @@ const DriveManagementPage = () => {
                   <Button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-emerald-500 text-slate-950 font-bold"
+                    className="w-full bg-secondary text-slate-950 font-black h-14 rounded-xl shadow-xl shadow-secondary/10 uppercase tracking-widest text-xs"
                   >
-                    {isSubmitting ? 'ANALYZING_JD_AND_SAVING...' : 'COMMIT_PLACEMENT_DRIVE'}
+                    {isSubmitting ? 'ANALYZING JD...' : 'CREATE PLACEMENT DRIVE'}
                   </Button>
-                  <p className="text-[8px] font-mono text-on-surface-variant mt-4 text-center leading-relaxed font-label font-medium text-on-surface-variant">
-                    * AI engine will automatically extract technical skill vectors from the provided JD 
-                    to customize interview context for each candidate.
+                  <p className="text-[8px] font-black text-on-surface-variant/40 mt-6 text-center leading-relaxed uppercase tracking-widest">
+                    * AI engine will automatically extract technical skill vectors from the provided JD to customize interview context.
                   </p>
-                </div>
-              </form>
+                </div>              </form>
             </SheetContent>
           </Sheet>
         </div>
@@ -433,12 +426,12 @@ const DriveManagementPage = () => {
         {/* Drives Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {isLoading ? (
-            <div className="col-span-full py-12 text-center text-on-surface-variant animate-pulse font-mono">
-              Syncing_Drive_Data...
+            <div className="col-span-full py-12 text-center text-on-surface-variant animate-pulse font-headline text-xs uppercase tracking-widest">
+              Syncing drive data...
             </div>
           ) : drives.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-on-surface-variant font-mono border border-dashed border-outline-variant/30">
-              No_Active_Drives_Found
+            <div className="col-span-full py-12 text-center text-on-surface-variant font-headline text-xs uppercase tracking-widest border border-dashed border-outline-variant/30 rounded-[2rem]">
+              No active drives found
             </div>
           ) : (
             drives.map((drive) => (
@@ -479,9 +472,9 @@ const DriveManagementPage = () => {
                   <Button 
                     variant="outline"
                     onClick={() => handleAssign(drive.id)}
-                    className="flex-1 text-[10px] border-outline-variant/30 text-slate-300 hover:bg-sky-500/5 hover:text-sky-400 hover:border-sky-500/30"
+                    className="flex-1 text-[10px] border-outline-variant/30 text-slate-300 hover:bg-sky-500/5 hover:text-sky-400 hover:border-sky-500/30 font-black uppercase tracking-widest"
                   >
-                    ASSIGN_TO_STUDENTS <Icon name="Users" size={12} className="ml-2" />
+                    ASSIGN TO STUDENTS <Icon name="Users" size={12} className="ml-2" />
                   </Button>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -492,18 +485,18 @@ const DriveManagementPage = () => {
                         <Icon name="Trash2" size={14} />
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent>
+                    <AlertDialogContent className="bg-surface-container-low border border-white/5 rounded-[2rem] shadow-2xl">
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the placement drive
-                          for {drive.companyName} and remove all associated candidate data from the registry.
+                        <AlertDialogTitle className="font-headline font-black text-white italic uppercase tracking-tighter text-2xl">Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription className="font-body text-on-surface-variant">
+                          This action will permanently delete the placement drive
+                          for {drive.companyName} and remove all associated candidate data.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>CANCEL_OPERATION</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(drive.id)}>
-                          CONFIRM_DELETION
+                        <AlertDialogCancel className="bg-white/5 text-white border-white/5 rounded-xl uppercase tracking-widest text-[10px] font-black">CANCEL</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(drive.id)} className="bg-red-500 text-white rounded-xl uppercase tracking-widest text-[10px] font-black hover:bg-red-600">
+                          DELETE
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

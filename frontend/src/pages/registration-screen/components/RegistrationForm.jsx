@@ -47,18 +47,18 @@ const RegistrationForm = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData?.fullName?.trim()) newErrors.fullName = 'Full Name required for identification';
-    if (!formData?.email?.trim() || !validateEmail(formData?.email)) newErrors.email = 'Invalid identity protocol format';
-    if (!formData?.password || !validatePassword(formData?.password)) newErrors.password = 'Key must be 8+ chars (A-z, 0-9)';
+    if (!formData?.fullName?.trim()) newErrors.fullName = 'Full Name is required';
+    if (!formData?.email?.trim() || !validateEmail(formData?.email)) newErrors.email = 'Please enter a valid email address';
+    if (!formData?.password || !validatePassword(formData?.password)) newErrors.password = 'Password must be 8+ chars (A-z, 0-9)';
     
     if (role === 'ROLE_ORG_ADMIN') {
-      if (!formData?.organizationName?.trim()) newErrors.organizationName = 'Entity identification required';
-      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'Entity access code required';
+      if (!formData?.organizationName?.trim()) newErrors.organizationName = 'Organization name is required';
+      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'Organization code is required';
     } else {
-      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'Authority reference code required';
+      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'Reference code is required';
     }
 
-    if (!agreedToTerms) newErrors.terms = 'Protocol acknowledgement required';
+    if (!agreedToTerms) newErrors.terms = 'Please agree to the terms';
 
     setErrors(newErrors);
     return Object.keys(newErrors)?.length === 0;
@@ -82,7 +82,7 @@ const RegistrationForm = () => {
       await api.post('auth/signup', payload);
       navigate('/login');
     } catch (error) {
-      setErrors({ submit: error.response?.data?.message || 'Synthesis failed. Neural link rejected.' });
+      setErrors({ submit: error.response?.data?.message || 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +105,7 @@ const RegistrationForm = () => {
                  <Icon name="ms:error" size={18} />
               </div>
               <div>
-                <p className="text-[10px] text-error font-extrabold font-headline font-label font-medium text-on-surface-variant">Synthesis Rejected</p>
+                <p className="text-[10px] text-error font-extrabold font-headline font-label font-medium text-on-surface-variant">Registration Error</p>
                 <p className="text-xs text-error/70 mt-1 font-body leading-relaxed">{errors?.submit}</p>
               </div>
             </motion.div>
@@ -126,9 +126,9 @@ const RegistrationForm = () => {
           />
 
           <Input
-            label="Identity Protocol (Email)"
+            label="Email Address"
             type="email"
-            placeholder="identification@sector.com"
+            placeholder="example@email.com"
             value={formData?.email}
             onChange={(e) => handleInputChange('email', e?.target?.value)}
             error={errors?.email}
@@ -139,9 +139,9 @@ const RegistrationForm = () => {
         </div>
 
         <Input
-          label="Access Credentials"
+          label="Password"
           type={showPassword ? "text" : "password"}
-          placeholder="Manifest a strong authentication key..."
+          placeholder="Enter a strong password..."
           value={formData?.password}
           onChange={(e) => handleInputChange('password', e?.target?.value)}
           error={errors?.password}
@@ -163,9 +163,9 @@ const RegistrationForm = () => {
         {role === 'ROLE_ORG_ADMIN' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Input
-              label="Organization Entity"
+              label="Organization Name"
               type="text"
-              placeholder="e.g. Nexus Tech"
+              placeholder="e.g. Acme Corp"
               value={formData?.organizationName}
               onChange={(e) => handleInputChange('organizationName', e?.target?.value)}
               error={errors?.organizationName}
@@ -174,9 +174,9 @@ const RegistrationForm = () => {
               leftElement={<Icon name="ms:corporate_fare" size={20} className="text-on-surface-variant/40" />}
             />
             <Input
-              label="Entity Access Code"
+              label="Organization Code"
               type="text"
-              placeholder="e.g. UNV2026"
+              placeholder="e.g. ORG123"
               value={formData?.organizationCode}
               onChange={(e) => handleInputChange('organizationCode', e?.target?.value)}
               error={errors?.organizationCode}
@@ -188,7 +188,7 @@ const RegistrationForm = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Input
-              label="Authority Reference Code"
+              label="Reference Code"
               type="text"
               placeholder="e.g. STU123"
               value={formData?.organizationCode}
@@ -199,9 +199,9 @@ const RegistrationForm = () => {
               leftElement={<Icon name="ms:qr_code_2" size={20} className="text-on-surface-variant/40" />}
             />
             <Input
-              label="Archetype / Career Vector"
+              label="Career Goal"
               type="text"
-              placeholder="e.g. Backend Architect"
+              placeholder="e.g. Backend Developer"
               value={formData?.careerGoal}
               onChange={(e) => handleInputChange('careerGoal', e.target.value)}
               error={errors?.careerGoal}
@@ -224,7 +224,7 @@ const RegistrationForm = () => {
               />
             </div>
             <label htmlFor="terms" className="text-[11px] font-extrabold text-on-surface-variant uppercase tracking-widest leading-relaxed group-hover:text-on-surface transition-colors cursor-pointer opacity-50 group-hover:opacity-100">
-              I acknowledge the <button type="button" className="text-primary hover:underline">Nexus Protocols</button> and <button type="button" className="text-primary hover:underline">Privacy Spheres</button> of IntervYou.AI.
+              I agree to the <button type="button" className="text-primary hover:underline">Terms of Service</button> and <button type="button" className="text-primary hover:underline">Privacy Policy</button> of IntervYou.AI.
             </label>
           </div>
           <AnimatePresence>

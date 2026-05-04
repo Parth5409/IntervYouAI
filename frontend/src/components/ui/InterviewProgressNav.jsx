@@ -51,7 +51,7 @@ const InterviewProgressNav = ({
               IntervYou.AI
             </span>
             <span className="font-headline text-[9px] text-on-surface-variant uppercase tracking-widest mt-1 opacity-60">
-              NODE_0X1A4 // ACTIVE_SESSION
+              SYSTEM // ACTIVE SESSION
             </span>
           </div>
         </div>
@@ -69,7 +69,7 @@ const InterviewProgressNav = ({
                   <div className="flex items-center gap-3 group">
                     <div className={cn(
                       "w-6 h-6 rounded-full font-headline text-[10px] font-bold flex items-center justify-center transition-all duration-500",
-                      isCompleted ? "bg-emerald-500 text-black shadow-sm" :
+                      isCompleted ? "bg-secondary text-black shadow-sm" :
                       isActive ? "bg-primary text-black shadow-lg shadow-primary/20 scale-110" :
                       "bg-surface-container text-on-surface-variant border border-outline-variant/30"
                     )}>
@@ -87,7 +87,7 @@ const InterviewProgressNav = ({
                   {index < stepLabels.length - 1 && (
                     <div className={cn(
                       "flex-1 h-[1px] rounded-full transition-all duration-1000",
-                      isCompleted ? "bg-emerald-500/40" : "bg-outline-variant/20"
+                      isCompleted ? "bg-secondary/40" : "bg-outline-variant/20"
                     )} />
                   )}
                 </React.Fragment>
@@ -99,10 +99,10 @@ const InterviewProgressNav = ({
         {/* Right: Actions */}
         <div className="flex items-center gap-6">
           <div className="hidden lg:flex flex-col items-end">
-            <span className="text-[9px] font-headline text-on-surface-variant font-bold uppercase tracking-widest opacity-40">System_State</span>
+            <span className="text-[9px] font-headline text-on-surface-variant font-bold uppercase tracking-widest opacity-40">Status</span>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-headline font-bold text-emerald-500 uppercase tracking-widest leading-none">Operational</span>
-              <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse shadow-sm" />
+              <span className="text-[10px] font-headline font-bold text-secondary uppercase tracking-widest leading-none">Ready</span>
+              <div className="w-1 h-1 bg-secondary rounded-full animate-pulse shadow-sm" />
             </div>
           </div>
           <button 

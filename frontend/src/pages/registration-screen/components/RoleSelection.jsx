@@ -8,8 +8,7 @@ const RoleSelection = ({ selectedRole, onSelect }) => {
     {
       id: 'ROLE_STUDENT',
       title: 'Practitioner',
-      description: 'Sharpen your neural pathways and master the interview ether.',
-      icon: 'ms:psychology',
+      description: 'Sharpen your interview skills and master the process.',      icon: 'ms:psychology',
     },
     {
       id: 'ROLE_ORG_ADMIN',

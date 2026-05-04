@@ -9,9 +9,9 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
   const [loadingCompanies, setLoadingCompanies] = useState(false);
 
   const experienceLevels = [
-    { value: "entry", label: "Early Career (0-2Y)" },
-    { value: "mid", label: "Professional Tier (3-5Y)" },
-    { value: "expert", label: "Executive Level (5Y+)" }
+    { value: "entry", label: "Early Career (0-2 Years)" },
+    { value: "mid", label: "Experienced (3-5 Years)" },
+    { value: "expert", label: "Senior Level (5+ Years)" }
   ];
 
   const industries = [
@@ -64,18 +64,18 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
       <div className="space-y-2">
         <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
           <div className="w-1.5 h-8 bg-primary rounded-full shadow-sm" />
-          Compensation Protocol
+          Salary Negotiation Setup
         </h3>
         <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
-          Calibrating Tactical Negotiation Parameters
+          Configure your negotiation practice session
         </p>
       </div>
 
       <div className="space-y-12">
         <div className="grid gap-12 md:grid-cols-2">
           <Input
-            label="Vector Target (Role)"
-            placeholder="E.G. SENIOR DEVELOPER"
+            label="Target Job Role"
+            placeholder="e.g. Senior Developer"
             value={formData?.jobRole || ''}
             onChange={(e) => handleFieldChange('jobRole')(e.target.value)}
             error={errors?.jobRole}
@@ -84,8 +84,8 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
           />
 
           <Select
-            label="Target Entity"
-            placeholder={loadingCompanies ? "Syncing..." : "Select Corporate Database"}
+            label="Company"
+            placeholder={loadingCompanies ? "Loading..." : "Select Company"}
             options={companies}
             value={formData?.company}
             onChange={handleFieldChange('company')}
@@ -96,8 +96,8 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
         <div className="grid gap-12 md:grid-cols-2">
           <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
             <Select
-              label="Experience Tier"
-              placeholder="Select Seniority"
+              label="Experience Level"
+              placeholder="Select Level"
               options={experienceLevels}
               value={formData?.experienceLevel}
               onChange={handleFieldChange('experienceLevel')}
@@ -108,7 +108,7 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
 
           <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
             <Select
-              label="Sector Classification"
+              label="Industry"
               placeholder="Select Industry"
               options={industries}
               value={formData?.industry}
@@ -122,8 +122,8 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
         <div className="grid gap-12 md:grid-cols-2">
           <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
             <Select
-              label="Target Range"
-              placeholder="Select Salary Window"
+              label="Expected Salary Range"
+              placeholder="Select Range"
               options={salaryRanges}
               value={formData?.salaryRange}
               onChange={handleFieldChange('salaryRange')}
@@ -134,8 +134,8 @@ const SalaryNegotiationSetupForm = ({ formData, onChange, errors }) => {
 
           <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
             <Select
-              label="Tactical Style"
-              placeholder="Select Engagement Style"
+              label="Negotiation Style"
+              placeholder="Select Style"
               options={negotiationStyles}
               value={formData?.negotiationStyle}
               onChange={handleFieldChange('negotiationStyle')}

@@ -12,13 +12,13 @@ const GDFeedbackScores = ({ feedback }) => {
   ];
 
   const getScoreColor = (score) => {
-    if (score >= 85) return 'text-emerald-500';
+    if (score >= 85) return 'text-secondary';
     if (score >= 70) return 'text-amber-500';
     return 'text-red-500';
   };
 
   const getBarColor = (score) => {
-    if (score >= 85) return 'bg-emerald-500';
+    if (score >= 85) return 'bg-secondary';
     if (score >= 70) return 'bg-amber-500';
     return 'bg-red-500';
   };
