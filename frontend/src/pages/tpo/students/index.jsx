@@ -32,6 +32,7 @@ const StudentDirectoryPage = () => {
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [editingStudent, setEditingStudent] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isBackfilling, setIsBackfilling] = useState(false);
 
   const fetchStudents = async () => {
     try {
@@ -83,6 +84,18 @@ const StudentDirectoryPage = () => {
       fetchStudents();
     } catch (error) {
       toast.error('Bulk delete failed: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleBackfillSkills = async () => {
+    try {
+      setIsBackfilling(true);
+      await api.post('students/backfill-skills');
+      toast.success('Skill extraction initiated for existing resumes');
+    } catch (error) {
+      toast.error('Backfill failed: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsBackfilling(false);
     }
   };
 
@@ -143,6 +156,9 @@ const StudentDirectoryPage = () => {
         let value = currentline[index]?.trim();
         if (header === 'currentCgpa') value = parseFloat(value);
         if (header === 'passingYear') value = parseInt(value);
+        if (header === 'skills') {
+          value = value ? value.split(',').map(s => s.trim()).filter(Boolean) : [];
+        }
         obj[header] = value;
       });
       result.push(obj);
@@ -223,6 +239,16 @@ const StudentDirectoryPage = () => {
                   </AlertDialog>
                   )}
 
+                  <Button 
+                    variant="outline"
+                    onClick={handleBackfillSkills}
+                    disabled={isBackfilling}
+                    className="border-white/5 text-on-surface-variant font-black hover:bg-white/5 rounded-xl px-6 uppercase tracking-widest text-xs h-12"
+                  >
+                    <Icon name="RefreshCw" size={16} className={cn("mr-2", isBackfilling && "animate-spin")} />
+                    {isBackfilling ? 'SYNCING...' : 'SYNC SKILLS'}
+                  </Button>
+
                   <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                   <SheetTrigger asChild>
                   <Button className="bg-secondary text-slate-950 font-black hover:bg-secondary-fixed rounded-xl px-6 uppercase tracking-widest text-xs">
@@ -255,14 +281,13 @@ const StudentDirectoryPage = () => {
                   </div>
 
                   <div className="bg-white/[0.02] p-6 border border-white/5 rounded-2xl">
-                  <h3 className="text-[10px] font-black text-primary uppercase tracking-widest mb-4 italic">
-                    Expected Format
-                  </h3>
-                  <code className="text-[10px] font-mono text-on-surface-variant/60 block leading-relaxed">
-                    email, fullName, prn, branch, currentCgpa, passingYear
-                  </code>
+                    <h3 className="text-[10px] font-black text-primary uppercase tracking-widest mb-4 italic">
+                      Expected Format
+                    </h3>
+                    <code className="text-[10px] font-mono text-on-surface-variant/60 block leading-relaxed">
+                      email, fullName, prn, branch, currentCgpa, passingYear, skills (optional)
+                    </code>
                   </div>
-
                   {importError && (
                   <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
                     <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">{importError}</p>

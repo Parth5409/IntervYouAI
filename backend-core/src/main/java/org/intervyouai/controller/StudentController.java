@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.intervyouai.dto.ResumeUploadRequest;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/core/v1/students")
@@ -24,6 +25,14 @@ public class StudentController {
 
     @Autowired
     private StudentService studentService;
+
+    @PutMapping("/{userId}/skills")
+    public ResponseEntity<Void> updateSkills(
+            @PathVariable UUID userId,
+            @RequestBody Set<String> skills) {
+        studentService.updateSkills(userId, skills);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/resume")
     @PreAuthorize("hasRole('STUDENT')")
@@ -87,5 +96,12 @@ public class StudentController {
             @RequestBody List<UUID> profileIds) {
         studentService.bulkDeleteStudents(userDetails.getId(), profileIds);
         return ResponseEntity.ok(GenericResponse.success(null));
+    }
+
+    @PostMapping("/backfill-skills")
+    @PreAuthorize("hasRole('TPO')")
+    public ResponseEntity<GenericResponse<String>> backfillSkills(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        studentService.backfillSkills(userDetails.getId());
+        return ResponseEntity.ok(GenericResponse.success("Backfill process initiated for eligible resumes."));
     }
 }

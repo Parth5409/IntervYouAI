@@ -324,6 +324,61 @@ const StudentProfilePage = () => {
               </div>
             </div>
 
+            {/* Skills Section */}
+            <div className="bg-white/[0.02] border border-white/5 p-10 rounded-[2.5rem] space-y-6 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-[80px] rounded-full -mr-16 -mt-16 pointer-events-none" />
+              <h3 className="font-headline font-black text-white flex items-center gap-3 text-sm uppercase tracking-widest">
+                <Icon name="ms:psychology" size={24} className="text-secondary" />
+                Skill Set
+              </h3>
+              
+              <div className="flex flex-wrap gap-3">
+                {formData.skills && formData.skills.length > 0 ? (
+                  formData.skills.map((skill, index) => (
+                    <span 
+                      key={index}
+                      className="px-4 py-2 bg-white/5 border border-white/10 text-white font-headline text-[10px] font-black uppercase tracking-widest rounded-xl hover:border-secondary/40 hover:bg-secondary/5 transition-all group relative"
+                    >
+                      {skill}
+                      {isEditing && (
+                        <button 
+                          onClick={() => setFormData(prev => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }))}
+                          className="ml-2 text-red-400 hover:text-red-500"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </span>
+                  ))
+                ) : (
+                  <p className="font-headline text-[10px] text-on-surface-variant/40 font-black uppercase tracking-widest italic">
+                    No skills identified yet. Upload a resume to auto-extract your skills.
+                  </p>
+                )}
+              </div>
+
+              {isEditing && (
+                <div className="pt-4 flex gap-3">
+                  <input 
+                    type="text"
+                    placeholder="Add a skill..."
+                    className="flex-1 bg-white/5 border border-white/5 rounded-xl px-4 py-2 text-xs text-white focus:border-secondary/40 outline-none"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = e.target.value.trim();
+                        if (val && !formData.skills.includes(val)) {
+                          setFormData(prev => ({ ...prev, skills: [...prev.skills, val] }));
+                          e.target.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <p className="text-[8px] font-black text-on-surface-variant/30 uppercase tracking-widest flex items-center">Press Enter to add</p>
+                </div>
+              )}
+            </div>
+
             {/* Resume Section */}
             <div className="bg-white/[0.02] border border-white/5 p-10 rounded-[2.5rem] space-y-6 shadow-2xl">
               <h3 className="font-headline font-black text-white flex items-center gap-3 text-sm uppercase tracking-widest">

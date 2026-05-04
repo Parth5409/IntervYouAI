@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -92,6 +94,7 @@ public class StudentService {
                     .branch(dto.getBranch())
                     .currentCgpa(dto.getCurrentCgpa())
                     .passingYear(dto.getPassingYear())
+                    .skills(dto.getSkills())
                     .build();
 
             createdProfiles.add(mapToResponse(studentProfileRepository.save(profile)));
@@ -187,6 +190,37 @@ public class StudentService {
         profile.setCareerGoal(request.getCareerGoal());
 
         return mapToResponse(studentProfileRepository.save(profile));
+    }
+
+    @Transactional
+    public void updateSkills(UUID userId, Set<String> skills) {
+        StudentProfile profile = studentProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+        profile.setSkills(skills);
+        studentProfileRepository.save(profile);
+    }
+
+    @Transactional
+    public void backfillSkills(UUID tpoId) {
+        // We only backfill for the organization of the TPO who requested it
+        User tpo = userRepository.findById(tpoId)
+                .orElseThrow(() -> new RuntimeException("TPO not found"));
+        
+        List<StudentProfile> profiles = studentProfileRepository.findProfilesNeedingBackfill();
+        
+        // Filter by org
+        List<StudentProfile> orgProfiles = profiles.stream()
+                .filter(p -> p.getUser().getOrganization().getId().equals(tpo.getOrganization().getId()))
+                .collect(java.util.stream.Collectors.toList());
+
+        for (StudentProfile profile : orgProfiles) {
+            kafkaProducerService.publishResumeUploadedEvent(
+                    org.intervyouai.dto.event.ResumeUploadedEvent.builder()
+                            .studentId(profile.getUser().getId())
+                            .resumeUrl(profile.getResumeUrl())
+                            .build()
+            );
+        }
     }
 
     private StudentResponse mapToResponse(StudentProfile profile) {

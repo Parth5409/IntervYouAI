@@ -25,9 +25,25 @@ public class PlacementDriveController {
     @PreAuthorize("hasRole('TPO')")
     public ResponseEntity<Void> assignDrive(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @PathVariable UUID driveId) {
-        placementDriveService.assignDriveToStudents(userDetails.getId(), driveId);
+            @PathVariable UUID driveId,
+            @RequestBody(required = false) List<UUID> studentIds) {
+        placementDriveService.assignDriveToStudents(userDetails.getId(), driveId, studentIds);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/extract-skills")
+    @PreAuthorize("hasRole('TPO')")
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<java.util.Set<String>>> extractSkills(
+            @RequestBody org.intervyouai.service.AiIntegrationService.JDExtractionRequest request) {
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.extractSkillsFromJd(request.getJob_description())));
+    }
+
+    @GetMapping("/{driveId}/eligible-students")
+    @PreAuthorize("hasRole('TPO')")
+    public ResponseEntity<org.intervyouai.dto.GenericResponse<List<org.intervyouai.dto.EligibleStudentResponse>>> getEligibleStudents(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable UUID driveId) {
+        return ResponseEntity.ok(org.intervyouai.dto.GenericResponse.success(placementDriveService.getEligibleStudentsWithMatching(userDetails.getId(), driveId)));
     }
 
     @PostMapping

@@ -69,7 +69,7 @@ public class PlacementDriveServiceTest {
         when(placementDriveRepository.findById(driveId)).thenReturn(Optional.of(drive));
         when(studentProfileRepository.findEligibleStudents(eq(orgId), any(java.math.BigDecimal.class))).thenReturn(List.of(s1));
 
-        placementDriveService.assignDriveToStudents(tpoId, driveId);
+        placementDriveService.assignDriveToStudents(tpoId, driveId, null);
 
         // Verify only 1 event published (for s1)
         verify(kafkaProducerService, times(1)).publishDriveAssignedEvent(any(DriveAssignedEvent.class));
@@ -164,7 +164,7 @@ public class PlacementDriveServiceTest {
         when(placementDriveRepository.findById(driveId)).thenReturn(Optional.of(drive));
 
         assertThrows(RuntimeException.class, () -> {
-            placementDriveService.assignDriveToStudents(otherTpoId, driveId);
+            placementDriveService.assignDriveToStudents(otherTpoId, driveId, null);
         });
 
         verify(kafkaProducerService, never()).publishDriveAssignedEvent(any());
