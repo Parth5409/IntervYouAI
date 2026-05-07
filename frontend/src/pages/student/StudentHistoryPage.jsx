@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/ui/DashboardLayout';
 import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
 import { cn } from '../../utils/cn';
@@ -33,8 +33,8 @@ const StudentHistoryPage = () => {
   const filters = ['ALL', 'TECHNICAL', 'HR', 'GD', 'SALARY'];
 
   const getScoreColor = (score) => {
-    if (score === null || score === undefined) return 'text-slate-500';
-    if (score >= 90) return 'text-emerald-500';
+    if (score === null || score === undefined) return 'text-on-surface-variant';
+    if (score >= 90) return 'text-secondary';
     if (score >= 75) return 'text-sky-500';
     if (score >= 60) return 'text-amber-500';
     return 'text-red-500';
@@ -87,26 +87,26 @@ const StudentHistoryPage = () => {
   return (
     <DashboardLayout>
       <div className="space-y-8 max-w-5xl mx-auto pb-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-outline-variant/30 pb-6">
           <div>
-            <h1 className="text-3xl font-mono font-bold tracking-tighter uppercase flex items-center gap-3">
-              <span className="text-slate-500">{'>'}</span> MISSION_ARCHIVE
+            <h1 className="text-3xl font-headline font-bold flex items-center gap-3">
+              <span className="text-on-surface-variant">{'>'}</span> INTERVIEW HISTORY
             </h1>
-            <p className="text-slate-400 font-mono text-xs mt-2 uppercase tracking-widest">
-              Historical performance data // Organized by deployment sector
+            <p className="text-on-surface-variant font-headline mt-2 text-xs font-bold uppercase tracking-widest opacity-60">
+              Review your past interview performance
             </p>
           </div>
           
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {filters.map(filter => (
               <button
                 key={filter}
                 onClick={() => setSelectedFilter(filter)}
                 className={cn(
-                  "px-3 py-1.5 font-mono text-[9px] tracking-widest uppercase transition-all border",
+                  "px-4 py-2 font-headline text-[10px] tracking-[0.2em] font-black uppercase transition-all border rounded-xl",
                   selectedFilter === filter 
-                    ? "bg-emerald-500/10 border-emerald-500 text-emerald-500" 
-                    : "text-slate-500 hover:text-slate-300 bg-slate-950 border-slate-800"
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" 
+                    : "text-on-surface-variant hover:text-white bg-white/5 border-white/5"
                 )}
               >
                 {filter}
@@ -116,12 +116,12 @@ const StudentHistoryPage = () => {
         </div>
 
         {/* Grouped History List */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {isLoading ? (
-            <div className="py-20 text-center space-y-4">
-              <div className="w-10 h-10 border-2 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mx-auto" />
-              <p className="font-mono text-[10px] text-slate-500 uppercase tracking-[0.2em] animate-pulse">
-                Decrypting_Historical_Archives...
+            <div className="py-20 text-center space-y-6">
+              <div className="w-12 h-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
+              <p className="font-headline text-[10px] text-on-surface-variant animate-pulse font-black uppercase tracking-widest">
+                Loading history...
               </p>
             </div>
           ) : groupedHistory.length > 0 ? (
@@ -131,36 +131,38 @@ const StudentHistoryPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: groupIndex * 0.05 }}
-                className="bg-slate-900/20 border border-slate-800 overflow-hidden"
+                className="bg-white/[0.02] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all hover:bg-white/[0.04]"
               >
                 {/* Group Header */}
                 <div 
-                  className="p-5 flex items-center justify-between cursor-pointer hover:bg-slate-800/30 transition-colors"
+                  className="p-8 flex items-center justify-between cursor-pointer group"
                   onClick={() => toggleDrive(group.id)}
                 >
-                  <div className="flex items-center gap-5">
-                    <div className="w-10 h-10 bg-slate-950 border border-slate-800 flex items-center justify-center">
-                      <Icon name="Briefcase" size={18} className="text-emerald-500" />
+                  <div className="flex items-center gap-8">
+                    <div className="w-16 h-16 bg-white/5 border border-white/10 flex items-center justify-center rounded-2xl group-hover:border-primary/40 transition-all shadow-inner">
+                      <Icon name="Briefcase" size={28} className="text-primary group-hover:scale-110 transition-transform" />
                     </div>
                     <div>
-                      <h3 className="font-mono font-bold text-slate-100 uppercase tracking-tight">{group.companyName}</h3>
-                      <p className="font-mono text-[9px] text-slate-500 uppercase mt-0.5">
-                        {group.sessions.length} DEPLOYMENT{group.sessions.length > 1 ? 'S' : ''} // LAST_ACT: {new Date(group.lastActivity).toLocaleDateString()}
+                      <h3 className="font-headline font-black text-white text-xl italic tracking-tight">{group.companyName}</h3>
+                      <p className="font-headline text-[10px] text-on-surface-variant mt-2 font-black uppercase tracking-widest opacity-60">
+                        {group.sessions.length} INTERVIEW{group.sessions.length > 1 ? 'S' : ''} // LAST ACTIVITY: {new Date(group.lastActivity).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-10">
                     <div className="hidden sm:flex flex-col items-end">
-                      <p className="text-[8px] font-mono text-slate-600 uppercase">Mean_Score</p>
-                      <p className="text-xs font-mono font-bold text-slate-300">
+                      <p className="text-[9px] font-headline text-on-surface-variant/40 font-black uppercase tracking-widest italic">Average Score</p>
+                      <p className="text-xl font-headline font-black text-white italic">
                         {Math.round(group.sessions.reduce((acc, s) => acc + (s.overallScore || 0), 0) / group.sessions.length)}%
                       </p>
                     </div>
-                    <Icon 
-                      name={expandedDrives[group.id] ? "ChevronUp" : "ChevronDown"} 
-                      size={16} 
-                      className="text-slate-500" 
-                    />
+                    <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover:border-primary/40 transition-all">
+                      <Icon 
+                        name={expandedDrives[group.id] ? "ms:expand_less" : "ms:expand_more"} 
+                        size={24} 
+                        className="text-on-surface-variant group-hover:text-primary" 
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -172,45 +174,45 @@ const StudentHistoryPage = () => {
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="overflow-hidden border-t border-slate-800/50 bg-slate-950/30"
+                      className="overflow-hidden border-t border-white/5 bg-white/[0.01]"
                     >
-                      <div className="divide-y divide-slate-800/30">
+                      <div className="divide-y divide-white/5">
                         {group.sessions.map((session) => (
-                          <div key={session.id} className="p-4 sm:px-8 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-800/20 transition-colors">
-                            <div className="flex items-center gap-4">
+                          <div key={session.id} className="p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 hover:bg-white/[0.02] transition-all">
+                            <div className="flex items-center gap-6">
                               <div className={cn(
-                                "w-8 h-8 rounded-full border flex items-center justify-center shrink-0",
-                                session.sessionType === 'TECHNICAL' ? "border-emerald-500/20 text-emerald-500 bg-emerald-500/5" :
-                                session.sessionType === 'GD' ? "border-amber-500/20 text-amber-500 bg-amber-500/5" :
+                                "w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 shadow-inner transition-all",
+                                session.sessionType === 'TECHNICAL' ? "border-primary/20 text-primary bg-primary/5" :
+                                session.sessionType === 'GD' ? "border-secondary/20 text-secondary bg-secondary/5" :
                                 "border-sky-500/20 text-sky-500 bg-sky-500/5"
                               )}>
                                 <Icon 
-                                  name={session.sessionType === 'TECHNICAL' ? 'Code' : session.sessionType === 'GD' ? 'Users' : 'User'} 
-                                  size={14} 
+                                  name={session.sessionType === 'TECHNICAL' ? 'ms:code' : session.sessionType === 'GD' ? 'ms:groups' : 'ms:person'} 
+                                  size={24} 
                                 />
                               </div>
                               <div>
-                                <p className="font-mono text-[10px] font-bold text-slate-300 uppercase tracking-widest">{session.sessionType.replace('_', ' ')}</p>
-                                <div className="flex items-center gap-3 mt-0.5">
-                                  <span className="font-mono text-[8px] text-slate-500">ID: {session.id.slice(0, 8)}</span>
-                                  <span className="w-0.5 h-0.5 rounded-full bg-slate-700" />
-                                  <span className="font-mono text-[8px] text-slate-500">{new Date(session.createdAt).toLocaleString()}</span>
+                                <p className="font-headline text-xs font-black text-white uppercase tracking-widest">{session.sessionType.replace('_', ' ')}</p>
+                                <div className="flex items-center gap-4 mt-2">
+                                  <span className="font-headline text-[9px] text-on-surface-variant font-black uppercase tracking-widest opacity-40">ID: {session.id.slice(0, 8)}</span>
+                                  <div className="w-1 h-1 rounded-full bg-white/10" />
+                                  <span className="font-headline text-[9px] text-on-surface-variant font-black uppercase tracking-widest opacity-40">{new Date(session.createdAt).toLocaleString()}</span>
                                 </div>
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between sm:justify-end gap-8">
+                            <div className="flex items-center justify-between sm:justify-end gap-12">
                               <div className="text-right">
-                                <p className="text-[8px] font-mono text-slate-600 uppercase">Score</p>
-                                <p className={cn("text-lg font-mono font-bold", getScoreColor(session.overallScore))}>
+                                <p className="text-[9px] font-headline text-on-surface-variant/40 font-black uppercase tracking-widest italic">Score</p>
+                                <p className={cn("text-2xl font-headline font-black italic", getScoreColor(session.overallScore))}>
                                   {session.status === 'completed' ? `${session.overallScore}%` : 'PENDING'}
                                 </p>
                               </div>
                               <Button 
                                 onClick={() => handleViewReport(session)}
-                                className="h-8 px-4 text-[9px] font-mono bg-slate-900 border border-slate-800 hover:border-emerald-500/50 hover:text-emerald-400 transition-all uppercase"
+                                className="h-12 px-8 text-[10px] font-headline font-black uppercase tracking-widest bg-white text-black hover:bg-primary hover:text-white rounded-xl transition-all shadow-lg"
                               >
-                                ANALYSIS_LOG
+                                VIEW REPORT
                               </Button>
                             </div>
                           </div>
@@ -222,9 +224,9 @@ const StudentHistoryPage = () => {
               </motion.div>
             ))
           ) : (
-            <div className="py-20 text-center border border-dashed border-slate-800 bg-slate-900/10">
-              <Icon name="SearchX" size={40} className="mx-auto text-slate-700 mb-4" />
-              <p className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">No matching mission logs detected in database</p>
+            <div className="py-20 text-center border border-dashed border-white/10 bg-white/[0.01] rounded-[2.5rem] space-y-6">
+              <Icon name="ms:search_off" size={60} className="mx-auto text-on-surface-variant/20" />
+              <p className="font-headline text-sm text-on-surface-variant font-black uppercase tracking-[0.3em] opacity-40">No interviews found in your history</p>
             </div>
           )}
         </div>

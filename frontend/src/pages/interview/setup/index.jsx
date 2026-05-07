@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import DashboardLayout from '../../../components/ui/DashboardLayout';
 import InterviewProgressNav from '../../../components/ui/InterviewProgressNav';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import InterviewTypeCard from './components/InterviewTypeCard';
 import TechnicalSetupForm from './components/TechnicalSetupForm';
 import HRSetupForm from './components/HRSetupForm';
@@ -29,14 +31,12 @@ const InterviewSetupWizard = () => {
         setCurrentStep(2);
       }
       if (location.state.driveId) {
-        // If it's a specific drive, we usually want Technical
         setSelectedType('technical');
         setCurrentStep(2);
-        // We could fetch drive details here to pre-fill company name
         const fetchDriveDetails = async () => {
            try {
-             const { data } = await api.get(`/api/core/v1/drives/all`); // Ideally a single drive endpoint
-             const drive = data.data.find(d => d.id === location.state.driveId);
+             const { data } = await api.get(`/drives/${location.state.driveId}/details`);
+             const drive = data.data;
              if (drive) {
                setFormData(prev => ({ ...prev, company: drive.companyName, driveId: drive.id }));
              }
@@ -47,7 +47,7 @@ const InterviewSetupWizard = () => {
     }
   }, [location.state]);
 
-  const stepLabels = ['Type', 'Setup', 'Summary'];
+  const stepLabels = ['Selection', 'Setup', 'Start'];
   const totalSteps = 3;
 
   const interviewTypes = [
@@ -55,44 +55,44 @@ const InterviewSetupWizard = () => {
       type: 'technical',
       title: 'Technical Interview',
       description: 'Practice coding challenges, system design, and technical problem-solving with AI-powered scenarios.',
-      icon: 'Code',
+      icon: 'ms:code',
       features: [
-        'Algorithm & Data Structure Questions',
-        'System Design Discussions',
-        'Code Review Sessions'
+        'Coding Challenges',
+        'System Design',
+        'Logic Review'
       ]
     },
     {
       type: 'hr',
       title: 'HR Interview',
       description: 'Master behavioral questions, company culture discussions, and professional communication skills.',
-      icon: 'Users',
+      icon: 'ms:groups',
       features: [
-        'Behavioral Question Practice',
-        'Culture Fit Assessment',
-        'Career Goal Discussions'
+        'Behavioral Questions',
+        'Company Culture',
+        'Soft Skills'
       ]
     },
     {
       type: 'group-discussion',
       title: 'Group Discussion',
       description: 'Enhance communication, leadership, and collaborative problem-solving in simulated group settings.',
-      icon: 'MessageSquare',
+      icon: 'ms:forum',
       features: [
-        'Leadership Skills Development',
-        'Team Collaboration Practice',
-        'Critical Thinking Exercises'
+        'Debate & Reasoning',
+        'Team Collaboration',
+        'Communication Skills'
       ]
     },
     {
       type: 'salary-negotiation',
       title: 'Salary Negotiation',
       description: 'Learn effective negotiation strategies for compensation, benefits, and contract terms.',
-      icon: 'DollarSign',
+      icon: 'ms:payments',
       features: [
-        'Compensation Discussion Tactics',
-        'Benefits Negotiation',
-        'Contract Terms Review'
+        'Market Rate Analysis',
+        'Benefits Discussion',
+        'Closing the Deal'
       ]
     }
   ];
@@ -133,8 +133,8 @@ const InterviewSetupWizard = () => {
       case 2:
         if (selectedType === 'technical') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
-          if (!formData?.company) newErrors.company = 'Company selection is required';
-          if (!formData?.difficulty) newErrors.difficulty = 'Difficulty level is required';
+          if (!formData?.company) newErrors.company = 'Company is required';
+          if (!formData?.difficulty) newErrors.difficulty = 'Difficulty is required';
           if (!formData?.max_questions) newErrors.max_questions = 'Number of questions is required';
         } else if (selectedType === 'hr') {
           if (!formData?.jobRole) newErrors.jobRole = 'Job role is required';
@@ -149,7 +149,7 @@ const InterviewSetupWizard = () => {
           if (!formData?.company) newErrors.company = 'Company is required';
           if (!formData?.experienceLevel) newErrors.experienceLevel = 'Experience level is required';
           if (!formData?.industry) newErrors.industry = 'Industry is required';
-          if (!formData?.salaryRange) newErrors.salaryRange = 'Salary range is required';
+          if (!formData?.salaryRange) newErrors.salaryRange = 'Target salary is required';
           if (!formData?.negotiationStyle) newErrors.negotiationStyle = 'Negotiation style is required';
         }
         break;
@@ -232,22 +232,14 @@ const InterviewSetupWizard = () => {
       if (data.success) {
         const sessionId = data.data.id;
         localStorage.removeItem('interviewSetupData');
-        
         const roomPath = selectedType === 'group-discussion' ? `/gd/room/${sessionId}` : `/interview/room/${sessionId}`;
-
         navigate(roomPath, {
-          state: {
-            interviewType: selectedType,
-            configuration: formData,
-            sessionId: sessionId
-          }
+          state: { interviewType: selectedType, configuration: formData, sessionId: sessionId }
         });
-      } else {
-        setErrors({ api: data.message || "Failed to create session." });
       }
     } catch (error) {
       console.error("Failed to start interview session:", error);
-      setErrors({ api: error.response?.data?.detail || "An unexpected error occurred." });
+      setErrors({ api: error.response?.data?.detail || "Failed to start interview. Please try again." });
     } finally {
       setIsLoading(false);
     }
@@ -257,16 +249,21 @@ const InterviewSetupWizard = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-mono font-bold text-slate-100 tracking-tighter uppercase">
-                SELECT_SIMULATION_VECTOR
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center gap-4 mb-2">
+                <span className="w-12 h-[2px] bg-primary rounded-full"></span>
+                <span className="text-[11px] font-extrabold tracking-[0.4em] text-primary uppercase">Select Mode</span>
+                <span className="w-12 h-[2px] bg-primary rounded-full"></span>
+              </div>
+              <h2 className="text-5xl font-headline font-extrabold text-on-surface italic">
+                Get Started
               </h2>
-              <p className="text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em]">
-                Choose the behavioral or technical paradigm for this session
+              <p className="text-on-surface-variant font-body text-base max-w-2xl mx-auto opacity-60 leading-relaxed">
+                Choose the interview mode you want to practice. Each mode features specialized AI interviewers.
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-8 md:grid-cols-2">
               {interviewTypes?.map((interview) => (
                 <InterviewTypeCard
                   key={interview?.type}
@@ -281,55 +278,45 @@ const InterviewSetupWizard = () => {
               ))}
             </div>
             {errors?.type && (
-              <div className="text-center">
-                <p className="text-red-500 font-mono text-[10px] uppercase tracking-widest bg-red-500/10 border border-red-500/20 py-2 inline-block px-4">
-                  {errors?.type}
-                </p>
-              </div>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center"
+              >
+                <div className="inline-flex items-center gap-3 px-6 py-3 bg-red-500/10 border border-red-500/20 rounded-2xl">
+                  <Icon name="ms:error" size={18} className="text-red-500" />
+                  <p className="text-red-500 font-headline text-[10px] font-extrabold font-label font-medium text-on-surface-variant">
+                    {errors?.type}
+                  </p>
+                </div>
+              </motion.div>
             )}
           </div>
         );
 
       case 2:
         return (
-          <div>
+          <div className="animate-in fade-in slide-in-from-right-10 duration-700">
             {selectedType === 'technical' && (
-              <TechnicalSetupForm
-                formData={formData}
-                onChange={handleFormDataChange}
-                errors={errors}
-              />
+              <TechnicalSetupForm formData={formData} onChange={handleFormDataChange} errors={errors} />
             )}
             {selectedType === 'hr' && (
-              <HRSetupForm
-                formData={formData}
-                onChange={handleFormDataChange}
-                errors={errors}
-              />
+              <HRSetupForm formData={formData} onChange={handleFormDataChange} errors={errors} />
             )}
             {selectedType === 'group-discussion' && (
-              <GroupDiscussionSetupForm
-                formData={formData}
-                onChange={handleFormDataChange}
-                errors={errors}
-              />
+              <GroupDiscussionSetupForm formData={formData} onChange={handleFormDataChange} errors={errors} />
             )}
             {selectedType === 'salary-negotiation' && (
-              <SalaryNegotiationSetupForm
-                formData={formData}
-                onChange={handleFormDataChange}
-                errors={errors}
-              />
+              <SalaryNegotiationSetupForm formData={formData} onChange={handleFormDataChange} errors={errors} />
             )}
           </div>
         );
 
       case 3:
         return (
-          <SessionSummary
-            interviewType={selectedType}
-            formData={formData}
-          />
+          <div className="animate-in fade-in zoom-in-95 duration-700">
+            <SessionSummary interviewType={selectedType} formData={formData} />
+          </div>
         );
 
       default:
@@ -338,94 +325,91 @@ const InterviewSetupWizard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 relative overflow-hidden flex flex-col">
-      {/* Blueprint Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
-
-      {/* Header */}
-      <header className="h-16 border-b border-slate-800 bg-slate-950/50 backdrop-blur-md flex items-center justify-between px-8 relative z-10 shrink-0">
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 bg-emerald-500 flex items-center justify-center shrink-0">
-            <Icon name="Brain" size={20} className="text-slate-950" />
-          </div>
-          <span className="font-mono font-bold tracking-tighter text-lg">
-            INTERVYOU.AI // MISSION_PREP
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] font-mono text-emerald-500/80 uppercase tracking-widest hidden sm:inline">Secure_Environment_Active</span>
-        </div>
-      </header>
-
-      <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
-        <div className="container mx-auto px-4 py-12 max-w-5xl">
+    <DashboardLayout>
+      <div className="relative z-10">
+        <div className="container mx-auto px-6 py-10 max-w-6xl">
           {/* Progress Indicator */}
-          <div className="mb-12">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-mono text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">
-                PHASE_{currentStep.toString().padStart(2, '0')} // {stepLabels[currentStep - 1].toUpperCase()}
-              </h2>
-              <span className="font-mono text-[10px] text-emerald-500/60 uppercase">
-                Step {currentStep} of {totalSteps}
+          <div className="mb-20 max-w-4xl mx-auto">
+            <div className="flex justify-between items-end mb-6 px-1">
+              <div className="space-y-1">
+                <span className="text-[10px] font-extrabold text-primary uppercase tracking-[0.4em]">Step Progress</span>
+                <h3 className="font-headline text-lg font-extrabold text-on-surface">
+                  Step {currentStep} <span className="text-on-surface-variant opacity-40 ml-2">//</span> <span className="italic text-primary ml-2">{stepLabels[currentStep - 1]}</span>
+                </h3>
+              </div>
+              <span className="font-headline font-extrabold text-on-surface-variant tabular-nums opacity-60 text-xs font-label font-medium text-on-surface-variant">
+                {currentStep} / {totalSteps}
               </span>
             </div>
-            <div className="h-1 w-full bg-slate-900 border border-slate-800 flex gap-1 p-[1px]">
-              {stepLabels.map((_, i) => (
-                <div 
-                  key={i} 
-                  className={cn(
-                    "h-full flex-1 transition-colors duration-500",
-                    i + 1 <= currentStep ? "bg-emerald-500" : "bg-slate-800"
-                  )} 
-                />
-              ))}
+            <div className="h-3 w-full bg-surface-container-high/40 rounded-full p-1 border border-outline-variant/5">
+              <div className="h-full w-full flex gap-2">
+                {stepLabels.map((_, i) => (
+                  <motion.div 
+                    key={i} 
+                    initial={{ width: 0 }}
+                    animate={{ width: '100%' }}
+                    className={cn(
+                      "h-full flex-1 rounded-full transition-all duration-1000",
+                      i + 1 <= currentStep ? "bg-primary shadow-sm" : "bg-outline-variant/10"
+                    )} 
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          <main className="min-h-[400px]">
+          <main className="min-h-[500px]">
             {renderStepContent()}
           </main>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between items-center pt-8 border-t border-slate-800 mt-12">
+          <div className="flex justify-between items-center pt-16 border-t border-outline-variant/10 mt-20">
             <div>
               {currentStep > 1 && (
                 <Button
                   onClick={handleBack}
-                  className="bg-slate-900 border border-slate-800 text-slate-400 font-mono text-[10px] tracking-widest hover:text-slate-100 uppercase h-10 px-6"
+                  variant="outline"
+                  className="h-16 px-10 rounded-2xl group border-outline-variant/20 transition-all duration-500"
                 >
-                  <Icon name="ArrowLeft" size={14} className="mr-2" />
-                  PREVIOUS_PHASE
+                  <span className="flex items-center gap-4 font-headline text-[10px] font-extrabold font-label font-medium text-on-surface-variant">
+                    <Icon name="ms:arrow_back" size={20} className="group-hover:-translate-x-1 transition-transform" />
+                    Back
+                  </span>
                 </Button>
               )}
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
               {currentStep < totalSteps ? (
                 <Button
                   onClick={handleNext}
                   disabled={currentStep === 1 && !selectedType}
-                  className="bg-emerald-500 text-slate-950 font-mono font-bold text-[10px] tracking-widest hover:bg-emerald-400 uppercase h-10 px-8"
+                  variant="primary"
+                  className="h-20 px-12 rounded-2xl group shadow-[0_15px_30px_rgba(255,145,90,0.2)] transition-all duration-500 bg-primary text-white"
                 >
-                  NEXT_PHASE
-                  <Icon name="ArrowRight" size={14} className="ml-2" />
+                  <span className="flex items-center gap-4 font-headline text-sm font-extrabold uppercase tracking-widest">
+                    Next Step
+                    <Icon name="ms:arrow_forward" size={24} className="group-hover:translate-x-1 transition-transform" />
+                  </span>
                 </Button>
               ) : (
                 <Button
                   onClick={handleStartInterview}
                   loading={isLoading}
-                  className="bg-emerald-500 text-slate-950 font-mono font-bold text-[10px] tracking-widest hover:bg-emerald-400 uppercase h-10 px-10"
+                  variant="primary"
+                  className="h-20 px-12 rounded-[2rem] group shadow-[0_20px_40px_rgba(255,145,90,0.3)] transition-all duration-500"
                 >
-                  {isLoading ? 'INITIALIZING...' : 'START_MISSION'}
-                  <Icon name="Play" size={14} className="ml-2" />
+                  <span className="flex items-center gap-4 font-headline text-[11px] font-extrabold">
+                    {isLoading ? 'Loading...' : 'Start Interview'}
+                    <Icon name="ms:rocket_launch" size={24} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                  </span>
                 </Button>
               )}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

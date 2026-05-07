@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { cn } from '../../../utils/cn';
 
@@ -7,69 +7,88 @@ const RoleSelection = ({ selectedRole, onSelect }) => {
   const roles = [
     {
       id: 'ROLE_STUDENT',
-      title: 'CANDIDATE',
-      description: 'I want to practice interviews and improve my placement readiness.',
-      icon: 'User',
-      accent: 'emerald'
+      title: 'Practitioner',
+      description: 'Sharpen your interview skills and master the process.',      icon: 'ms:psychology',
     },
     {
       id: 'ROLE_ORG_ADMIN',
-      title: 'ORGANIZATION',
-      description: 'I want to manage placement drives and track student performance.',
-      icon: 'Building',
-      accent: 'sky'
+      title: 'Architect',
+      description: 'Design the recruitment nexus and oversee candidate growth.',
+      icon: 'ms:corporate_fare',
     }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      {roles.map((role) => (
-        <motion.div
-          key={role.id}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => onSelect(role.id)}
-          className={cn(
-            "cursor-pointer border p-6 transition-all duration-300 relative overflow-hidden group",
-            selectedRole === role.id 
-              ? "border-emerald-500 bg-emerald-500/5" 
-              : "border-slate-800 bg-slate-900/50 hover:border-slate-700 hover:bg-slate-900"
-          )}
-        >
-          {/* Accent Glow */}
-          {selectedRole === role.id && (
-            <div className="absolute top-0 right-0 p-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
-          )}
-
-          <div className="relative z-10 flex flex-col space-y-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
+      {roles.map((role) => {
+        const active = selectedRole === role.id;
+        return (
+          <motion.div
+            key={role.id}
+            whileHover={{ y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onSelect(role.id)}
+            className={cn(
+              "cursor-pointer p-10 transition-all duration-700 relative overflow-hidden rounded-[2.5rem] group",
+              active 
+                ? "bg-primary/10 border border-primary/40 shadow-2xl" 
+                : "bg-surface-container-high/20 border border-outline-variant/10 hover:border-on-surface/20"
+            )}
+          >
+            {/* Background Glows */}
             <div className={cn(
-              "w-12 h-12 flex items-center justify-center border transition-colors",
-              selectedRole === role.id 
-                ? "border-emerald-500 bg-emerald-500/10 text-emerald-500" 
-                : "border-slate-800 bg-slate-950 text-slate-500 group-hover:text-slate-300 group-hover:border-slate-700"
-            )}>
-              <Icon name={role.icon} size={24} />
-            </div>
-            
-            <div>
-              <h3 className={cn(
-                "font-mono text-sm font-bold tracking-widest uppercase",
-                selectedRole === role.id ? "text-emerald-500" : "text-slate-200"
-              )}>
-                {role.title}
-              </h3>
-              <p className="text-xs text-slate-400 mt-2 font-mono leading-relaxed">
-                {role.description}
-              </p>
-            </div>
-          </div>
+               "absolute top-0 right-0 w-32 h-32 blur-[80px] rounded-full transition-all duration-1000",
+               active ? "bg-primary/20 scale-150" : "bg-white/5 opacity-0 group-hover:opacity-100"
+            )} />
 
-          {/* Industrial Grid Pattern (Subtle) */}
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:1rem_1rem]" />
-        </motion.div>
-      ))}
+            <div className="relative z-10 flex flex-col items-center text-center space-y-6">
+              <div className={cn(
+                "w-20 h-20 flex items-center justify-center rounded-[1.5rem] transition-all duration-700 relative",
+                active 
+                  ? "bg-primary text-on-primary shadow-lg shadow-primary/20" 
+                  : "bg-surface-container-highest text-on-surface-variant group-hover:text-primary group-hover:bg-surface-container-highest/80"
+              )}>
+                {active && (
+                   <motion.div 
+                     animate={{ rotate: 360 }}
+                     transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                     className="absolute inset-[-12px] border-2 border-primary/20 rounded-[2rem] pointer-events-none"
+                   />
+                )}
+                <Icon name={role.icon} size={40} />
+              </div>
+              
+              <div className="space-y-3">
+                <h3 className={cn(
+                  "font-headline text-sm font-extrabold tracking-[0.3em] uppercase transition-colors",
+                  active ? "text-primary" : "text-on-surface-variant group-hover:text-on-surface"
+                )}>
+                  {role.title}
+                </h3>
+                <p className="text-[11px] text-on-surface-variant/40 font-extrabold uppercase tracking-[0.15em] leading-relaxed max-w-[200px] group-hover:text-on-surface-variant transition-colors">
+                  {role.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Selection Tick Indicator */}
+            <AnimatePresence>
+              {active && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  className="absolute top-6 right-6"
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary flex items-center justify-center">
+                    <Icon name="ms:check" size={18} className="text-primary" />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        );
+      })}
     </div>
   );
 };

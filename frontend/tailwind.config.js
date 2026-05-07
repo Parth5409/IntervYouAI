@@ -18,60 +18,75 @@ export default {
     },
     extend: {
       colors: {
-        border: "var(--color-border)", /* light border */
-        input: "var(--color-input)", /* pure white */
-        ring: "var(--color-ring)", /* deep professional blue */
-        background: "var(--color-background)", /* warm off-white */
-        foreground: "var(--color-foreground)", /* rich charcoal */
-        primary: {
-          DEFAULT: "var(--color-primary)", /* deep professional blue */
-          foreground: "var(--color-primary-foreground)", /* white */
-        },
-        secondary: {
-          DEFAULT: "var(--color-secondary)", /* sophisticated slate gray */
-          foreground: "var(--color-secondary-foreground)", /* white */
-        },
-        destructive: {
-          DEFAULT: "var(--color-destructive)", /* clear red */
-          foreground: "var(--color-destructive-foreground)", /* white */
-        },
-        muted: {
-          DEFAULT: "var(--color-muted)", /* light gray */
-          foreground: "var(--color-muted-foreground)", /* balanced gray */
-        },
-        accent: {
-          DEFAULT: "var(--color-accent)", /* confident emerald green */
-          foreground: "var(--color-accent-foreground)", /* white */
-        },
-        popover: {
-          DEFAULT: "var(--color-popover)", /* pure white */
-          foreground: "var(--color-popover-foreground)", /* rich charcoal */
-        },
-        card: {
-          DEFAULT: "var(--color-card)", /* pure white */
-          foreground: "var(--color-card-foreground)", /* rich charcoal */
-        },
-        success: {
-          DEFAULT: "var(--color-success)", /* vibrant green */
-          foreground: "var(--color-success-foreground)", /* white */
-        },
-        warning: {
-          DEFAULT: "var(--color-warning)", /* warm amber */
-          foreground: "var(--color-warning-foreground)", /* white */
-        },
-        error: {
-          DEFAULT: "var(--color-error)", /* clear red */
-          foreground: "var(--color-error-foreground)", /* white */
-        },
+        background:                "#080808",
+        surface:                   "#080808",
+        "surface-dim":               "#080808",
+        "surface-bright":            "#222222",
+        "surface-container-lowest":  "#000000",
+        "surface-container-low":     "#111111",
+        "surface-container":         "#141414",
+        "surface-container-high":    "#181818",
+        "surface-container-highest": "#1c1c1c",
+        "surface-variant":           "#212121",
+        outline:                   "#333333",
+        "outline-variant":           "#262626",
+        "on-surface":                "#ffffff",
+        "on-surface-variant":        "#888888",
+        "on-background":             "#ffffff",
+        "inverse-surface":           "#fcf9f8",
+        "inverse-on-surface":        "#565555",
+        primary:                   "#6366f1", // Indigo
+        "primary-container":         "#4f46e5",
+        "primary-fixed":             "#818cf8",
+        "primary-fixed-dim":         "#6366f1",
+        "primary-dim":               "#4f46e5",
+        "on-primary":                "#ffffff",
+        "on-primary-container":      "#e0e7ff",
+        "on-primary-fixed":          "#000000",
+        "on-primary-fixed-variant":  "#312e81",
+        "inverse-primary":           "#818cf8",
+        "surface-tint":              "#6366f1",
+        secondary:                 "#06b6d4", // Cyan
+        "secondary-container":       "#0891b2",
+        "secondary-fixed":           "#22d3ee",
+        "secondary-fixed-dim":       "#06b6d4",
+        "secondary-dim":             "#0891b2",
+        "on-secondary":              "#000000",
+        "on-secondary-container":    "#cffafe",
+        "on-secondary-fixed":        "#000000",
+        "on-secondary-fixed-variant":"#164e63",
+        tertiary:                  "#a855f7", // Purple
+        "tertiary-container":        "#9333ea",
+        "tertiary-fixed":            "#c084fc",
+        "tertiary-fixed-dim":        "#a855f7",
+        "tertiary-dim":              "#9333ea",
+        "on-tertiary":               "#ffffff",
+        "on-tertiary-container":     "#f3e8ff",
+        "on-tertiary-fixed":         "#000000",
+        "on-tertiary-fixed-variant": "#581c87",
+        error:                     "#f43f5e",
+        "error-dim":                 "#e11d48",
+        "error-container":           "#9f1239",
+        "on-error":                  "#ffffff",
+        "on-error-container":        "#ffe4e6",
+        border: "var(--color-border)",
+        input: "var(--color-input)",
+        ring: "var(--color-ring)",
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        DEFAULT: "0.375rem",
+        lg:      "0.75rem",
+        xl:      "1rem",
+        "2xl":   "1.5rem",
+        "3xl":   "2rem",
+        full:    "9999px",
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
+        headline: ['"Poppins"', 'sans-serif'],
+        body:     ['"Poppins"', 'sans-serif'],
+        label:    ['"Poppins"', 'sans-serif'],
+        sans:     ['"Poppins"', 'sans-serif'],
+        mono:     ["JetBrains Mono", "monospace"],
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],

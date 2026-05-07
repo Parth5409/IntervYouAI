@@ -7,12 +7,10 @@ import LoginPrompt from './components/LoginPrompt';
 const RegistrationScreen = () => {
   return (
     <AuthLayout 
-      title="Entity_Registration" 
-      subtitle="Initialize new profile in the system"
+      title="Create Account" 
+      subtitle="Join IntervYou.AI and start your journey"
     >
       <RegistrationForm />
-      <TrustSignals />
-      <LoginPrompt />
     </AuthLayout>
   );
 };

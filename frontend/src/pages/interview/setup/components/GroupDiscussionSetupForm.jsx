@@ -8,26 +8,21 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
   const [loadingTopics, setLoadingTopics] = useState(false);
 
   const durations = [
-    { value: "15", label: "15_MINUTES (BLITZ)" },
-    { value: "20", label: "20_MINUTES (STANDARD)" },
-    { value: "30", label: "30_MINUTES (EXTENDED)" },
-    { value: "45", label: "45_MINUTES (MARATHON)" }
+    { value: "15", label: "15 Minutes" },
+    { value: "20", label: "20 Minutes" },
+    { value: "30", label: "30 Minutes" },
+    { value: "45", label: "45 Minutes" }
   ];
 
   useEffect(() => {
     const fetchTopics = async () => {
       setLoadingTopics(true);
       try {
-        // Fallback topics if API fails
         const mockTopics = [
-          { value: 'ai-ethics', label: 'ETHICAL_IMPLICATIONS_OF_AI', description: 'Discuss the impact of AI on privacy, employment, and societal structures.' },
-          { value: 'remote-work', label: 'REMOTE_VS_OFFICE_PARADIGM', description: 'Analyze the long-term efficiency and cultural impacts of remote work models.' },
-          { value: 'green-tech', label: 'SUSTAINABLE_TECHNOLOGY_FUTURE', description: 'Evaluating the transition to green energy and circular economy models.' }
+          { value: 'ai-ethics', label: 'Ethical Implications of AI', description: 'Discuss the impact of AI on privacy, employment, and societal structures.' },
+          { value: 'remote-work', label: 'Remote vs Office Paradigm', description: 'Analyze the long-term efficiency and cultural impacts of remote work models.' },
+          { value: 'green-tech', label: 'Sustainable Technology Future', description: 'Evaluating the transition to green energy and circular economy models.' }
         ];
-        
-        // We could use an actual endpoint here if available
-        // const response = await api.get('setup/gd-topics');
-        // setTopics(response.data.data || mockTopics);
         setTopics(mockTopics);
       } catch (error) {
         console.error("Failed to fetch GD topics:", error);
@@ -47,72 +42,96 @@ const GroupDiscussionSetupForm = ({ formData, onChange, errors }) => {
   const selectedTopic = topics?.find(topic => topic?.value === formData?.topic);
 
   return (
-    <div className="space-y-8">
-      <div className="border-l-2 border-amber-500 pl-4">
-        <h3 className="text-sm font-mono font-bold text-slate-100 uppercase tracking-[0.2em]">
-          COLLECTIVE_DISCOURSE_CONFIGURATION
+    <div className="space-y-12">
+      <div className="space-y-2">
+        <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-amber-500 rounded-full shadow-sm" />
+          Group Discussion Setup
         </h3>
-        <p className="text-slate-500 font-mono text-[10px] mt-1 uppercase tracking-wider">
-          Establish simulation parameters for multi-agent interaction
+        <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
+          Configure your group discussion session
         </p>
       </div>
 
-      <div className="space-y-6">
-        <Select
-          label="Discussion_Topic (Vector)"
-          placeholder={loadingTopics ? "SYNCING_TOPICS..." : "SELECT_TOPIC"}
-          options={topics}
-          value={formData?.topic}
-          onChange={handleFieldChange('topic')}
-          error={errors?.topic}
-          required
-        />
-
-        {selectedTopic && (
-          <div className="bg-slate-900 border border-slate-800 p-4 font-mono">
-            <div className="flex items-start gap-4">
-              <Icon name="Info" size={16} className="text-amber-500 shrink-0 mt-1" />
-              <div>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">DEBRIEF_SUMMARY</p>
-                <p className="text-[11px] text-slate-300 leading-relaxed">{selectedTopic?.description}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="grid gap-8 md:grid-cols-2">
+      <div className="space-y-12">
+        <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl space-y-8">
           <Select
-            label="Temporal_Window (Duration)"
-            placeholder="SELECT_DURATION"
-            options={durations}
-            value={formData?.duration}
-            onChange={handleFieldChange('duration')}
-            error={errors?.duration}
+            label="Discussion Topic"
+            placeholder={loadingTopics ? "Loading..." : "Select Subject"}
+            options={topics}
+            value={formData?.topic}
+            onChange={handleFieldChange('topic')}
+            error={errors?.topic}
             required
           />
+
+          <AnimatePresence>
+            {selectedTopic && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="bg-amber-500/5 border border-amber-500/20 rounded-[2rem] p-8"
+              >
+                <div className="flex items-start gap-6">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                    <Icon name="ms:info" size={20} />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-extrabold text-amber-500 uppercase tracking-[0.3em] opacity-60">Discussion Details</p>
+                    <p className="font-body text-sm text-on-surface-variant leading-relaxed opacity-80">{selectedTopic?.description}</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="grid gap-12 md:grid-cols-2">
+          <div className="p-10 bg-surface-container-high/40 rounded-[2.5rem] border border-outline-variant/10 shadow-xl backdrop-blur-3xl">
+            <Select
+              label="Session Duration"
+              placeholder="Select Duration"
+              options={durations}
+              value={formData?.duration}
+              onChange={handleFieldChange('duration')}
+              error={errors?.duration}
+              required
+            />
+          </div>
         </div>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 p-6 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-          <Icon name="MessageSquare" size={64} className="text-amber-500" />
+      <div className="bg-amber-500/5 rounded-[3rem] border border-amber-500/20 p-12 relative overflow-hidden group shadow-2xl backdrop-blur-3xl">
+        <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:opacity-20 transition-all duration-700 -rotate-6 transform group-hover:scale-110">
+          <Icon name="ms:forum" size={120} className="text-amber-500" />
         </div>
-        <h4 className="text-[10px] font-mono font-bold text-amber-500 mb-4 uppercase tracking-[0.2em] flex items-center gap-2">
-          <div className="w-1.5 h-1.5 bg-amber-500" />
-          DISCOURSE_EVALUATION_METRICS
-        </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-          {[
-            'MULTI_AGENT_SYNCHRONIZATION',
-            'ARGUMENTATIVE_STRUCTURE_ANALYSIS',
-            'COOPERATIVE_LOGIC_TRACKING',
-            'FACILITATIVE_INFLUENCE_SCORING'
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <span className="text-slate-700 font-mono text-[10px]">0{i+1}</span>
-              <span className="text-slate-400 font-mono text-[9px] uppercase tracking-tighter">{item}</span>
-            </div>
-          ))}
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-12">
+          <div className="space-y-4 max-w-md">
+            <h4 className="text-[11px] font-extrabold text-amber-500 uppercase tracking-[0.5em] flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              Skill Assessment
+            </h4>
+            <p className="font-body text-base text-on-surface-variant opacity-70 leading-relaxed">
+              Our AI evaluates your communication skills, team collaboration, and ability to construct logical arguments.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6 flex-1">
+            {[
+              { text: 'Communication Skills', icon: 'ms:sync' },
+              { text: 'Logical Reasoning', icon: 'ms:account_tree' },
+              { text: 'Team Collaboration', icon: 'ms:hub' },
+              { text: 'Leadership Impact', icon: 'ms:stars' }
+            ].map((item, i) => (
+              <div key={i} className="flex items-center gap-5 group/item transition-all hover:translate-x-2">
+                <div className="w-12 h-12 rounded-2xl bg-surface-container-highest flex items-center justify-center text-amber-500 border border-outline-variant/10 group-hover/item:bg-amber-500 group-hover/item:text-on-surface transition-all duration-500 shadow-md">
+                  <Icon name={item.icon} size={22} />
+                </div>
+                <span className="text-on-surface font-extrabold text-[10px] uppercase tracking-widest leading-tight transition-colors group-hover/item:text-amber-500">{item.text}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

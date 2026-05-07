@@ -4,89 +4,91 @@ import { cn } from '../../../../utils/cn';
 
 const GDSummary = ({ formData }) => {
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="border-l-2 border-amber-500 pl-4">
-        <h3 className="text-sm font-mono font-bold text-slate-100 uppercase tracking-[0.2em]">
-          GD_SESSION_DEBRIEF_&_PRE_FLIGHT_CHECK
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <div className="space-y-2">
+        <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-amber-500 rounded-full shadow-sm" />
+          Discussion Summary
         </h3>
-        <p className="text-slate-500 font-mono text-[10px] mt-1 uppercase tracking-wider">
-          Verify collective discourse parameters before multi-agent initialization
+        <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
+          Review your discussion settings
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-12 lg:grid-cols-3">
         {/* Main Status */}
-        <div className="lg:col-span-2 border border-amber-500/30 bg-slate-900/50 p-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Icon name="MessageSquare" size={80} className="text-amber-500" />
-          </div>
+        <div className="lg:col-span-2 bg-surface-container-high/40 backdrop-blur-3xl p-12 rounded-[3.5rem] border border-amber-500/20 shadow-2xl relative overflow-hidden group transition-all duration-700 hover:border-amber-500/30">
+           <div className="absolute -top-24 -right-24 w-64 h-64 bg-amber-500/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-amber-500/10 transition-all duration-1000" />
           
-          <div className="relative z-10 space-y-8">
-            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 border border-amber-500/30 flex items-center justify-center bg-slate-950">
-                <Icon name="MessageSquare" size={32} className="text-amber-500" />
+          <div className="relative z-10 space-y-12">
+            <div className="flex items-center gap-8">
+              <div className="w-20 h-20 rounded-3xl border border-amber-500/20 flex items-center justify-center bg-surface-container-highest shadow-xl transition-transform duration-700 group-hover:scale-110">
+                <Icon name="ms:forum" size={36} className="text-amber-500" />
               </div>
-              <div>
-                <h4 className="text-xl font-mono font-bold text-slate-100 tracking-tighter uppercase">
-                  COLLECTIVE_DISCOURSE_SIMULATION
+              <div className="space-y-1">
+                <h4 className="text-3xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
+                  Group Discussion
                 </h4>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Temporal_Window:</span>
-                  <span className="font-mono text-[10px] text-amber-500 font-bold tracking-widest">{formData.duration}_MINUTES</span>
+                <p className="text-on-surface-variant text-sm font-body opacity-60 italic">Practice group discussion with AI participants.</p>
+                <div className="flex items-center gap-4 mt-3">
+                  <span className="font-extrabold text-[9px] text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Duration:</span>
+                  <span className="font-extrabold text-[10px] text-amber-500 tracking-[0.2em] bg-amber-500/10 px-3 py-1 rounded-full">{formData.duration} MINUTES</span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-8 border-t border-slate-800/50 space-y-6">
-              <div className="space-y-1">
-                <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">DISCUSSION_TOPIC_VECTOR</p>
-                <p className="text-sm font-mono font-bold text-slate-300 uppercase tracking-tight leading-relaxed">
-                  {formData.topic}
-                </p>
-              </div>
+            <div className="pt-12 border-t border-outline-variant/10 space-y-4 group/item">
+              <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40 group-hover/item:opacity-70 transition-opacity">Discussion Topic</p>
+              <p className="text-xl font-extrabold text-on-surface tracking-tight leading-relaxed border-b border-white/5 pb-6 group-hover/item:border-amber-500/30 transition-all">
+                {formData.topic}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Technical Stack */}
-        <div className="space-y-6">
-          <div className="bg-slate-900 border border-slate-800 p-6 space-y-4">
-            <h4 className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-amber-500" />
-              SIMULATION_STACK
+        <div className="space-y-10 flex flex-col">
+          <div className="bg-surface-container-high/40 backdrop-blur-3xl border border-outline-variant/10 p-10 rounded-[3rem] space-y-8 shadow-xl relative overflow-hidden">
+             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-[80px]" />
+            <h4 className="text-[11px] font-extrabold text-amber-500 uppercase tracking-[0.4em] flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              System Status
             </h4>
-            <div className="space-y-3">
+            <div className="space-y-6">
               {[
-                { icon: 'Users', label: 'AGENT_MODELS_LOADED', status: 'ACTIVE', color: 'text-emerald-500' },
-                { icon: 'Mic', label: 'VOCAL_UPLINK', status: 'READY', color: 'text-emerald-500' },
-                { icon: 'Cpu', label: 'DISCOURSE_ENGINE', status: 'STANDBY', color: 'text-sky-500' }
+                { icon: 'ms:groups', label: 'AI Participants', status: 'LOADED', color: 'text-primary' },
+                { icon: 'ms:mic', label: 'Microphone', status: 'ACTIVE', color: 'text-primary' },
+                { icon: 'ms:memory', label: 'Interview Engine', status: 'READY', color: 'text-sky-500' }
               ].map((req, i) => (
-                <div key={i} className="flex items-center justify-between border-b border-slate-800/50 pb-2 last:border-0 last:pb-0">
-                  <div className="flex items-center gap-3">
-                    <Icon name={req.icon} size={14} className="text-slate-500" />
-                    <span className="text-[9px] font-mono text-slate-400">{req.label}</span>
+                <div key={i} className="flex items-center justify-between border-b border-outline-variant/5 pb-4 last:border-0 last:pb-0 group/req">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant/40 group-hover/req:text-amber-500 transition-colors">
+                       <Icon name={req.icon} size={18} />
+                    </div>
+                    <span className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest opacity-60 group-hover/req:opacity-100 transition-opacity">{req.label}</span>
                   </div>
-                  <span className={cn("text-[9px] font-mono font-bold", req.color)}>{req.status}</span>
+                  <span className={cn("text-[10px] font-extrabold tracking-widest", req.color)}>{req.status}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-amber-500/5 border border-amber-500/20 p-6 space-y-4">
-            <h4 className="text-[10px] font-mono font-bold text-amber-500 uppercase tracking-[0.2em] flex items-center gap-2">
-              <Icon name="AlertTriangle" size={14} />
-              DISCOURSE_PROTOCOL
+          <div className="bg-amber-500/5 border border-amber-500/20 p-10 rounded-[3rem] space-y-8 shadow-2xl flex-1 backdrop-blur-3xl relative overflow-hidden group">
+             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full blur-[80px]" />
+            <h4 className="text-[11px] font-extrabold text-amber-500 uppercase tracking-[0.4em] flex items-center gap-3">
+              <Icon name="ms:assignment" size={20} className="group-hover:rotate-12 transition-transform duration-700" />
+              Discussion Guidelines
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-6">
               {[
-                'COOPERATIVE_INTERRUPTION_LOGIC',
-                'EVIDENTIAL_ARGUMENT_WEIGHTING',
-                'FACILITATIVE_ROLE_ADAPTATION',
-                'CLARITY_VECTOR_MAINTENANCE'
+                'Natural turn-taking',
+                'Evidence-based arguments',
+                'Adaptive AI behavior',
+                'Clear communication'
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="text-amber-500/50 mt-1 shrink-0">::</span>
-                  <span className="text-[9px] font-mono text-amber-200/70 uppercase leading-tight">{item}</span>
+                <li key={i} className="flex items-start gap-4 group/li">
+                  <span className="text-amber-500 font-extrabold text-xs mt-0.5 group-hover/li:translate-x-1 transition-transform">»</span>
+                  <span className="text-[10px] font-extrabold text-on-surface-variant/70 uppercase tracking-widest leading-relaxed group-hover/li:text-on-surface transition-colors">{item}</span>
                 </li>
               ))}
             </ul>

@@ -1,13 +1,13 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
-import Button from './Button';
+import Button from './button';
 import { cn } from '../../utils/cn';
 
 const InterviewProgressNav = ({ 
   currentStep = 1, 
   totalSteps = 3, 
-  stepLabels = ['SETUP', 'INTERVIEW', 'FEEDBACK'],
+  stepLabels = ['Setup', 'Interview', 'Feedback'],
   showProgress = true,
   showBackButton = true,
   onBack,
@@ -29,34 +29,36 @@ const InterviewProgressNav = ({
     navigate('/dashboard');
   };
 
-  // Hide navigation during active interview (Optional, but let's keep it visible for now with tool-like style)
-  // if (isInterviewActive) { return null; }
-
   return (
-    <header className="bg-slate-950/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-50 h-16 shrink-0">
-      <div className="container mx-auto h-full flex items-center justify-between px-6">
-        {/* Left: Terminal Style Home/Back */}
-        <div className="flex items-center gap-4">
-          {showBackButton ? (
+    <header className="fixed top-0 left-0 right-0 z-40 h-16 flex justify-between items-center px-10 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 font-headline text-xs font-semibold">
+      <div className="mx-auto w-full max-w-7xl flex items-center justify-between">
+        {/* Left: Branding */}
+        <div className="flex items-center gap-6">
+          {showBackButton && !isInterviewActive ? (
             <button
               onClick={handleBack}
-              className="text-slate-500 hover:text-emerald-500 transition-colors p-2"
+              className="text-on-surface-variant hover:text-white transition-all p-2 rounded-lg hover:bg-surface-container"
             >
-              <Icon name="ChevronLeft" size={20} />
+              <Icon name="ms:arrow_back" size={20} />
             </button>
           ) : (
-            <div className="w-8 h-8 bg-emerald-500 flex items-center justify-center">
-              <Icon name="Brain" size={20} className="text-slate-950" />
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-black shadow-lg shadow-primary/10">
+              <Icon name="ms:bolt" size={18} />
             </div>
           )}
-          <span className="font-mono font-bold tracking-tighter text-sm hidden sm:block">
-            INTERVYOU.AI // NODE_01
-          </span>
+          <div className="flex flex-col">
+            <span className="font-headline text-sm font-extrabold text-white tracking-tight leading-none">
+              IntervYou.AI
+            </span>
+            <span className="font-headline text-[9px] text-on-surface-variant uppercase tracking-widest mt-1 opacity-60">
+              SYSTEM // ACTIVE SESSION
+            </span>
+          </div>
         </div>
 
-        {/* Center: Mission Progress */}
-        <div className="flex-1 max-w-xl mx-8">
-          <div className="flex items-center gap-2">
+        {/* Center: Progress */}
+        <div className="hidden md:block flex-1 max-w-xl mx-12">
+          <div className="flex items-center justify-between gap-4">
             {stepLabels.map((label, index) => {
               const stepNumber = index + 1;
               const isActive = stepNumber === currentStep;
@@ -64,24 +66,29 @@ const InterviewProgressNav = ({
 
               return (
                 <React.Fragment key={label}>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 group">
                     <div className={cn(
-                      "w-6 h-6 border font-mono text-[10px] flex items-center justify-center transition-all duration-500",
-                      isCompleted ? "bg-emerald-500 border-emerald-500 text-slate-950" :
-                      isActive ? "border-emerald-500 text-emerald-500 bg-emerald-500/10 shadow-[0_0_10px_rgba(16,185,129,0.2)]" :
-                      "border-slate-800 text-slate-600"
+                      "w-6 h-6 rounded-full font-headline text-[10px] font-bold flex items-center justify-center transition-all duration-500",
+                      isCompleted ? "bg-secondary text-black shadow-sm" :
+                      isActive ? "bg-primary text-black shadow-lg shadow-primary/20 scale-110" :
+                      "bg-surface-container text-on-surface-variant border border-outline-variant/30"
                     )}>
-                      {isCompleted ? <Icon name="Check" size={12} /> : `0${stepNumber}`}
+                      {isCompleted ? <Icon name="ms:check" size={14} /> : stepNumber}
                     </div>
-                    <span className={cn(
-                      "font-mono text-[10px] tracking-widest hidden lg:block transition-colors",
-                      isActive ? "text-slate-100 font-bold" : "text-slate-600"
-                    )}>
-                      {label}
-                    </span>
+                    <div className="flex flex-col">
+                      <span className={cn(
+                        "font-headline text-[10px] font-bold uppercase tracking-widest transition-colors leading-none",
+                        isActive ? "text-white" : "text-on-surface-variant opacity-40"
+                      )}>
+                        {label}
+                      </span>
+                    </div>
                   </div>
                   {index < stepLabels.length - 1 && (
-                    <div className="flex-1 h-[1px] bg-slate-800 min-w-[20px]" />
+                    <div className={cn(
+                      "flex-1 h-[1px] rounded-full transition-all duration-1000",
+                      isCompleted ? "bg-secondary/40" : "bg-outline-variant/20"
+                    )} />
                   )}
                 </React.Fragment>
               );
@@ -90,16 +97,19 @@ const InterviewProgressNav = ({
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex flex-col items-end mr-4">
-            <span className="text-[8px] font-mono text-slate-500 uppercase">Status</span>
-            <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-tighter">Live_Uplink</span>
+        <div className="flex items-center gap-6">
+          <div className="hidden lg:flex flex-col items-end">
+            <span className="text-[9px] font-headline text-on-surface-variant font-bold uppercase tracking-widest opacity-40">Status</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-headline font-bold text-secondary uppercase tracking-widest leading-none">Ready</span>
+              <div className="w-1 h-1 bg-secondary rounded-full animate-pulse shadow-sm" />
+            </div>
           </div>
           <button 
             onClick={handleHome}
-            className="text-slate-500 hover:text-emerald-500 transition-colors p-2"
+            className="text-on-surface-variant hover:text-white transition-all p-2 rounded-lg hover:bg-surface-container border border-transparent hover:border-outline-variant/20 shadow-sm"
           >
-            <Icon name="Home" size={18} />
+            <Icon name="ms:home" size={20} />
           </button>
         </div>
       </div>

@@ -30,6 +30,9 @@ public class AnalyticsController {
     @Autowired
     private PlacementDriveRepository placementDriveRepository;
 
+    @Autowired
+    private org.intervyouai.service.ReportService reportService;
+
     @GetMapping("/tpo-overview")
     @PreAuthorize("hasRole('TPO')")
     public ResponseEntity<GenericResponse<Map<String, Object>>> getTpoOverview(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -52,6 +55,19 @@ public class AnalyticsController {
         stats.put("readinessIndex", "7.8"); // Placeholder
 
         return ResponseEntity.ok(GenericResponse.success(stats));
+    }
+
+    @GetMapping("/tpo-reports")
+    @PreAuthorize("hasRole('TPO')")
+    public ResponseEntity<GenericResponse<org.intervyouai.dto.TpoReportResponse>> getTpoReports(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User tpo = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new RuntimeException("TPO not found"));
+        
+        if (tpo.getOrganization() == null) {
+            throw new RuntimeException("Organization not found for TPO");
+        }
+
+        return ResponseEntity.ok(GenericResponse.success(reportService.getTpoReport(tpo.getOrganization().getId())));
     }
 
     @GetMapping("/admin-overview")

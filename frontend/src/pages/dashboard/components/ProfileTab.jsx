@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import Input from '../../../components/ui/Input';
 import Image from '../../../components/AppImage';
 import api from '../../../utils/api';

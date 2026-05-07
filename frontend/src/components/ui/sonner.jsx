@@ -13,13 +13,13 @@ const Toaster = ({ ...props }) => {
       toastOptions={{
         classNames: {
           toast:
-            "group toast font-mono rounded-none group-[.toaster]:bg-slate-950 group-[.toaster]:text-slate-100 group-[.toaster]:border-slate-800 group-[.toaster]:shadow-lg",
-          description: "group-[.toast]:text-slate-400",
+            "group toast font-mono rounded-none group-[.toaster]:bg-surface-container-low group-[.toaster]:text-on-surface group-[.toaster]:border-outline-variant/30 group-[.toaster]:shadow-lg",
+          description: "group-[.toast]:text-on-surface-variant",
           actionButton:
-            "group-[.toast]:bg-emerald-500 group-[.toast]:text-slate-950 group-[.toast]:font-bold group-[.toast]:rounded-none",
+            "group-[.toast]:bg-secondary group-[.toast]:text-slate-950 group-[.toast]:font-bold group-[.toast]:rounded-none",
           cancelButton:
-            "group-[.toast]:bg-slate-800 group-[.toast]:text-slate-400 group-[.toast]:rounded-none",
-          success: "group-[.toast]:text-emerald-500",
+            "group-[.toast]:bg-surface-container-low group-[.toast]:text-on-surface-variant group-[.toast]:rounded-none",
+          success: "group-[.toast]:text-secondary",
           error: "group-[.toast]:text-red-500",
           warning: "group-[.toast]:text-amber-500",
           info: "group-[.toast]:text-sky-500",

@@ -68,3 +68,5 @@ frontend/coverage/
 ai-engine/llm_models/
 .gemini/
 IntervYouNewDesigns/
+graphify-out/
+errorfile.txt

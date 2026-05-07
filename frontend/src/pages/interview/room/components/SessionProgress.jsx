@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { cn } from '../../../../utils/cn';
 
 const SessionProgress = ({
@@ -18,72 +19,79 @@ const SessionProgress = ({
   const questionProgress = Math.min((questionsAnswered / totalQuestions) * 100, 100);
 
   return (
-    <div className="space-y-6 font-mono">
+    <div className="space-y-4 font-body">
       {/* Header Info */}
-      <div className="flex items-start justify-between">
-        <div className="space-y-1">
-          <p className="text-[8px] text-slate-500 uppercase tracking-widest">Active_Phase</p>
-          <h3 className="text-sm font-bold text-slate-100 tracking-tighter uppercase">
-            {currentPhase}
-          </h3>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-[1px] bg-primary"></span>
+          <p className="text-[7px] text-primary uppercase font-bold tracking-[0.2em]">Status</p>
         </div>
-        <div className="text-right space-y-1">
-          <p className="text-[8px] text-slate-500 uppercase tracking-widest">Temporal_Marker</p>
-          <div className="text-sm font-bold text-emerald-500 tracking-widest">
-            {formatTime(sessionTime)}
+        <div className="flex items-end justify-between">
+          <div className="space-y-0.5">
+            <h3 className="text-base font-headline font-extrabold text-on-surface leading-tight">
+              {currentPhase.replace(/_/g, ' ').replace('PROTOCOL', 'Interview')}
+            </h3>
+            <p className="text-[8px] text-on-surface-variant font-medium uppercase tracking-widest opacity-40">Connected</p>
+          </div>
+          <div className="text-right">
+            <div className="text-xl font-headline font-extrabold text-on-surface tabular-nums leading-none">
+              {formatTime(sessionTime)}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Progress Matrix */}
       <div className="space-y-4">
-        {/* Temporal Progress */}
+        {/* Time Progress */}
         <div className="space-y-1.5">
-          <div className="flex justify-between text-[9px] uppercase tracking-tighter">
-            <span className="text-slate-500">Temporal_Coverage</span>
-            <span className="text-slate-300 font-bold">{Math.round(progressPercentage)}%</span>
+          <div className="flex justify-between items-end">
+            <span className="text-[8px] text-on-surface-variant font-bold uppercase tracking-widest opacity-60">Time</span>
+            <span className="text-[9px] text-on-surface font-extrabold">{Math.round(progressPercentage)}%</span>
           </div>
-          <div className="h-1 w-full bg-slate-800 border border-slate-800/50 flex p-[1px]">
-            <div
-              className="bg-emerald-500/80 transition-all duration-1000 ease-out h-full shadow-[0_0_10px_rgba(16,185,129,0.3)]"
-              style={{ width: `${progressPercentage}%` }}
+          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercentage}%` }}
+              className="bg-primary h-full rounded-full transition-all duration-1000 ease-out"
             />
           </div>
         </div>
 
         {/* Iteration Progress */}
         <div className="space-y-1.5">
-          <div className="flex justify-between text-[9px] uppercase tracking-tighter">
-            <span className="text-slate-500">Iteration_Count</span>
-            <span className="text-slate-300 font-bold">{questionsAnswered} / {totalQuestions}</span>
+          <div className="flex justify-between items-end">
+            <span className="text-[8px] text-on-surface-variant font-bold uppercase tracking-widest opacity-60">Questions</span>
+            <span className="text-[9px] text-on-surface font-extrabold">{questionsAnswered} <span className="text-on-surface-variant opacity-30">/ {totalQuestions}</span></span>
           </div>
-          <div className="h-1 w-full bg-slate-800 border border-slate-800/50 flex p-[1px]">
-            <div
-              className="bg-sky-500/80 transition-all duration-1000 ease-out h-full shadow-[0_0_10px_rgba(56,189,248,0.3)]"
-              style={{ width: `${questionProgress}%` }}
+          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${questionProgress}%` }}
+              className="bg-primary h-full rounded-full transition-all duration-1000 ease-out"
             />
           </div>
         </div>
       </div>
 
-      {/* Tactical Stats Grid */}
-      <div className="grid grid-cols-3 border border-slate-800 bg-slate-950/50">
+      {/* Tonal Stats Grid */}
+      <div className="grid grid-cols-3 gap-1.5">
         {[
-          { label: 'MINS', val: Math.floor(sessionTime / 60) },
-          { label: 'SENT', val: questionsAnswered },
-          { label: 'REMN', val: Math.max(0, totalQuestions - questionsAnswered) }
+          { label: 'ELAPSED', val: Math.floor(sessionTime / 60), unit: 'm' },
+          { label: 'COMPLETED', val: questionsAnswered, unit: 'ans' },
+          { label: 'REMAINING', val: Math.max(0, totalQuestions - questionsAnswered), unit: 'q' }
         ].map((stat, i) => (
-          <div key={i} className={cn(
-            "p-3 text-center space-y-1",
-            i < 2 && "border-r border-slate-800"
-          )}>
-            <p className="text-[7px] text-slate-600 uppercase font-bold tracking-widest">{stat.label}</p>
-            <p className="text-xs font-bold text-slate-300">{stat.val.toString().padStart(2, '0')}</p>
+          <div key={i} className="bg-white/[0.02] border border-white/5 rounded-lg p-2 text-center">
+            <p className="text-[6px] text-on-surface-variant uppercase font-bold tracking-widest mb-0.5 opacity-40">{stat.label}</p>
+            <div className="flex items-baseline justify-center gap-0.5">
+              <p className="text-lg font-headline font-extrabold text-on-surface tabular-nums">{stat.val.toString().padStart(2, '0')}</p>
+              <span className="text-[6px] font-bold text-on-surface-variant uppercase opacity-20">{stat.unit}</span>
+            </div>
           </div>
         ))}
       </div>
     </div>
-  );
+);
 };
 
 export default SessionProgress;

@@ -12,35 +12,39 @@ const SessionSummary = ({ interviewType, formData }) => {
     switch (interviewType) {
       case 'technical':
         return {
-          title: 'TECHNICAL_SIMULATION',
-          icon: 'Code',
-          color: 'text-emerald-500',
-          borderColor: 'border-emerald-500/30',
-          duration: '45-60_MIN'
+          title: 'Technical Interview',
+          icon: 'ms:code',
+          color: 'text-primary',
+          borderColor: 'border-primary/20',
+          duration: '45-60 MIN',
+          desc: 'Assess your technical skills and problem-solving.'
         };
       case 'hr':
         return {
-          title: 'BEHAVIORAL_SIMULATION',
-          icon: 'Users',
+          title: 'Behavioral Interview',
+          icon: 'ms:groups',
           color: 'text-sky-500',
-          borderColor: 'border-sky-500/30',
-          duration: '30-45_MIN'
+          borderColor: 'border-sky-500/20',
+          duration: '30-45 MIN',
+          desc: 'Assess your behavioral skills and culture fit.'
         };
       case 'salary-negotiation':
         return {
-          title: 'COMPENSATION_NEGOTIATION',
-          icon: 'DollarSign',
-          color: 'text-emerald-500',
-          borderColor: 'border-emerald-500/30',
-          duration: '20-30_MIN'
+          title: 'Compensation Negotiation',
+          icon: 'ms:payments',
+          color: 'text-primary',
+          borderColor: 'border-primary/20',
+          duration: '20-30 MIN',
+          desc: 'Practice negotiating your compensation.'
         };
       default:
         return {
-          title: 'STANDARD_INTERVIEW',
-          icon: 'Play',
-          color: 'text-slate-400',
-          borderColor: 'border-slate-800',
-          duration: '30-45_MIN'
+          title: 'Standard Interview',
+          icon: 'ms:play_arrow',
+          color: 'text-on-surface',
+          borderColor: 'border-outline-variant/10',
+          duration: '30-45 MIN',
+          desc: 'General interview assessment.'
         };
     }
   };
@@ -49,67 +53,69 @@ const SessionSummary = ({ interviewType, formData }) => {
 
   const formatLabel = (key) => {
     const labelMap = {
-      jobRole: 'TARGET_ROLE',
-      company: 'TARGET_ENTITY',
-      experienceLevel: 'EXPERIENCE_TIER',
-      industry: 'SECTOR_CLASS',
-      difficulty: 'COMPLEXITY_INDEX',
-      max_questions: 'SEQUENCE_LENGTH',
-      salaryRange: 'SALARY_VECTOR',
-      negotiationStyle: 'TACTICAL_STYLE'
+      jobRole: 'Job Role',
+      company: 'Company',
+      experienceLevel: 'Experience Level',
+      industry: 'Industry',
+      difficulty: 'Difficulty',
+      max_questions: 'Number of Questions',
+      salaryRange: 'Salary Range',
+      negotiationStyle: 'Negotiation Style'
     };
     return labelMap?.[key] || key.toUpperCase();
   };
 
   const formatValue = (key, value) => {
     if (!value) return 'N/A';
-    return value.toString().toUpperCase();
+    return value.toString();
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="border-l-2 border-slate-700 pl-4">
-        <h3 className="text-sm font-mono font-bold text-slate-100 uppercase tracking-[0.2em]">
-          SESSION_DEBRIEF_&_PRE_FLIGHT_CHECK
+    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+      <div className="space-y-2">
+        <h3 className="text-2xl font-extrabold text-on-surface uppercase tracking-tight flex items-center gap-4">
+          <div className="w-1.5 h-8 bg-primary rounded-full shadow-sm" />
+          Interview Summary
         </h3>
-        <p className="text-slate-500 font-mono text-[10px] mt-1 uppercase tracking-wider">
-          Verify configuration parameters before mission initialization
+        <p className="text-on-surface-variant font-extrabold text-[10px] ml-6 uppercase tracking-[0.4em] opacity-40">
+          Review your interview settings
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
+      <div className="grid gap-12 lg:grid-cols-3">
         {/* Main Status */}
         <div className={cn(
-          "lg:col-span-2 border bg-slate-900/50 p-8 relative overflow-hidden",
+          "lg:col-span-2 bg-surface-container-high/40 backdrop-blur-3xl p-12 rounded-[3.5rem] border shadow-2xl relative overflow-hidden group transition-all duration-700 hover:border-primary/30",
           details.borderColor
         )}>
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Icon name={details.icon} size={80} className={details.color} />
-          </div>
+           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/10 transition-all duration-1000" />
           
-          <div className="relative z-10 space-y-8">
-            <div className="flex items-center gap-6">
-              <div className={cn("w-16 h-16 border flex items-center justify-center bg-slate-950", details.borderColor)}>
-                <Icon name={details.icon} size={32} className={details.color} />
+          <div className="relative z-10 space-y-12">
+            <div className="flex items-center gap-8">
+              <div className={cn("w-20 h-20 rounded-3xl border flex items-center justify-center bg-surface-container-highest shadow-xl transition-transform duration-700 group-hover:scale-110", details.borderColor)}>
+                <Icon name={details.icon} size={36} className={details.color} />
               </div>
-              <div>
-                <h4 className="text-xl font-mono font-bold text-slate-100 tracking-tighter uppercase">
+              <div className="space-y-1">
+                <h4 className="text-3xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
                   {details.title}
                 </h4>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Est_Duration:</span>
-                  <span className="font-mono text-[10px] text-emerald-500 font-bold tracking-widest">{details.duration}</span>
+                <p className="text-on-surface-variant text-sm font-body opacity-60 italic">{details.desc}</p>
+                <div className="flex items-center gap-4 mt-3">
+                  <span className="font-extrabold text-[9px] text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Duration:</span>
+                  <span className="font-extrabold text-[10px] text-primary tracking-[0.2em] bg-primary/10 px-3 py-1 rounded-full">{details.duration}</span>
                 </div>
               </div>
             </div>
 
-            <div className="grid gap-x-12 gap-y-6 md:grid-cols-2 pt-8 border-t border-slate-800/50">
+            <div className="grid gap-x-16 gap-y-10 md:grid-cols-2 pt-12 border-t border-outline-variant/10">
               {Object.entries(formData).map(([key, value]) => {
                 if (!value || key === 'type' || key === 'driveId') return null;
                 return (
-                  <div key={key} className="space-y-1">
-                    <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">{formatLabel(key)}</p>
-                    <p className="text-xs font-mono font-bold text-slate-300 uppercase tracking-tight truncate">
+                  <div key={key} className="space-y-2 group/item">
+                    <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40 group-hover/item:opacity-70 transition-opacity">
+                      {formatLabel(key)}
+                    </p>
+                    <p className="text-base font-extrabold text-on-surface tracking-tight truncate border-b border-white/5 pb-2 group-hover/item:border-primary/30 transition-all">
                       {formatValue(key, value)}
                     </p>
                   </div>
@@ -120,44 +126,48 @@ const SessionSummary = ({ interviewType, formData }) => {
         </div>
 
         {/* Technical Stack */}
-        <div className="space-y-6">
-          <div className="bg-slate-900 border border-slate-800 p-6 space-y-4">
-            <h4 className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-sky-500" />
-              SYSTEM_REQUIREMENTS
+        <div className="space-y-10 flex flex-col">
+          <div className="bg-surface-container-high/40 backdrop-blur-3xl border border-outline-variant/10 p-10 rounded-[3rem] space-y-8 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-full blur-[80px]" />
+            <h4 className="text-[11px] font-extrabold text-sky-500 uppercase tracking-[0.4em] flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+              System Status
             </h4>
-            <div className="space-y-3">
+            <div className="space-y-6">
               {[
-                { icon: 'Mic', label: 'AUDIO_INPUT_ACTIVE', status: 'VERIFIED', color: 'text-emerald-500' },
-                { icon: 'Wifi', label: 'NETWORK_LATENCY', status: '84MS', color: 'text-emerald-500' },
-                { icon: 'Brain', label: 'AI_CORE_LINK', status: 'READY', color: 'text-emerald-500' }
+                { icon: 'ms:mic', label: 'Microphone', status: 'VERIFIED', color: 'text-primary' },
+                { icon: 'ms:wifi', label: 'Connection', status: 'STABLE', color: 'text-primary' },
+                { icon: 'ms:memory', label: 'AI Engine', status: 'READY', color: 'text-primary' }
               ].map((req, i) => (
-                <div key={i} className="flex items-center justify-between border-b border-slate-800/50 pb-2 last:border-0 last:pb-0">
-                  <div className="flex items-center gap-3">
-                    <Icon name={req.icon} size={14} className="text-slate-500" />
-                    <span className="text-[9px] font-mono text-slate-400">{req.label}</span>
+                <div key={i} className="flex items-center justify-between border-b border-outline-variant/5 pb-4 last:border-0 last:pb-0 group/req">
+                  <div className="flex items-center gap-4">
+                    <div className="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant/40 group-hover/req:text-sky-500 transition-colors">
+                       <Icon name={req.icon} size={18} />
+                    </div>
+                    <span className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest opacity-60 group-hover/req:opacity-100 transition-opacity">{req.label}</span>
                   </div>
-                  <span className={cn("text-[9px] font-mono font-bold", req.color)}>{req.status}</span>
+                  <span className={cn("text-[10px] font-extrabold tracking-widest", req.color)}>{req.status}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-amber-500/5 border border-amber-500/20 p-6 space-y-4">
-            <h4 className="text-[10px] font-mono font-bold text-amber-500 uppercase tracking-[0.2em] flex items-center gap-2">
-              <Icon name="AlertTriangle" size={14} />
-              PRE_FLIGHT_PROTOCOL
+          <div className="bg-primary/5 border border-primary/20 p-10 rounded-[3rem] space-y-8 shadow-2xl flex-1 backdrop-blur-3xl relative overflow-hidden group">
+             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/10 rounded-full blur-[80px]" />
+            <h4 className="text-[11px] font-extrabold text-primary uppercase tracking-[0.4em] flex items-center gap-3">
+              <Icon name="ms:security" size={20} className="group-hover:rotate-12 transition-transform duration-700" />
+              Session Guidelines
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-6">
               {[
-                'ESTABLISH_SILENT_PERIMETER',
-                'VERIFY_VOCAL_CLARITY',
-                'TERMINATE_BACKGROUND_NODES',
-                'MAINTAIN_STABLE_UPLINK'
+                'Use a quiet environment',
+                'Speak clearly into mic',
+                'Minimize background noise',
+                'Maintain stable connection'
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className="text-amber-500/50 mt-1 shrink-0">::</span>
-                  <span className="text-[9px] font-mono text-amber-200/70 uppercase leading-tight">{item}</span>
+                <li key={i} className="flex items-start gap-4 group/li">
+                  <span className="text-primary font-extrabold text-xs mt-0.5 group-hover/li:translate-x-1 transition-transform">»</span>
+                  <span className="text-[10px] font-extrabold text-on-surface-variant/70 uppercase tracking-widest leading-relaxed group-hover/li:text-on-surface transition-colors">{item}</span>
                 </li>
               ))}
             </ul>

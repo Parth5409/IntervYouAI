@@ -1,20 +1,17 @@
-import React from 'react';
-import Icon from '../../../components/AppIcon';
-
 const TrustSignals = () => {
   const trustFeatures = [
-    { icon: 'Shield', title: 'ENCRYPTED_DATA' },
-    { icon: 'Users', title: '50K_ENTITIES' },
-    { icon: 'Award', title: 'AI_OPTIMIZED' },
-    { icon: 'Clock', title: '24/7_AVAIL' }
+    { icon: 'ms:lock', title: 'Encrypted' },
+    { icon: 'ms:groups', title: '50K Users' },
+    { icon: 'ms:memory', title: 'AI Driven' },
+    { icon: 'ms:speed', title: 'Realtime' }
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-px bg-slate-800 border border-slate-800 mt-8">
+    <div className="grid grid-cols-2 gap-4 mt-8">
       {trustFeatures.map((feature, index) => (
-        <div key={index} className="bg-slate-900/50 p-4 flex flex-col items-center justify-center group hover:bg-slate-900 transition-colors">
-          <Icon name={feature.icon} size={16} className="text-emerald-500 mb-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-          <span className="text-[10px] font-mono text-slate-400 group-hover:text-slate-300 uppercase tracking-[0.2em]">{feature.title}</span>
+        <div key={index} className="bg-surface-container-high/20 backdrop-blur-xl border border-outline-variant/10 p-5 rounded-2xl flex flex-col items-center justify-center group hover:bg-surface-container-high/40 transition-all duration-500">
+          <Icon name={feature.icon} size={20} className="text-on-surface-variant/20 mb-3 group-hover:text-primary transition-colors" />
+          <span className="text-[10px] font-extrabold text-on-surface-variant/40 group-hover:text-on-surface uppercase tracking-[0.2em]">{feature.title}</span>
         </div>
       ))}
     </div>

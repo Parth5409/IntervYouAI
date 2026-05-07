@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import DashboardLayout from '../../../components/ui/DashboardLayout';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import Icon from '../../../components/AppIcon';
 import SessionHeader from './components/SessionHeader';
 import FeedbackSections from './components/FeedbackSections';
@@ -62,27 +62,40 @@ const InterviewFeedback = () => {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex flex-col items-center justify-center py-20 gap-6">
-          <div className="w-16 h-16 border-2 border-emerald-500/20 border-t-emerald-500 animate-spin" />
-          <p className="font-mono text-[10px] text-emerald-500 uppercase tracking-[0.3em] animate-pulse">
-            GENERATING_INTELLIGENCE_REPORT...
-          </p>
-        </div>
-      </DashboardLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-12 relative">
+          <div className="relative w-24 h-24">
+            <div className="absolute inset-0 border-4 border-primary/10 rounded-full" />
+            <div className="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin" />
+          </div>
+          <div className="text-center space-y-3">
+            <h2 className="text-3xl font-headline font-bold text-on-surface italic">
+              Generating your report
+            </h2>
+            <p className="font-headline text-sm font-medium text-primary animate-pulse italic">
+               Analyzing your interview session...
+            </p>
+          </div>
+        </div>      </DashboardLayout>
     );
   }
 
   if (!sessionData) {
     return (
       <DashboardLayout>
-        <div className="flex flex-col items-center justify-center py-20 gap-6 border-2 border-dashed border-slate-800">
-          <Icon name="SearchX" size={48} className="text-slate-700" />
-          <div className="text-center space-y-2">
-            <h2 className="font-mono font-bold text-slate-100 uppercase">SESSION_DATA_NOT_FOUND</h2>
-            <p className="font-mono text-[10px] text-slate-500 uppercase">The requested mission log is unavailable</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-12 text-center">
+          <div className="w-24 h-24 rounded-3xl bg-error/10 flex items-center justify-center text-error border border-error/20">
+            <Icon name="ms:error" size={48} />
           </div>
-          <Button onClick={handleReturnToDashboard} className="bg-slate-800 text-slate-300 font-mono text-[10px] h-10 px-6 uppercase tracking-widest">
-            Return_to_Dashboard
+          <div className="space-y-4">
+             <h2 className="text-3xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
+              Session Data Unavailable
+            </h2>
+            <p className="text-on-surface-variant font-extrabold text-[10px] uppercase tracking-[0.4em] opacity-40">
+              The requested interview data could not be retrieved
+            </p>
+          </div>
+          <Button onClick={handleReturnToDashboard} variant="default" className="h-12 px-8 uppercase tracking-widest text-[11px] font-extrabold">
+            Back to Dashboard
           </Button>
         </div>
       </DashboardLayout>
@@ -91,34 +104,38 @@ const InterviewFeedback = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto space-y-12">
+      <div className="max-w-6xl mx-auto space-y-16 pb-24">
         {/* Header Navigation */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-6">
-          <div>
-            <h1 className="text-3xl font-mono font-bold tracking-tighter uppercase flex items-center gap-3">
-              <span className="text-slate-500">{'>'}</span> MISSION_DEBRIEF
-            </h1>
-            <p className="text-slate-400 font-mono text-xs mt-2 uppercase tracking-widest">
-              Performance analysis // Node_{sessionId?.slice(0, 8)}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-outline-variant/10 pb-10">
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="w-2 h-8 bg-primary rounded-full" />
+              <h1 className="text-4xl font-extrabold tracking-tighter uppercase leading-none text-gradient">
+                Interview Feedback
+              </h1>
+            </div>
+            <p className="text-[10px] text-on-surface-variant uppercase tracking-[0.25em] ml-6 font-bold">
+              PERFORMANCE ANALYSIS // Sequence {sessionId?.slice(0, 8)}
             </p>
           </div>
           <Button
             onClick={handleReturnToDashboard}
-            className="bg-slate-900 border border-slate-800 text-slate-400 font-mono text-[10px] tracking-widest hover:text-slate-100 uppercase h-10 px-6"
+            variant="outline"
+            className="h-12 px-8 uppercase tracking-widest text-[10px] font-extrabold gap-3 self-start md:self-center bg-surface-container-low border-outline-variant/20 hover:border-primary/50 transition-all"
           >
-            <Icon name="ArrowLeft" size={14} className="mr-2" />
-            BACK_TO_CENTER
+            <Icon name="ms:arrow_back" size={18} />
+            Dashboard
           </Button>
         </div>
 
         {/* Main Content Grid */}
-        <div className="space-y-12">
+        <div className="space-y-16">
           {/* Summary Header */}
           <SessionHeader sessionData={sessionData} />
 
           {/* Analysis Sections */}
-          <div className="grid gap-12 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-12">
+          <div className="grid gap-16 lg:grid-cols-3">
+            <div className="lg:col-span-2 space-y-16">
               <FeedbackSections
                 feedback={sessionData?.feedback}
                 expandedSections={expandedSections}
@@ -128,30 +145,50 @@ const InterviewFeedback = () => {
               <Recommendations recommendations={sessionData?.feedback?.recommendations} />
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-10">
               <SocialSharing
                 sessionData={sessionData}
                 achievements={sessionData?.overall_score >= 80}
               />
               
-              <div className="bg-slate-900 border border-slate-800 p-6 space-y-4">
-                <h4 className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-sky-500" />
-                  POST_MISSION_ACTIONS
+              <div className="bg-surface-container-high/40 backdrop-blur-3xl border border-outline-variant/10 p-10 rounded-[3rem] space-y-8 shadow-xl relative overflow-hidden group hover:border-primary/20 transition-all duration-700">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-full blur-[80px]" />
+                <h4 className="text-[11px] font-extrabold text-primary uppercase tracking-[0.4em] flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  Actions
                 </h4>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-4">
                   <Button
                     onClick={handleStartNewSession}
-                    className="w-full bg-emerald-500 text-slate-950 font-mono font-bold text-[10px] h-10 uppercase tracking-widest"
+                    variant="primary"
+                    className="w-full h-14 uppercase tracking-widest text-[11px] font-extrabold gap-3"
                   >
-                    INIT_NEW_SIMULATION
+                     <Icon name="ms:rocket_launch" size={18} />
+                    Start New Interview
                   </Button>
                   <Button
                     onClick={() => window.print()}
-                    className="w-full bg-slate-800 text-slate-300 font-mono text-[10px] h-10 uppercase tracking-widest"
+                    variant="outline"
+                    className="w-full h-14 uppercase tracking-widest text-[11px] font-extrabold gap-3"
                   >
-                    DOWNLOAD_PDF_LOG
+                     <Icon name="ms:description" size={18} />
+                    Download Report
                   </Button>
+                </div>
+              </div>
+
+              {/* Technical Metadata widget */}
+              <div className="bg-surface-container-highest/30 p-8 rounded-[2.5rem] border border-outline-variant/10">
+                <div className="space-y-4">
+                   <p className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-[0.3em] opacity-40">Platform Version</p>
+                   <p className="text-xs font-extrabold text-on-surface tracking-widest">INTERVYOU-AI-V2.5.0</p>
+                   <div className="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
+                     <span className="text-[9px] font-extrabold text-primary uppercase tracking-[0.2em]">Validated by</span>
+                     <div className="flex gap-2">
+                        <Icon name="ms:verified" size={16} className="text-primary" />
+                        <Icon name="ms:security" size={16} className="text-sky-500" />
+                     </div>
+                   </div>
                 </div>
               </div>
             </div>

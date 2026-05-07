@@ -1,42 +1,33 @@
-
 @layer base {
   :root, .light {
-    /* Core Colors */
-    --color-background: #f8f9fa;
-    --color-foreground: #212529;
-    --color-card: #ffffff;
-    --color-card-foreground: #212529;
-    --color-popover: #ffffff;
-    --color-popover-foreground: #212529;
-    --color-muted: #e9ecef;
-    --color-muted-foreground: #6c757d;
-    --color-border: #dee2e6;
-    --color-input: #ffffff;
-    --color-ring: #0d6efd;
+    /* Base configuration forced to Dark for Premium Aesthetic */
+    --color-background: #080808;
+    --color-foreground: #ffffff;
+    --color-card: #111111;
+    --color-card-foreground: #ffffff;
+    --color-popover: #111111;
+    --color-popover-foreground: #ffffff;
+    --color-muted: #1c1c1c;
+    --color-muted-foreground: #888888;
+    --color-border: #333333;
+    --color-input: #000000;
+    --color-ring: #ff915a;
 
-    /* Brand Colors */
-    --color-primary: #0d6efd;
-    --color-primary-foreground: #ffffff;
-    --color-secondary: #6c757d;
-    --color-secondary-foreground: #ffffff;
-    --color-accent: #198754;
-    --color-accent-foreground: #ffffff;
+    --color-primary: #ff915a;
+    --color-primary-foreground: #531e00;
 
-    /* Status Colors */
-    --color-success: #198754;
-    --color-success-foreground: #ffffff;
-    --color-warning: #ffc107;
-    --color-warning-foreground: #000;
-    --color-error: #dc3545;
-    --color-error-foreground: #ffffff;
-    --color-destructive: #dc3545;
-    --color-destructive-foreground: #ffffff;
+    --color-surface: #080808;
+    --color-surface-dim: #080808;
+    --color-surface-bright: #222222;
+    --color-surface-container-lowest: #000000;
+    --color-surface-container-low: #111111;
+    --color-surface-container: #141414;
+    --color-surface-container-high: #181818;
+    --color-surface-container-highest: #1c1c1c;
 
-    /* Text Colors */
-    --color-text-primary: #212529;
-    --color-text-secondary: #6c757d;
+    --color-on-surface: #ffffff;
+    --color-on-surface-variant: #888888;
 
-    /* Radius */
-    --radius: 0.375rem;
+    --radius: 0.75rem;
   }
 }

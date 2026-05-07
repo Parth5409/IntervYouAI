@@ -35,7 +35,7 @@ public class PlacementDriveService {
     private org.intervyouai.repository.StudentProfileRepository studentProfileRepository;
 
     @Transactional
-    public void assignDriveToStudents(UUID tpoId, UUID driveId) {
+    public void assignDriveToStudents(UUID tpoId, UUID driveId, List<UUID> specificStudentIds) {
         PlacementDrive drive = placementDriveRepository.findById(driveId)
                 .orElseThrow(() -> new RuntimeException("Drive not found"));
 
@@ -43,19 +43,67 @@ public class PlacementDriveService {
             throw new RuntimeException("Unauthorized: You did not create this drive");
         }
 
-        // Find all students in the same organization meeting the CGPA criteria
-        UUID orgId = drive.getTpo().getOrganization().getId();
-        List<org.intervyouai.model.StudentProfile> eligibleStudents = studentProfileRepository.findEligibleStudents(orgId, drive.getMinCgpa());
+        List<UUID> studentIdsToAssign;
+        if (specificStudentIds != null && !specificStudentIds.isEmpty()) {
+            studentIdsToAssign = specificStudentIds;
+        } else {
+            // Fallback to all eligible students if no list provided
+            UUID orgId = drive.getTpo().getOrganization().getId();
+            studentIdsToAssign = studentProfileRepository.findEligibleStudents(orgId, drive.getMinCgpa()).stream()
+                    .map(s -> s.getUser().getId())
+                    .collect(Collectors.toList());
+        }
 
-        for (org.intervyouai.model.StudentProfile student : eligibleStudents) {
+        for (UUID studentId : studentIdsToAssign) {
             kafkaProducerService.publishDriveAssignedEvent(
                     org.intervyouai.dto.event.DriveAssignedEvent.builder()
                             .driveId(driveId)
-                            .studentId(student.getUser().getId())
+                            .studentId(studentId)
                             .companyName(drive.getCompanyName())
                             .build()
             );
         }
+    }
+
+    public List<org.intervyouai.dto.EligibleStudentResponse> getEligibleStudentsWithMatching(UUID tpoId, UUID driveId) {
+        PlacementDrive drive = placementDriveRepository.findById(driveId)
+                .orElseThrow(() -> new RuntimeException("Drive not found"));
+
+        if (!drive.getTpo().getId().equals(tpoId)) {
+            throw new RuntimeException("Unauthorized: You did not create this drive");
+        }
+
+        UUID orgId = drive.getTpo().getOrganization().getId();
+        List<org.intervyouai.model.StudentProfile> eligibleStudents = studentProfileRepository.findEligibleStudents(orgId, drive.getMinCgpa());
+        
+        Set<String> requiredSkills = drive.getSkillsRequired() != null ? drive.getSkillsRequired() : Set.of();
+
+        return eligibleStudents.stream().map(student -> {
+            Set<String> studentSkills = student.getSkills() != null ? student.getSkills() : Set.of();
+            
+            Set<String> intersection = studentSkills.stream()
+                    .filter(s -> requiredSkills.stream().anyMatch(rs -> rs.equalsIgnoreCase(s)))
+                    .collect(Collectors.toSet());
+            
+            int matchPercentage = 0;
+            if (!requiredSkills.isEmpty()) {
+                matchPercentage = (int) ((double) intersection.size() / requiredSkills.size() * 100);
+            }
+
+            return org.intervyouai.dto.EligibleStudentResponse.builder()
+                    .profileId(student.getId())
+                    .userId(student.getUser().getId())
+                    .fullName(student.getUser().getFullName())
+                    .email(student.getUser().getEmail())
+                    .currentCgpa(student.getCurrentCgpa())
+                    .branch(student.getBranch())
+                    .skills(studentSkills)
+                    .matchPercentage(matchPercentage)
+                    .matchedSkills(intersection)
+                    .build();
+        })
+        .sorted((a, b) -> b.getMatchPercentage() - a.getMatchPercentage())
+        .collect(Collectors.toList());
     }
 
     @Transactional
@@ -63,7 +111,10 @@ public class PlacementDriveService {
         User tpo = userRepository.findById(tpoId)
                 .orElseThrow(() -> new RuntimeException("TPO not found"));
 
-        Set<String> skills = aiIntegrationService.extractSkillsFromJd(request.getJobDescription());
+        Set<String> skills = request.getSkillsRequired();
+        if (skills == null || skills.isEmpty()) {
+            skills = aiIntegrationService.extractSkillsFromJd(request.getJobDescription());
+        }
 
         PlacementDrive drive = PlacementDrive.builder()
                 .tpo(tpo)
@@ -111,6 +162,10 @@ public class PlacementDriveService {
         PlacementDrive drive = placementDriveRepository.findById(driveId)
                 .orElseThrow(() -> new RuntimeException("Drive not found"));
         return mapToResponse(drive);
+    }
+
+    public Set<String> extractSkillsFromJd(String jd) {
+        return aiIntegrationService.extractSkillsFromJd(jd);
     }
 
     @Transactional

@@ -2,12 +2,15 @@ import React from 'react';
 
 const WelcomeHeader = () => {
   return (
-    <div className="text-left mb-8 border-l-2 border-emerald-500 pl-4">
-      <h2 className="text-2xl font-mono font-bold text-slate-50 uppercase tracking-tighter">
-        Welcome Back
-      </h2>
-      <p className="text-slate-400 font-mono text-[10px] uppercase tracking-[0.2em] mt-1">
-        Sign in to continue your session
+    <div className="text-left mb-10 space-y-3">
+      <div className="flex items-center gap-3">
+         <div className="w-2 h-2 rounded-full bg-primary shadow-sm animate-pulse" />
+         <h2 className="text-3xl font-extrabold text-on-surface tracking-tighter uppercase leading-none">
+          Welcome Back
+        </h2>
+      </div>
+      <p className="text-on-surface-variant font-extrabold text-[10px] uppercase tracking-[0.4em] opacity-40 ml-5">
+        Connecting...
       </p>
     </div>
   );

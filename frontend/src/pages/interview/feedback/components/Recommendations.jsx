@@ -7,28 +7,30 @@ const Recommendations = ({ recommendations }) => {
   }
 
   return (
-    <div className="border border-slate-800 bg-slate-900/30 p-8 font-mono relative overflow-hidden group">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 blur-3xl rounded-full -mr-16 -mt-16" />
+    <div className="bg-surface-container-high/20 backdrop-blur-3xl border border-outline-variant/10 p-10 rounded-[3rem] relative overflow-hidden group shadow-xl">
+      <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 blur-[100px] rounded-full -mr-24 -mt-24 pointer-events-none group-hover:bg-primary/10 transition-all duration-1000" />
       
-      <div className="flex items-center gap-3 border-b border-slate-800 pb-4 mb-6 relative z-10">
-        <Icon name="Target" size={18} className="text-sky-500" />
-        <h3 className="text-xs font-bold text-slate-100 uppercase tracking-[0.2em]">
-          STRATEGIC_ACTION_PLAN
+      <div className="flex items-center gap-4 border-b border-outline-variant/10 pb-6 mb-8 relative z-10">
+        <div className="w-10 h-10 rounded-xl bg-surface-container-highest border border-outline-variant/10 flex items-center justify-center text-primary">
+          <Icon name="ms:target" size={20} />
+        </div>
+        <h3 className="text-[11px] font-extrabold text-on-surface uppercase tracking-[0.4em]">
+          Personalized Recommendations
         </h3>
       </div>
 
-      <div className="space-y-4 relative z-10">
+      <div className="space-y-6 relative z-10">
         {recommendations.map((rec, index) => (
-          <div key={index} className="flex items-start gap-4 group/item">
-            <div className="mt-1.5 w-1.5 h-1.5 bg-sky-500/50 group-hover/item:bg-sky-500 transition-colors shrink-0" />
-            <p className="text-[11px] text-slate-400 uppercase leading-relaxed tracking-tight group-hover/item:text-slate-200 transition-colors">
+          <div key={index} className="flex items-start gap-5 group/item transition-all hover:translate-x-1">
+            <div className="mt-1.5 w-2 h-2 rounded-full bg-primary/20 group-hover/item:bg-primary group-hover/item:shadow-sm transition-all shrink-0" />
+            <p className="text-sm font-body text-on-surface-variant leading-relaxed tracking-tight group-hover/item:text-on-surface transition-colors uppercase italic font-medium opacity-70 group-hover/item:opacity-100">
               {rec}
             </p>
           </div>
         ))}
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-sky-500/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
     </div>
   );
 };

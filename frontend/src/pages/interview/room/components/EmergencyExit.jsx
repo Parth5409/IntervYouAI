@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../../components/AppIcon';
+import Button from '../../../../components/ui/button';
 import { cn } from '../../../../utils/cn';
 
 const EmergencyExit = ({ 
@@ -34,78 +36,89 @@ const EmergencyExit = ({
   return (
     <>
       {/* Emergency Exit Button */}
-      <div className={cn("fixed top-4 right-4 z-50", className)}>
+      <div className={cn("fixed top-4 right-6 z-50", className)}>
         <button
           onClick={() => setShowConfirmation(true)}
           aria-label="Exit interview"
-          className="w-10 h-10 border border-slate-800 bg-slate-950/80 backdrop-blur-md text-slate-500 hover:text-red-500 hover:border-red-500/50 transition-all flex items-center justify-center group"
+          className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 backdrop-blur-3xl text-on-surface-variant hover:text-error hover:border-error/20 transition-all flex items-center justify-center group shadow-2xl"
         >
-          <Icon name="X" size={20} className="group-hover:rotate-90 transition-transform duration-300" />
+          <Icon name="ms:close" size={20} className="group-hover:rotate-90 transition-transform duration-500" />
         </button>
       </div>
 
       {/* Confirmation Modal */}
-      {showConfirmation && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div 
-            className="fixed inset-0 bg-slate-950/80" 
-            onClick={() => !isExiting && setShowConfirmation(false)} 
-          />
-          
-          <div className="bg-slate-900 border border-slate-800 p-8 w-full max-w-md relative font-mono animate-in zoom-in-95 duration-200">
-            {/* Corner Accents */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-red-500/30" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-red-500/30" />
+      <AnimatePresence>
+        {showConfirmation && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-background/80 backdrop-blur-md" 
+              onClick={() => !isExiting && setShowConfirmation(false)} 
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-surface-container-high border border-outline-variant/10 p-12 rounded-[2.5rem] w-full max-w-lg relative font-body shadow-2xl overflow-hidden"
+            >
+              {/* Subtle Glow */}
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-error/10 rounded-full blur-[60px] pointer-events-none" />
 
-            {isExiting ? (
-              <div className="text-center py-8 space-y-6">
-                <div className="w-12 h-12 border-2 border-emerald-500/20 border-t-emerald-500 animate-spin mx-auto" />
-                <div className="space-y-2">
-                  <h3 className="font-bold text-slate-100 uppercase tracking-widest">SAVING_MISSION_LOG</h3>
-                  <p className="text-[10px] text-slate-500 uppercase">Synchronizing with global database...</p>
+              {isExiting ? (
+                <div className="text-center py-12 space-y-8">
+                  <div className="w-16 h-16 border-4 border-secondary/10 border-t-secondary rounded-full animate-spin mx-auto" />
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-headline font-extrabold text-on-surface">Saving Session</h3>
+                    <p className="text-[11px] text-on-surface-variant font-bold uppercase tracking-[0.2em] opacity-40">Saving interview data...</p>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center space-y-8">
-                <div className="w-12 h-12 border border-red-500/30 bg-red-500/5 flex items-center justify-center mx-auto">
-                  <Icon name="AlertTriangle" size={24} className="text-red-500" />
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="font-bold text-slate-100 uppercase tracking-widest">TERMINATE_SIMULATION?</h3>
-                  <p className="text-[10px] text-slate-500 uppercase leading-relaxed">
-                    Confirming termination will end the current session. 
-                    Partial progress will be committed to history.
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <button
-                    onClick={handleExit}
-                    className="w-full bg-red-500 text-slate-950 font-bold py-3 text-[10px] uppercase tracking-[0.2em] hover:bg-red-400 transition-colors"
-                  >
-                    Confirm_Termination
-                  </button>
+              ) : (
+                <div className="text-center space-y-10">
+                  <div className="w-20 h-20 rounded-3xl bg-error/10 border border-error/20 flex items-center justify-center mx-auto">
+                    <Icon name="ms:warning" size={40} className="text-error" />
+                  </div>
                   
-                  <button
-                    onClick={() => setShowConfirmation(false)}
-                    className="w-full bg-slate-800 text-slate-300 font-bold py-3 text-[10px] uppercase tracking-[0.2em] hover:bg-slate-700 transition-colors"
-                  >
-                    Abort_Action
-                  </button>
+                  <div className="space-y-4">
+                    <h3 className="text-3xl font-headline font-extrabold text-on-surface">End Interview?</h3>
+                    <p className="text-[13px] text-on-surface-variant font-medium leading-relaxed max-w-sm mx-auto">
+                      Confirming will end the current interview. 
+                      Your progress will be saved to your history.
+                    </p>
+                  </div>
 
-                  <button
-                    onClick={handleEmergencyExit}
-                    className="text-[8px] text-slate-600 hover:text-red-500 uppercase tracking-widest pt-2 transition-colors"
-                  >
-                    FORCE_EXIT_WITHOUT_SYNC
-                  </button>
+                  <div className="flex flex-col gap-4">
+                    <Button
+                      onClick={handleExit}
+                      variant="destructive"
+                      className="h-16 rounded-2xl w-full text-xs uppercase tracking-[0.2em] font-bold"
+                    >
+                      End Interview
+                    </Button>
+                    
+                    <Button
+                      onClick={() => setShowConfirmation(false)}
+                      variant="outline"
+                      className="h-16 rounded-2xl w-full text-xs uppercase tracking-[0.2em] font-bold"
+                    >
+                      Continue Interview
+                    </Button>
+
+                    <button
+                      onClick={handleEmergencyExit}
+                      className="text-[10px] text-on-surface-variant hover:text-error uppercase tracking-[0.2em] font-bold pt-4 transition-colors opacity-40 hover:opacity-100"
+                    >
+                      Exit without saving
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 };

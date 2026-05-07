@@ -6,7 +6,7 @@ import QuickActionCards from './components/QuickActionCards';
 import ProfileTab from './components/ProfileTab';
 import InterviewHistoryTab from './components/InterviewHistoryTab';
 import ProgressWidgets from './components/ProgressWidgets';
-import Button from '../../components/ui/Button';
+import Button from '../../components/ui/button';
 import useAuth from '../../hooks/useAuth';
 
 

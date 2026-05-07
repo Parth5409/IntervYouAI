@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../../components/ui/Input';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import Icon from '../../../components/AppIcon';
 import api from '../../../utils/api';
@@ -9,13 +10,13 @@ import RoleSelection from './RoleSelection';
 
 const RegistrationForm = () => {
   const navigate = useNavigate();
-  const [role, setRole] = useState('ROLE_STUDENT'); // Default role
+  const [role, setRole] = useState('ROLE_STUDENT');
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
     organizationName: '',
-    organizationCode: '', // This will be collegeCode for students
+    organizationCode: '',
     careerGoal: ''
   });
   const [errors, setErrors] = useState({});
@@ -48,16 +49,16 @@ const RegistrationForm = () => {
     const newErrors = {};
     if (!formData?.fullName?.trim()) newErrors.fullName = 'Full Name is required';
     if (!formData?.email?.trim() || !validateEmail(formData?.email)) newErrors.email = 'Please enter a valid email address';
-    if (!formData?.password || !validatePassword(formData?.password)) newErrors.password = 'Password must be 8+ chars with uppercase & numbers';
+    if (!formData?.password || !validatePassword(formData?.password)) newErrors.password = 'Password must be 8+ chars (A-z, 0-9)';
     
     if (role === 'ROLE_ORG_ADMIN') {
-      if (!formData?.organizationName?.trim()) newErrors.organizationName = 'Organization Name is required';
-      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'Organization Code is required';
+      if (!formData?.organizationName?.trim()) newErrors.organizationName = 'Organization name is required';
+      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'Organization code is required';
     } else {
-      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'College Code is required';
+      if (!formData?.organizationCode?.trim()) newErrors.organizationCode = 'Reference code is required';
     }
 
-    if (!agreedToTerms) newErrors.terms = 'You must agree to the Terms of Service';
+    if (!agreedToTerms) newErrors.terms = 'Please agree to the terms';
 
     setErrors(newErrors);
     return Object.keys(newErrors)?.length === 0;
@@ -73,8 +74,7 @@ const RegistrationForm = () => {
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
-        role: role.replace('ROLE_', ''), // Strip prefix for backend enum if needed, or keep if backend handles it.
-        // Actually, backend UserRole enum matches the name without prefix.
+        role: role.replace('ROLE_', ''),
         organizationCode: formData.organizationCode,
         organizationName: role === 'ROLE_ORG_ADMIN' ? formData.organizationName : undefined,
         careerGoal: role === 'ROLE_STUDENT' ? formData.careerGoal : undefined
@@ -89,11 +89,30 @@ const RegistrationForm = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       <RoleSelection selectedRole={role} onSelect={setRole} />
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-10">
+        <AnimatePresence>
+          {errors?.submit && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0, y: -20 }}
+              animate={{ opacity: 1, height: 'auto', y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -20 }}
+              className="p-5 bg-error/10 border border-error/20 rounded-2xl flex items-start gap-4"
+            >
+              <div className="w-8 h-8 rounded-xl bg-error/20 flex items-center justify-center text-error animate-pulse shrink-0">
+                 <Icon name="ms:error" size={18} />
+              </div>
+              <div>
+                <p className="text-[10px] text-error font-extrabold font-headline font-label font-medium text-on-surface-variant">Registration Error</p>
+                <p className="text-xs text-error/70 mt-1 font-body leading-relaxed">{errors?.submit}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Input
             label="Full Name"
             type="text"
@@ -103,113 +122,134 @@ const RegistrationForm = () => {
             error={errors?.fullName}
             required
             disabled={isLoading}
+            leftElement={<Icon name="ms:person" size={20} className="text-on-surface-variant/40" />}
           />
 
           <Input
             label="Email Address"
             type="email"
-            placeholder="student@university.edu"
+            placeholder="example@email.com"
             value={formData?.email}
             onChange={(e) => handleInputChange('email', e?.target?.value)}
             error={errors?.email}
             required
             disabled={isLoading}
+            leftElement={<Icon name="ms:alternate_email" size={20} className="text-on-surface-variant/40" />}
           />
         </div>
 
         <Input
           label="Password"
           type={showPassword ? "text" : "password"}
-          placeholder="Create a strong password"
+          placeholder="Enter a strong password..."
           value={formData?.password}
           onChange={(e) => handleInputChange('password', e?.target?.value)}
           error={errors?.password}
           required
           disabled={isLoading}
+          leftElement={<Icon name="ms:key" size={20} className="text-on-surface-variant/40" />}
           rightElement={
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-slate-500 hover:text-emerald-500 transition-colors focus:outline-none"
+              className="text-on-surface-variant/40 hover:text-primary transition-colors focus:outline-none"
               disabled={isLoading}
             >
-              <Icon name={showPassword ? "EyeOff" : "Eye"} size={14} />
+              <Icon name={showPassword ? "ms:visibility_off" : "ms:visibility"} size={20} />
             </button>
           }
         />
 
         {role === 'ROLE_ORG_ADMIN' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Input
               label="Organization Name"
               type="text"
-              placeholder="e.g. Indian Institute of Technology"
+              placeholder="e.g. Acme Corp"
               value={formData?.organizationName}
               onChange={(e) => handleInputChange('organizationName', e?.target?.value)}
               error={errors?.organizationName}
               required
               disabled={isLoading}
+              leftElement={<Icon name="ms:corporate_fare" size={20} className="text-on-surface-variant/40" />}
             />
             <Input
               label="Organization Code"
               type="text"
-              placeholder="e.g. IITB"
+              placeholder="e.g. ORG123"
               value={formData?.organizationCode}
               onChange={(e) => handleInputChange('organizationCode', e?.target?.value)}
               error={errors?.organizationCode}
               required
               disabled={isLoading}
+              leftElement={<Icon name="ms:qr_code_2" size={20} className="text-on-surface-variant/40" />}
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Input
-              label="College Code"
+              label="Reference Code"
               type="text"
-              placeholder="e.g. IITB"
+              placeholder="e.g. STU123"
               value={formData?.organizationCode}
               onChange={(e) => handleInputChange('organizationCode', e?.target?.value)}
               error={errors?.organizationCode}
               required
               disabled={isLoading}
+              leftElement={<Icon name="ms:qr_code_2" size={20} className="text-on-surface-variant/40" />}
             />
             <Input
-              label="Career Goal (Optional)"
+              label="Career Goal"
               type="text"
-              placeholder="e.g. Software Engineer"
+              placeholder="e.g. Backend Developer"
               value={formData?.careerGoal}
               onChange={(e) => handleInputChange('careerGoal', e.target.value)}
               error={errors?.careerGoal}
               disabled={isLoading}
+              leftElement={<Icon name="ms:flag" size={20} className="text-on-surface-variant/40" />}
             />
           </div>
         )}
 
-        <div className="space-y-3">
-          <Checkbox
-            label="I agree to the Terms & Privacy Policy"
-            checked={agreedToTerms}
-            onChange={(e) => setAgreedToTerms(e?.target?.checked)}
-            disabled={isLoading}
-          />
-          {errors?.terms && (
-            <p className="text-[10px] font-mono text-red-500 uppercase">{errors.terms}</p>
-          )}
-        </div>
-
-        {errors?.submit && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20">
-            <p className="text-[10px] font-mono text-red-500 uppercase">{errors?.submit}</p>
+        <div className="space-y-5 px-1">
+          <div className="flex items-start gap-4 group cursor-pointer p-4 rounded-2xl bg-surface-container-highest/10 border border-outline-variant/10 hover:border-primary/20 transition-all">
+            <div className="relative flex items-center h-6">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e?.target?.checked)}
+                disabled={isLoading}
+                className="w-5 h-5 rounded border-outline-variant/30 bg-surface-container-highest/20 text-primary focus:ring-primary/20 transition-all cursor-pointer"
+              />
+            </div>
+            <label htmlFor="terms" className="text-[11px] font-extrabold text-on-surface-variant uppercase tracking-widest leading-relaxed group-hover:text-on-surface transition-colors cursor-pointer opacity-50 group-hover:opacity-100">
+              I agree to the <button type="button" className="text-primary hover:underline">Terms of Service</button> and <button type="button" className="text-primary hover:underline">Privacy Policy</button> of IntervYou.AI.
+            </label>
           </div>
-        )}
+          <AnimatePresence>
+            {errors?.terms && (
+              <motion.p 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="text-[10px] text-error font-extrabold uppercase tracking-widest ml-12"
+              >
+                {errors.terms}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
 
         <Button
           type="submit"
-          variant="default"
-          className="w-full h-12"
+          className="w-full h-16 group rounded-xl shadow-sm"
           disabled={isLoading}
         >
-          {isLoading ? 'INITIALIZING_SYSTEM...' : 'CREATE_ACCOUNT'}
+          <span className="flex items-center gap-3 font-headline font-semibold text-sm">
+            {isLoading ? 'Creating Profile...' : 'Create Account'}
+            {!isLoading && <Icon name="ms:rocket_launch" size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform duration-300" />}
+          </span>
         </Button>
       </form>
     </div>

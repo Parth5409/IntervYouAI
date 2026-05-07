@@ -1,72 +1,119 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import Icon from '../../../../components/AppIcon';
+import CameraPreview from '../../../../components/ui/CameraPreview';
+import Image from '../../../../components/AppImage';
 import { cn } from '../../../../utils/cn';
 
-const ParticipantCard = ({ participant, isSpeaking }) => {
-  const isHuman = participant.is_human;
-  const personalityStyles = {
-    supportive: { icon: 'Heart', color: 'text-emerald-500', borderColor: 'border-emerald-500/30' },
-    assertive: { icon: 'Zap', color: 'text-red-500', borderColor: 'border-red-500/30' },
-    factual: { icon: 'FileText', color: 'text-sky-500', borderColor: 'border-sky-500/30' },
-    analytical: { icon: 'Activity', color: 'text-purple-500', borderColor: 'border-purple-500/30' },
-    creative: { icon: 'Cpu', color: 'text-amber-500', borderColor: 'border-amber-500/30' },
-    human: { icon: 'User', color: 'text-emerald-500', borderColor: 'border-emerald-500/30' }
+const ParticipantCard = ({ 
+  participant, 
+  isSpeaking, 
+  localStream, 
+  isCameraActive, 
+  cameraError,
+  index
+}) => {
+  const isHuman = participant.is_human || participant.id === 'human_user';
+  
+  const botAvatars = {
+    SAM: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+    MORGAN: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?w=200&h=200&fit=crop&crop=face",
+    CASEY: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?w=200&h=200&fit=crop&crop=face",
+    JORDAN: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face",
+    ALEX: "https://images.unsplash.com/photo-1544005313-94ff8a218df5?w=200&h=200&fit=crop&crop=face"
   };
 
-  const style = personalityStyles[participant.personality] || { icon: 'Monitor', color: 'text-slate-500', borderColor: 'border-slate-800' };
+  const avatarUrl = botAvatars[participant.name.toUpperCase()] || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + participant.name;
 
   return (
-    <div className="flex flex-col items-center gap-3 transition-all duration-500">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
+      className="flex flex-col items-center gap-4 transition-all duration-500"
+    >
         <div className={cn(
-            "w-20 h-20 border bg-slate-950 flex items-center justify-center transition-all duration-500 relative group",
+            "w-24 h-24 rounded-2xl border-2 bg-white/[0.02] flex items-center justify-center transition-all duration-500 relative group overflow-hidden shadow-xl",
             isSpeaking 
-              ? "border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.2)] scale-110 z-10" 
-              : "border-slate-800 opacity-60"
+              ? "border-primary shadow-primary/20 scale-110 z-10 opacity-100" 
+              : isHuman 
+                ? "border-white/20 opacity-100" 
+                : "border-white/5 opacity-60"
         )}>
-            {/* Corner Brackets */}
-            <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-current opacity-30" />
-            <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-current opacity-30" />
-
-            <Icon name={style.icon} size={24} className={cn("transition-colors duration-500", isSpeaking ? "text-emerald-500" : style.color)} />
+            {isHuman ? (
+              <CameraPreview 
+                stream={localStream}
+                isActive={isCameraActive}
+                error={cameraError}
+                showStatus={false}
+                className="w-full h-full border-none object-cover"
+              />
+            ) : (
+              <div className="w-full h-full relative">
+                <Image 
+                  src={avatarUrl} 
+                  alt={participant.name}
+                  className={cn(
+                    "w-full h-full object-cover transition-all duration-700",
+                    isSpeaking ? "grayscale-0 scale-110" : "grayscale opacity-50"
+                  )}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            )}
             
             {isSpeaking && (
-                <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-1.5 bg-emerald-500 text-slate-950 font-mono text-[7px] font-bold tracking-widest uppercase">
+                <div className="absolute bottom-0 left-0 right-0 bg-primary/90 text-white font-headline text-[8px] font-black text-center py-1 z-20 uppercase tracking-widest">
                     SPEAKING
                 </div>
             )}
 
             {/* Scanning line for active speaker */}
             {isSpeaking && (
-              <div className="absolute inset-0 bg-emerald-500/5 overflow-hidden pointer-events-none">
-                <div className="w-full h-1/2 bg-gradient-to-b from-transparent via-emerald-500/10 to-transparent animate-scan" />
+              <div className="absolute inset-0 bg-primary/5 overflow-hidden pointer-events-none z-10">
+                <div className="w-full h-1/2 bg-gradient-to-b from-transparent via-primary/20 to-transparent animate-[scan_2s_linear_infinite]" />
               </div>
             )}
         </div>
         
-        <div className="text-center space-y-0.5">
+        <div className="text-center space-y-1">
             <p className={cn(
-              "text-[9px] font-mono font-bold tracking-widest uppercase truncate max-w-[80px]",
-              isSpeaking ? "text-slate-100" : "text-slate-500"
+              "text-[10px] font-headline font-black tracking-widest uppercase truncate max-w-[100px] italic",
+              isSpeaking ? "text-primary" : "text-white/60"
             )}>
               {participant.name}
             </p>
-            <div className="flex items-center justify-center gap-1.5">
-              <div className={cn("w-1 h-1 rounded-full", isSpeaking ? "bg-emerald-500 animate-pulse" : "bg-slate-800")} />
-              <p className="text-[7px] font-mono text-slate-600 uppercase tracking-tighter">
-                {isHuman ? 'LOCAL' : `${participant.personality.substring(0, 4).toUpperCase()}`}
+            <div className="flex items-center justify-center gap-2">
+              <div className={cn("w-1 h-1 rounded-full", isSpeaking ? "bg-primary animate-pulse" : "bg-white/10")} />
+              <p className="text-[8px] font-headline font-black text-white/20 uppercase tracking-widest">
+                {isHuman ? 'YOU' : `${participant.personality.substring(0, 4).toUpperCase()}_AI`}
               </p>
             </div>
         </div>
-    </div>
+    </motion.div>
   );
 };
 
-const ParticipantsGrid = ({ participants = [], activeSpeakerId }) => {
+const ParticipantsGrid = ({ 
+  participants = [], 
+  activeSpeakerId, 
+  localStream, 
+  isCameraActive, 
+  cameraError 
+}) => {
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="flex flex-wrap justify-center gap-x-6 gap-y-8 lg:gap-x-10">
-        {participants.map(p => (
-          <ParticipantCard key={p.id} participant={p} isSpeaking={p.id === activeSpeakerId} />
+    <div className="w-full max-w-5xl mx-auto px-6">
+      <div className="flex flex-wrap justify-center gap-x-12 gap-y-10">
+        {participants.map((p, i) => (
+          <ParticipantCard 
+            key={p.id} 
+            participant={p} 
+            isSpeaking={p.id === activeSpeakerId} 
+            localStream={localStream}
+            isCameraActive={isCameraActive}
+            cameraError={cameraError}
+            index={i}
+          />
         ))}
       </div>
     </div>
@@ -74,3 +121,4 @@ const ParticipantsGrid = ({ participants = [], activeSpeakerId }) => {
 };
 
 export default ParticipantsGrid;
+

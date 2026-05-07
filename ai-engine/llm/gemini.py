@@ -259,6 +259,38 @@ class GeminiLLM:
             logger.error(f"Error generating generic response: {e}")
             return "I am unable to respond at the moment."
 
+    async def extract_skills(self, text: str) -> List[str]:
+        """Extracts a list of technical and soft skills from the provided text."""
+        try:
+            prompt = f"""
+            Extract a clean, concise list of technical and professional skills from the following text. 
+            Focus on programming languages, frameworks, tools, soft skills, and domain expertise.
+            Return ONLY a JSON array of strings. No other text.
+
+            Text:
+            {text}
+            """
+            
+            system_msg = "You are an expert recruitment assistant specializing in skill extraction from resumes and job descriptions."
+            
+            messages = [SystemMessage(content=system_msg), HumanMessage(content=prompt)]
+            response = await self.llm.ainvoke(messages)
+            
+            content = response.content.strip()
+            # Find the first '[' and last ']' to extract the JSON array
+            start_idx = content.find('[')
+            end_idx = content.rfind(']')
+            if start_idx != -1 and end_idx != -1:
+                json_str = content[start_idx:end_idx+1]
+                skills = json.loads(json_str)
+                if isinstance(skills, list):
+                    return [str(s) for s in skills]
+            
+            return []
+        except Exception as e:
+            logger.error(f"Error extracting skills: {e}")
+            return []
+
     def _get_system_message(self, session_type: str, stage: str, context: Dict[str, Any]) -> str:
         """Generates the appropriate system message based on the interview type, stage, and difficulty."""
         difficulty = context.get('difficulty', 'Medium')

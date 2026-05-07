@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../../components/AppIcon';
 import { cn } from '../../../../utils/cn';
 
@@ -15,120 +16,109 @@ const VoiceControls = ({
 }) => {
 
   const getStatusText = () => {
-    if (isAIPlaying) return "AI_VOCAL_TRANSMISSION_ACTIVE";
-    if (disabled) return "AI_THINKING_IN_PROGRESS";
-    if (isMuted) return "INPUT_HARDWARE_MUTED";
-    if (isTranscribing) return "PROCESSING_TRANSCRIPT...";
-    if (isRecording) return "CAPTURING_AUDIO_FEED...";
-    return "READY_FOR_INPUT";
+    if (isAIPlaying) return "AI IS SPEAKING";
+    if (disabled) return "AI IS THINKING";
+    if (isMuted) return "MICROPHONE MUTED";
+    if (isTranscribing) return "PROCESSING...";
+    if (isRecording) return "LISTENING...";
+    return "READY";
   };
 
   return (
-    <div className="flex flex-col items-center gap-10">
-      {/* Main Interaction Node */}
+    <div className="flex flex-col items-center gap-6 py-4">
+      {/* Main Interaction Button */}
       <div className="relative group">
-        {/* Animated Rings for Recording */}
-        {isRecording && (
-          <div className="absolute inset-0 -m-4">
-            <div className="absolute inset-0 border border-red-500/20 animate-ping" />
-            <div className="absolute inset-0 border border-red-500/10 animate-pulse scale-110" />
-          </div>
-        )}
+        {/* Advanced Aurora Glow Rings */}
+        <div className={cn(
+          "absolute -inset-10 rounded-full blur-[80px] transition-all duration-1000 opacity-0",
+          isRecording ? "bg-error opacity-30" : isAIPlaying ? "bg-primary opacity-30" : "bg-secondary/10 opacity-10 group-hover:opacity-30"
+        )} />
 
-        {/* Animated Rings for AI Speaking */}
-        {isAIPlaying && (
-          <div className="absolute inset-0 -m-4">
-            <div className="absolute inset-0 border border-emerald-500/20 animate-ping" />
-            <div className="absolute inset-0 border border-emerald-500/10 animate-pulse scale-110" />
-          </div>
-        )}
+        <AnimatePresence>
+          {(isRecording || isAIPlaying || isTranscribing) && (
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1.2, opacity: 1 }}
+              exit={{ scale: 1.5, opacity: 0 }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className={cn(
+                "absolute -inset-6 rounded-full border border-dashed pointer-events-none opacity-40",
+                isRecording ? "border-error" : "border-primary"
+              )}
+            />
+          )}
+        </AnimatePresence>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={onToggleRecording}
           disabled={disabled || isMuted || isAIPlaying}
           className={cn(
-            "w-24 h-24 border-2 flex items-center justify-center transition-all duration-500 relative z-10",
+            "w-32 h-32 rounded-[2rem] border-2 flex flex-col items-center justify-center transition-all duration-700 relative z-10 overflow-hidden shadow-[0_20px_40px_-12px_rgba(0,0,0,0.8)]",
             isRecording
-              ? "bg-red-500/10 border-red-500 text-red-500 shadow-[0_0_30px_rgba(239,68,68,0.2)]"
+              ? "bg-error/20 border-error text-error scale-110 shadow-error/20"
               : (disabled || isAIPlaying)
-                ? "bg-slate-900 border-slate-800 text-slate-700 cursor-not-allowed"
-                : "bg-emerald-500/10 border-emerald-500/50 text-emerald-500 hover:border-emerald-500 hover:bg-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                ? "bg-white/5 border-white/5 text-white/20 cursor-not-allowed backdrop-blur-3xl"
+                : "bg-white/[0.02] border-white/10 text-white hover:text-primary hover:border-primary/40 hover:bg-primary/5 backdrop-blur-3xl group-hover:shadow-primary/10"
           )}
         >
-          <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-current opacity-50" />
-          <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-current opacity-50" />
-
           {isTranscribing || isAIPlaying ? (
-            <div className="flex gap-1 items-end h-8">
-              {[0, 1, 2, 3, 4].map(i => (
-                <div
+            <div className="flex gap-1.5 items-end h-10">
+              {[0, 1, 2, 3, 4, 5, 6].map(i => (
+                <motion.div
                   key={i}
-                  className={cn(
-                    "w-1 bg-emerald-500 animate-waveform",
-                    isAIPlaying ? "bg-emerald-400" : "bg-sky-500"
-                  )}
-                  style={{
-                    height: `${20 + Math.random() * 60}%`,
-                    animationDelay: `${i * 0.1}s`,
-                    animationDuration: '0.5s'
+                  animate={{ 
+                    height: [8, 20 + Math.random() * 24, 8],
                   }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 0.5,
+                    delay: i * 0.08,
+                  }}
+                  className={cn(
+                    "w-[3px] rounded-full",
+                    isAIPlaying ? "bg-primary" : "bg-secondary"
+                  )}
                 />
               ))}
             </div>
           ) : (
-            <Icon name={isRecording ? "Square" : "Mic"} size={32} />
+            <>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-50" />
+              <Icon name={isRecording ? "ms:stop_circle" : "ms:mic"} size={44} className="mb-2 relative z-10" />
+              <span className="text-[9px] font-black font-headline uppercase tracking-[0.3em] relative z-10">{isRecording ? "STOP" : "START"}</span>
+            </>
           )}
-        </button>
+        </motion.button>
       </div>
 
-      {/* Terminal Status Display */}
-      <div className="flex flex-col items-center gap-2">
-        <div className="bg-slate-900 border border-slate-800 px-6 py-2 flex items-center gap-3">
+      {/* High-End Status Badge */}
+      <div className="flex flex-col items-center gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/[0.03] backdrop-blur-3xl border border-white/5 rounded-xl px-8 py-3 flex items-center gap-4 shadow-xl relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5 animate-[scan_4s_linear_infinite]" />
           <div className={cn(
-            "w-1.5 h-1.5 rounded-full",
-            isRecording ? "bg-red-500 animate-pulse" : isTranscribing ? "bg-sky-500 animate-bounce" : isAIPlaying ? "bg-emerald-400 animate-pulse" : "bg-emerald-500"
+            "w-2 h-2 rounded-full shadow-lg relative z-10",
+            isRecording ? "bg-error animate-pulse shadow-error/50" : isTranscribing ? "bg-secondary animate-bounce shadow-secondary/50" : isAIPlaying ? "bg-primary animate-pulse shadow-primary/50" : "bg-secondary shadow-secondary/50"
           )} />
           <span className={cn(
-            "font-mono text-[10px] font-bold tracking-[0.2em] uppercase transition-colors",
-            isRecording ? "text-red-500" : isAIPlaying ? "text-emerald-400" : "text-slate-300"
+            "font-headline text-[9px] font-black tracking-[0.3em] uppercase transition-colors relative z-10",
+            isRecording ? "text-error" : isAIPlaying ? "text-primary" : "text-white"
           )}>
             {getStatusText()}
           </span>
-        </div>
+        </motion.div>
 
         {/* Interaction Hint */}
         {!disabled && !isTranscribing && !isAIPlaying && (
-          <p className="font-mono text-[8px] text-slate-500 uppercase tracking-widest animate-in fade-in duration-1000">
-            {isRecording ? "Press_to_Terminate_Input" : "Activate_Vocal_Node_to_Speak"}
+          <p className="font-body text-[8px] text-on-surface-variant/40 font-black uppercase tracking-[0.2em] animate-pulse">
+            {isRecording ? "STOP SPEAKING" : "CLICK TO SPEAK"}
           </p>
         )}
-      </div>
-
-      {/* Hardware Settings Bypass */}
-      <div className="flex items-center gap-6">
-        <button
-          onClick={onToggleMute}
-          className={cn(
-            "px-4 py-2 border font-mono text-[9px] font-bold tracking-widest uppercase transition-all",
-            isMuted
-              ? "bg-amber-500/10 border-amber-500 text-amber-500"
-              : "border-slate-800 text-slate-500 hover:text-slate-300 hover:border-slate-700"
-          )}
-        >
-          {isMuted ? "Unmute_Mic" : "Mute_Input"}
-        </button>
-        <div className="w-px h-4 bg-slate-800" />
-        <button
-          onClick={onReplayLastMessage}
-          disabled={isAIPlaying || conversationHistory?.length === 0}
-          className="px-4 py-2 border border-slate-800 font-mono text-[9px] font-bold tracking-widest uppercase text-slate-500 hover:text-emerald-500 hover:border-emerald-500/50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-        >
-          Replay_Audio
-        </button>
-        <div className="w-px h-4 bg-slate-800" />
-        <button className="text-slate-600 hover:text-emerald-500 transition-colors">
-          <Icon name="Settings" size={14} />
-        </button>
       </div>
     </div>
   );

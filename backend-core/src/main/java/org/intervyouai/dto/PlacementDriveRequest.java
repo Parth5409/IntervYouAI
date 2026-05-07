@@ -26,5 +26,7 @@ public class PlacementDriveRequest {
 
     private java.util.Set<org.intervyouai.model.RoundType> activeModules;
 
+    private java.util.Set<String> skillsRequired;
+
     private String configJson;
 }

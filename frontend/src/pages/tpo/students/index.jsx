@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '../../../components/ui/DashboardLayout';
 import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 import Input from '../../../components/ui/Input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../../../components/ui/sheet';
 import {
@@ -32,6 +32,7 @@ const StudentDirectoryPage = () => {
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [editingStudent, setEditingStudent] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isBackfilling, setIsBackfilling] = useState(false);
 
   const fetchStudents = async () => {
     try {
@@ -69,20 +70,32 @@ const StudentDirectoryPage = () => {
   const handleDelete = async (id) => {
     try {
       await api.delete(`/students/${id}`);
-      toast.success('STUDENT_RECORD_DELETED');
+      toast.success('Student record deleted');
       fetchStudents();
     } catch (error) {
-      toast.error('DELETE_FAILED: ' + (error.response?.data?.message || error.message));
+      toast.error('Delete failed: ' + (error.response?.data?.message || error.message));
     }
   };
 
   const handleBulkDelete = async () => {
     try {
       await api.delete('/students/bulk-delete', { data: selectedStudents });
-      toast.success(`${selectedStudents.length}_RECORDS_PURGED`);
+      toast.success(`${selectedStudents.length} student records deleted`);
       fetchStudents();
     } catch (error) {
-      toast.error('BULK_DELETE_FAILED: ' + (error.response?.data?.message || error.message));
+      toast.error('Bulk delete failed: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleBackfillSkills = async () => {
+    try {
+      setIsBackfilling(true);
+      await api.post('students/backfill-skills');
+      toast.success('Skill extraction initiated for existing resumes');
+    } catch (error) {
+      toast.error('Backfill failed: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsBackfilling(false);
     }
   };
 
@@ -108,11 +121,11 @@ const StudentDirectoryPage = () => {
         careerGoal: editingStudent.careerGoal
       };
       await api.put(`/students/${editingStudent.id}`, payload);
-      toast.success('STUDENT_DATA_SYNCED');
+      toast.success('Student details updated');
       setIsEditSheetOpen(false);
       fetchStudents();
     } catch (error) {
-      toast.error('UPDATE_FAILED: ' + (error.response?.data?.message || error.message));
+      toast.error('Update failed: ' + (error.response?.data?.message || error.message));
     } finally {
       setIsUpdating(false);
     }
@@ -143,6 +156,9 @@ const StudentDirectoryPage = () => {
         let value = currentline[index]?.trim();
         if (header === 'currentCgpa') value = parseFloat(value);
         if (header === 'passingYear') value = parseInt(value);
+        if (header === 'skills') {
+          value = value ? value.split(',').map(s => s.trim()).filter(Boolean) : [];
+        }
         obj[header] = value;
       });
       result.push(obj);
@@ -186,11 +202,11 @@ const StudentDirectoryPage = () => {
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-mono font-bold text-slate-100 uppercase tracking-tighter">
-              Student_Registry
+            <h1 className="text-2xl font-headline font-bold text-on-surface">
+              Student Directory
             </h1>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-widest mt-1">
-              Active candidates within institutional domain
+            <p className="font-mono text-on-surface-variant mt-1 text-xs font-label font-medium text-on-surface-variant">
+              Manage student records and performance data
             </p>
           </div>
 
@@ -199,100 +215,107 @@ const StudentDirectoryPage = () => {
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
-                    className="bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white"
+                  className="bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all font-black uppercase tracking-widest text-[10px]"
                   >
-                    <Icon name="Trash2" size={16} className="mr-2" />
-                    DELETE_SELECTED ({selectedStudents.length})
+                  <Icon name="Trash2" size={16} className="mr-2" />
+                  DELETE SELECTED ({selectedStudents.length})
                   </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-surface-container-low border border-white/5 rounded-[2rem] shadow-2xl">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Bulk Delete Confirmation</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to delete {selectedStudents.length} selected student records?
-                      This action will permanently remove these candidates from the institutional registry.
-                    </AlertDialogDescription>
+                  <AlertDialogTitle className="font-headline font-black text-white italic uppercase tracking-tighter text-2xl">Bulk Delete Confirmation</AlertDialogTitle>
+                  <AlertDialogDescription className="font-body text-on-surface-variant">
+                    Are you sure you want to delete {selectedStudents.length} selected student records?
+                    This action will permanently remove these candidates from the registry.
+                  </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>CANCEL</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleBulkDelete}>
-                      PURGE_RECORDS
-                    </AlertDialogAction>
+                  <AlertDialogCancel className="bg-white/5 text-white border-white/5 rounded-xl uppercase tracking-widest text-[10px] font-black">CANCEL</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleBulkDelete} className="bg-red-500 text-white rounded-xl uppercase tracking-widest text-[10px] font-black hover:bg-red-600">
+                    DELETE
+                  </AlertDialogAction>
                   </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-              <SheetTrigger asChild>
-                <Button className="bg-emerald-500 text-slate-950 font-bold hover:bg-emerald-400">
-                  <Icon name="Upload" size={16} className="mr-2" />
-                  BULK_IMPORT_CSV
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="bg-slate-950 border-l border-slate-800 text-slate-50 w-full sm:max-w-md">
-                <SheetHeader>
-                  <SheetTitle className="text-slate-100 font-mono text-xl uppercase tracking-tighter">
-                    Initialize_Bulk_Import
-                  </SheetTitle>
-                </SheetHeader>
-
-                <div className="mt-8 space-y-6">
-                  <div className="p-4 border border-dashed border-slate-800 bg-slate-900/50 text-center">
-                    <input
-                      type="file"
-                      accept=".csv"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="csv-upload"
-                    />
-                    <label htmlFor="csv-upload" className="cursor-pointer space-y-2 block">
-                      <Icon name="FileSpreadsheet" size={32} className="mx-auto text-slate-500" />
-                      <p className="text-xs font-mono text-slate-400">
-                        {csvData ? 'FILE_LOADED_READY_TO_PROCESS' : 'SELECT_CSV_FILE_FOR_UPLOAD'}
-                      </p>
-                    </label>
-                  </div>
-
-                  <div className="bg-slate-900 p-4 border border-slate-800">
-                    <h3 className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-3">
-                      Expected_CSV_Format
-                    </h3>
-                    <code className="text-[10px] font-mono text-emerald-500 block">
-                      email, fullName, prn, branch, currentCgpa, passingYear
-                    </code>
-                  </div>
-
-                  {importError && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20">
-                      <p className="text-[10px] font-mono text-red-500 uppercase">{importError}</p>
-                    </div>
+                  </AlertDialogContent>
+                  </AlertDialog>
                   )}
 
-                  <div className="pt-4 space-y-3">
-                    <Button
-                      onClick={handleBulkImport}
-                      disabled={!csvData || isImporting}
-                      className="w-full bg-emerald-500 text-slate-950 font-bold"
-                    >
-                      {isImporting ? 'PROCESSING_DATA...' : 'EXECUTE_IMPORT'}
-                    </Button>
-                    <p className="text-[8px] font-mono text-slate-500 text-center uppercase leading-relaxed">
-                      * Default passwords will be generated as ST + INSTITUTION_CODE + PRN (e.g., STMIT20230001).
-                      Students will be required to update credentials on first node access.
+                  <Button 
+                    variant="outline"
+                    onClick={handleBackfillSkills}
+                    disabled={isBackfilling}
+                    className="border-white/5 text-on-surface-variant font-black hover:bg-white/5 rounded-xl px-6 uppercase tracking-widest text-xs h-12"
+                  >
+                    <Icon name="RefreshCw" size={16} className={cn("mr-2", isBackfilling && "animate-spin")} />
+                    {isBackfilling ? 'SYNCING...' : 'SYNC SKILLS'}
+                  </Button>
+
+                  <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                  <SheetTrigger asChild>
+                  <Button className="bg-secondary text-slate-950 font-black hover:bg-secondary-fixed rounded-xl px-6 uppercase tracking-widest text-xs">
+                  <Icon name="Upload" size={16} className="mr-2" />
+                  IMPORT STUDENTS (CSV)
+                  </Button>
+                  </SheetTrigger>
+                  <SheetContent className="bg-surface-container-low border-l border-outline-variant/30 text-on-surface w-full sm:max-w-md overflow-y-auto">
+                  <SheetHeader>
+                  <SheetTitle className="text-on-surface font-headline text-xl">
+                  Import Student Data
+                  </SheetTitle>
+                  </SheetHeader>
+
+                  <div className="mt-8 space-y-6">
+                  <div className="p-12 border-2 border-dashed border-white/10 bg-white/[0.01] text-center rounded-[2rem] hover:border-primary/40 transition-all group">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="csv-upload"
+                  />
+                  <label htmlFor="csv-upload" className="cursor-pointer space-y-4 block">
+                    <Icon name="FileSpreadsheet" size={48} className="mx-auto text-on-surface-variant opacity-20 group-hover:opacity-100 transition-opacity" />
+                    <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">
+                      {csvData ? 'File loaded successfully' : 'Select CSV file for upload'}
                     </p>
+                  </label>
                   </div>
-                </div>
-              </SheetContent>
+
+                  <div className="bg-white/[0.02] p-6 border border-white/5 rounded-2xl">
+                    <h3 className="text-[10px] font-black text-primary uppercase tracking-widest mb-4 italic">
+                      Expected Format
+                    </h3>
+                    <code className="text-[10px] font-mono text-on-surface-variant/60 block leading-relaxed">
+                      email, fullName, prn, branch, currentCgpa, passingYear, skills (optional)
+                    </code>
+                  </div>
+                  {importError && (
+                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+                    <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">{importError}</p>
+                  </div>
+                  )}
+
+                  <div className="pt-4 space-y-4">
+                  <Button
+                    onClick={handleBulkImport}
+                    disabled={!csvData || isImporting}
+                    className="w-full bg-secondary text-slate-950 font-black h-14 rounded-xl shadow-xl shadow-secondary/10 uppercase tracking-widest text-xs"
+                  >
+                    {isImporting ? 'PROCESSING DATA...' : 'START IMPORT'}
+                  </Button>
+                  <p className="text-[8px] font-black text-on-surface-variant/40 text-center leading-relaxed uppercase tracking-widest">
+                    * Default passwords will be generated automatically. Students will be required to update credentials on first login.
+                  </p>
+                  </div>
+                  </div>              </SheetContent>
             </Sheet>
           </div>
         </div>
 
         {/* Table View */}
-        <div className="bg-slate-900/50 border border-slate-800 overflow-hidden">
+        <div className="bg-surface-container-low/50 border border-outline-variant/30 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left font-mono text-xs">
-              <thead className="bg-slate-950 border-b border-slate-800">
+              <thead className="bg-surface-container-low border-b border-outline-variant/30">
                 <tr>
                   <th className="px-4 py-4 w-10">
                     <Checkbox
@@ -300,23 +323,23 @@ const StudentDirectoryPage = () => {
                       onChange={(e) => handleSelectAll(e.target.checked)}
                     />
                   </th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter">Candidate_Identity</th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter">PRN</th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter">Academic_Unit</th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter">CGPA</th>
-                  <th className="px-6 py-4 text-slate-500 font-bold uppercase tracking-tighter text-right">Actions</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter">Student Name</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter">PRN</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter">Branch / Dept</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter">CGPA</th>
+                  <th className="px-6 py-4 text-on-surface-variant font-bold uppercase tracking-tighter text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y divide-white/5">
                 {isLoading ? (
-                  <tr><td colSpan="6" className="px-6 py-12 text-center text-slate-500 animate-pulse uppercase tracking-widest">Scanning_Records...</td></tr>
+                  <tr><td colSpan="6" className="px-6 py-20 text-center text-on-surface-variant animate-pulse font-headline text-xs uppercase tracking-[0.3em] italic">Scanning institutional records...</td></tr>
                 ) : students.length === 0 ? (
-                  <tr><td colSpan="6" className="px-6 py-12 text-center text-slate-500 uppercase tracking-widest">Empty_Registry_Zero_Records</td></tr>
+                  <tr><td colSpan="6" className="px-6 py-20 text-center text-on-surface-variant font-headline text-xs uppercase tracking-[0.3em] italic border border-dashed border-white/5 rounded-[2rem]">No student records found</td></tr>
                 ) : (
                   students.map((student) => (
                     <tr key={student.id} className={cn(
-                      "hover:bg-slate-800/30 transition-colors group",
-                      selectedStudents.includes(student.id) && "bg-emerald-500/5"
+                      "hover:bg-white/[0.02] transition-all duration-300 group",
+                      selectedStudents.includes(student.id) && "bg-primary/5"
                     )}>
                       <td className="px-4 py-4">
                         <Checkbox
@@ -325,49 +348,49 @@ const StudentDirectoryPage = () => {
                         />
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] text-slate-400 group-hover:border-emerald-500/50 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-xs font-headline font-black text-primary italic group-hover:border-primary/40 transition-colors">
                             {student.fullName?.charAt(0) || '?'}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-200">{student.fullName || 'UNKNOWN_CANDIDATE'}</div>
-                            <div className="text-[10px] text-slate-500 lowercase">{student.email || 'no-email@system.local'}</div>
+                            <div className="font-headline font-black text-white italic tracking-tight">{student.fullName || 'Unknown Candidate'}</div>
+                            <div className="text-[10px] text-on-surface-variant/40 font-black uppercase tracking-widest mt-1 lowercase">{student.email || 'no-email@system.local'}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-slate-400 font-mono">{student.prn}</td>
-                      <td className="px-6 py-4 text-slate-400">{student.branch}</td>
-                      <td className="px-6 py-4 font-bold text-sky-400">{student.currentCgpa || 'N/A'}</td>
+                      <td className="px-6 py-4 text-on-surface-variant font-headline text-[10px] font-black uppercase tracking-widest">{student.prn}</td>
+                      <td className="px-6 py-4 text-on-surface-variant font-headline text-[10px] font-black uppercase tracking-widest">{student.branch}</td>
+                      <td className="px-6 py-4 font-headline font-black text-sky-400 italic text-sm">{student.currentCgpa || 'N/A'}</td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-3">
                           <button
                             onClick={() => handleEditClick(student)}
-                            className="p-1.5 text-slate-500 hover:text-emerald-500 transition-colors"
+                            className="p-2 text-on-surface-variant hover:text-secondary transition-colors rounded-lg hover:bg-white/5"
                             title="Edit Student"
                           >
-                            <Icon name="Pencil" size={14} />
+                            <Icon name="Pencil" size={16} />
                           </button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <button
-                                className="p-1.5 text-slate-500 hover:text-red-500 transition-colors"
+                                className="p-2 text-on-surface-variant hover:text-red-500 transition-colors rounded-lg hover:bg-white/5"
                                 title="Delete Student"
                               >
-                                <Icon name="Trash2" size={14} />
+                                <Icon name="Trash2" size={16} />
                               </button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent>
+                            <AlertDialogContent className="bg-surface-container-low border border-white/5 rounded-[2rem] shadow-2xl">
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Student Record?</AlertDialogTitle>
-                                <AlertDialogDescription>
+                                <AlertDialogTitle className="font-headline font-black text-white italic uppercase tracking-tighter text-2xl">Delete Student Record?</AlertDialogTitle>
+                                <AlertDialogDescription className="font-body text-on-surface-variant">
                                   Are you sure you want to delete the record for {student.fullName}?
-                                  This operation is irreversible and will remove all session history.
+                                  This action will permanently remove all session history.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>ABORT</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDelete(student.id)}>
-                                  CONFIRM_DELETE
+                                <AlertDialogCancel className="bg-white/5 text-white border-white/5 rounded-xl uppercase tracking-widest text-[10px] font-black">CANCEL</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(student.id)} className="bg-red-500 text-white rounded-xl uppercase tracking-widest text-[10px] font-black hover:bg-red-600">
+                                  DELETE
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -385,30 +408,30 @@ const StudentDirectoryPage = () => {
 
       {/* Edit Student Sheet */}
       <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
-        <SheetContent className="bg-slate-950 border-l border-slate-800 text-slate-50 w-full sm:max-w-md overflow-y-auto">
+        <SheetContent className="bg-surface-container-low border-l border-outline-variant/30 text-on-surface w-full sm:max-w-md overflow-y-auto">
           <SheetHeader>
-            <SheetTitle className="text-slate-100 font-mono text-xl uppercase tracking-tighter">
-              Modify_Student_Node
+            <SheetTitle className="text-on-surface font-headline text-xl">
+              Edit Student Details
             </SheetTitle>
           </SheetHeader>
 
           {editingStudent && (
             <form onSubmit={handleUpdateStudent} className="mt-8 space-y-6">
-              <div className="p-4 bg-slate-900 border border-slate-800 space-y-1 mb-6">
-                <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Fixed_Identity</p>
-                <p className="text-sm font-mono font-bold text-slate-200">{editingStudent.fullName}</p>
-                <p className="text-xs font-mono text-slate-400">{editingStudent.email}</p>
+              <div className="p-4 bg-surface-container-low border border-outline-variant/30 space-y-1 mb-6">
+                <p className="text-[10px] font-mono text-on-surface-variant font-label font-medium text-on-surface-variant">Account Identity</p>
+                <p className="text-sm font-mono font-bold text-on-surface">{editingStudent.fullName}</p>
+                <p className="text-xs font-mono text-on-surface-variant">{editingStudent.email}</p>
               </div>
 
               <Input
-                label="Permanent Registration Number (PRN)"
+                label="PRN (Registration Number)"
                 value={editingStudent.prn || ''}
                 onChange={(e) => setEditingStudent({ ...editingStudent, prn: e.target.value })}
                 required
               />
 
               <Input
-                label="Academic Unit / Branch"
+                label="Branch / Department"
                 value={editingStudent.branch || ''}
                 onChange={(e) => setEditingStudent({ ...editingStudent, branch: e.target.value })}
               />
@@ -436,18 +459,18 @@ const StudentDirectoryPage = () => {
               />
 
               <div className="space-y-2">
-                <label className="font-mono text-[10px] text-slate-400 uppercase tracking-widest block">
-                  Capabilities (Comma Separated)
+                <label className="font-mono text-[10px] text-on-surface-variant block font-label font-medium text-on-surface-variant">
+                  Skills (Comma Separated)
                 </label>
                 <textarea
-                  className="w-full bg-slate-900 border border-slate-800 p-3 font-mono text-xs text-slate-200 focus:ring-1 focus:ring-emerald-500 outline-none min-h-[80px]"
+                  className="w-full bg-surface-container-low border border-outline-variant/30 p-3 font-mono text-xs text-on-surface focus:ring-1 focus:ring-secondary outline-none min-h-[80px]"
                   value={editingStudent.skills || ''}
                   onChange={(e) => setEditingStudent({ ...editingStudent, skills: e.target.value })}
                 />
               </div>
 
               <Input
-                label="Career Vector / Goal"
+                label="Career Goal"
                 value={editingStudent.careerGoal || ''}
                 onChange={(e) => setEditingStudent({ ...editingStudent, careerGoal: e.target.value })}
               />
@@ -457,16 +480,16 @@ const StudentDirectoryPage = () => {
                   type="button"
                   variant="outline"
                   onClick={() => setIsEditSheetOpen(false)}
-                  className="flex-1 border-slate-800 text-slate-400 hover:bg-slate-900"
+                  className="flex-1 border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low"
                 >
                   CANCEL
                 </Button>
                 <Button
                   type="submit"
                   disabled={isUpdating}
-                  className="flex-1 bg-emerald-500 text-slate-950 font-bold"
+                  className="flex-1 bg-secondary text-slate-950 font-black h-12 rounded-xl uppercase tracking-widest text-[10px]"
                 >
-                  {isUpdating ? 'UPDATING...' : 'SAVE_CHANGES'}
+                  {isUpdating ? 'UPDATING...' : 'SAVE CHANGES'}
                 </Button>
               </div>
             </form>

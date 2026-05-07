@@ -15,6 +15,8 @@ import java.util.UUID;
 @Repository
 public interface StudentProfileRepository extends JpaRepository<StudentProfile, UUID> {
     Optional<StudentProfile> findByUser(User user);
+    
+    Optional<StudentProfile> findByUserId(UUID userId);
 
     List<StudentProfile> findByUserOrganizationId(UUID orgId);
 
@@ -22,4 +24,7 @@ public interface StudentProfileRepository extends JpaRepository<StudentProfile, 
 
     @Query("SELECT s FROM StudentProfile s WHERE s.user.organization.id = :orgId AND (:minCgpa IS NULL OR s.currentCgpa >= :minCgpa)")
     List<StudentProfile> findEligibleStudents(@Param("orgId") UUID orgId, @Param("minCgpa") BigDecimal minCgpa);
+
+    @Query("SELECT s FROM StudentProfile s WHERE s.resumeUrl IS NOT NULL AND (s.skills IS EMPTY)")
+    List<StudentProfile> findProfilesNeedingBackfill();
 }

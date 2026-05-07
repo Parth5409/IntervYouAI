@@ -12,22 +12,22 @@ const GDFeedbackScores = ({ feedback }) => {
   ];
 
   const getScoreColor = (score) => {
-    if (score >= 85) return 'text-emerald-500';
+    if (score >= 85) return 'text-secondary';
     if (score >= 70) return 'text-amber-500';
     return 'text-red-500';
   };
 
   const getBarColor = (score) => {
-    if (score >= 85) return 'bg-emerald-500';
+    if (score >= 85) return 'bg-secondary';
     if (score >= 70) return 'bg-amber-500';
     return 'bg-red-500';
   };
 
   return (
-    <div className="border border-slate-800 bg-slate-900/30 p-8 font-mono">
-      <div className="flex items-center gap-3 border-b border-slate-800 pb-4 mb-8">
+    <div className="border border-outline-variant/30 bg-surface-container-low/30 p-8 font-mono">
+      <div className="flex items-center gap-3 border-b border-outline-variant/30 pb-4 mb-8">
         <div className="w-1.5 h-4 bg-amber-500" />
-        <h3 className="text-xs font-bold text-slate-100 uppercase tracking-[0.2em]">
+        <h3 className="text-xs font-bold text-on-surface uppercase tracking-[0.2em]">
           PERFORMANCE_METRICS_MATRIX
         </h3>
       </div>
@@ -39,12 +39,12 @@ const GDFeedbackScores = ({ feedback }) => {
             <div key={metric.key} className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Icon name={metric.icon} size={14} className="text-slate-500" />
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{metric.label}</span>
+                  <Icon name={metric.icon} size={14} className="text-on-surface-variant" />
+                  <span className="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest">{metric.label}</span>
                 </div>
                 <span className={cn("text-xs font-bold tracking-tighter", getScoreColor(score))}>{score}%</span>
               </div>
-              <div className="h-1.5 w-full bg-slate-800 border border-slate-800 flex p-[1px]">
+              <div className="h-1.5 w-full bg-surface-container-low border border-outline-variant/30 flex p-[1px]">
                 <div
                   className={cn("h-full transition-all duration-1000 ease-out", getBarColor(score))}
                   style={{ width: `${score}%` }}

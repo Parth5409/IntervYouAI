@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Button from '../../../components/ui/button';
 
 const ProgressWidgets = ({ user, interviewHistory }) => {
   const progressData = {
@@ -11,7 +11,7 @@ const ProgressWidgets = ({ user, interviewHistory }) => {
     },
     skillProgress: [
       { skill: 'Technical Skills', progress: 85, color: 'bg-blue-500' },
-      { skill: 'Communication', progress: 92, color: 'bg-green-500' },
+      { skill: 'Communication', progress: 92, color: 'bg-secondary' },
       { skill: 'Problem Solving', progress: 78, color: 'bg-purple-500' },
       { skill: 'Leadership', progress: 65, color: 'bg-orange-500' }
     ],

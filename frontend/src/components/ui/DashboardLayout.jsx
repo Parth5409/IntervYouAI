@@ -6,29 +6,30 @@ import useAuth from '../../hooks/useAuth';
 import { cn } from '../../utils/cn';
 
 const DashboardLayout = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const studentMenu = [
-    { label: 'OVERVIEW', path: '/student/dashboard', icon: 'LayoutDashboard' },
-    { label: 'INTERVIEWS', path: '/student/drives', icon: 'Play' },
-    { label: 'HISTORY', path: '/student/history', icon: 'History' },
-    { label: 'PROFILE', path: '/student/profile', icon: 'User' },
+    { label: 'Dashboard', path: '/student/dashboard', icon: 'ms:grid_view' },
+    { label: 'Interview Hub', path: '/interview/setup', icon: 'ms:psychology' },
+    { label: 'Interview Drives', path: '/student/drives', icon: 'ms:rocket' },
+    { label: 'Student History', path: '/student/history', icon: 'ms:analytics' },
+    { label: 'Profile Settings', path: '/student/profile', icon: 'ms:monitoring' },
   ];
 
   const tpoMenu = [
-    { label: 'ANALYTICS', path: '/tpo/dashboard', icon: 'BarChart' },
-    { label: 'DRIVE_MGMT', path: '/tpo/drives', icon: 'Briefcase' },
-    { label: 'STUDENTS', path: '/tpo/students', icon: 'Users' },
-    { label: 'REPORTS', path: '/tpo/reports', icon: 'Clipboard' },
+    { label: 'Analytics', path: '/tpo/dashboard', icon: 'ms:bar_chart' },
+    { label: 'Drive Management', path: '/tpo/drives', icon: 'ms:business_center' },
+    { label: 'Student Directory', path: '/tpo/students', icon: 'ms:group' },
+    { label: 'System Reports', path: '/tpo/reports', icon: 'ms:description' },
   ];
 
   const adminMenu = [
-    { label: 'ORG_STATS', path: '/admin/dashboard', icon: 'Building' },
-    { label: 'TPO_MGMT', path: '/admin/tpo', icon: 'UserPlus' },
-    { label: 'SYSTEM', path: '/admin/system', icon: 'Cpu' },
+    { label: 'Organization Stats', path: '/admin/dashboard', icon: 'ms:domain' },
+    { label: 'TPO Management', path: '/admin/tpo', icon: 'ms:person_add' },
+    { label: 'System Config', path: '/admin/system', icon: 'ms:settings_suggest' },
   ];
 
   const getMenu = () => {
@@ -44,132 +45,147 @@ const DashboardLayout = ({ children }) => {
   };
 
   return (
-    <div className="h-screen bg-slate-950 text-slate-50 font-sans selection:bg-emerald-500 selection:text-slate-950 flex overflow-hidden">
-      {/* Blueprint Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none" />
+    <div className="h-screen bg-background text-on-surface font-body flex overflow-hidden selection:bg-primary/30 selection:text-on-surface relative">
+      <div className="noise" />
+      {/* Background Ambient Layers */}
+      <div className="fixed inset-0 glow-mesh pointer-events-none z-0"></div>
+      <div className="fixed inset-0 subtle-grid pointer-events-none z-0"></div>
+      <div className="fixed -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+      <div className="fixed -bottom-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
       {/* Sidebar */}
       <aside 
         className={cn(
-          "h-full relative z-20 border-r border-slate-800 bg-slate-950/80 backdrop-blur-xl transition-all duration-300 flex flex-col shrink-0",
-          isSidebarOpen ? "w-64" : "w-20"
+          "fixed left-0 top-0 h-full flex flex-col p-6 bg-surface/40 backdrop-blur-3xl border-r border-white/5 z-50 font-headline text-sm transition-all duration-500",
+          isSidebarOpen ? "w-72" : "w-24"
         )}
       >
-        <div className="h-16 flex items-center px-6 border-b border-slate-800 gap-3">
-          <div className="w-8 h-8 bg-emerald-500 flex items-center justify-center shrink-0">
-            <Icon name="Brain" size={20} className="text-slate-950" />
-          </div>
+        {/* Logo Section */}
+        <div className="flex items-center gap-3 mb-12">
+          <motion.div 
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20"
+          >
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'wght' 700", fontSize: '20px' }}>bolt</span>
+          </motion.div>
           {isSidebarOpen && (
-            <span className="font-mono font-bold tracking-tighter text-lg overflow-hidden whitespace-nowrap">
-              INTERVYOU.AI
-            </span>
+            <motion.h1 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-xl font-black tracking-tighter text-white font-headline"
+            >
+              IntervYou<span className="text-primary">.AI</span>
+            </motion.h1>
           )}
         </div>
 
-        <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
-          {getMenu().map((item) => (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className={cn(
-                "w-full flex items-center gap-4 px-3 py-3 font-mono text-xs tracking-widest transition-all duration-200 group relative",
-                location.pathname === item.path 
-                  ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" 
-                  : "text-slate-400 hover:text-slate-100 hover:bg-slate-900"
-              )}
-            >
-              <Icon name={item.icon} size={18} />
-              {isSidebarOpen && <span className="overflow-hidden whitespace-nowrap">{item.label}</span>}
-              {location.pathname === item.path && (
-                <motion.div 
-                  layoutId="active-pill"
-                  className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500" 
-                />
-              )}
-            </button>
-          ))}
+        <nav className="flex-1 space-y-1.5">
+          {getMenu().map((item, index) => {
+            const active = location.pathname === item.path;
+            return (
+              <motion.button
+                key={item.path}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.05 }}
+                onClick={() => navigate(item.path)}
+                className={cn(
+                  "w-full flex items-center gap-4 px-4 py-3 rounded-2xl transition-all group relative overflow-hidden",
+                  active 
+                    ? "text-primary bg-primary/10 font-bold" 
+                    : "text-on-surface-variant/60 hover:text-white hover:bg-white/5"
+                )}
+              >
+                {active && (
+                  <motion.div 
+                    layoutId="active-pill"
+                    className="absolute left-0 w-1 h-6 bg-primary rounded-full"
+                  />
+                )}
+                <Icon name={item.icon} size={22} className={cn("transition-all duration-500 group-hover:scale-110 group-hover:text-primary", active && "text-primary")} />
+                {isSidebarOpen && <span className="font-headline text-[14px] tracking-tight">{item.label}</span>}
+              </motion.button>
+            );
+          })}
         </nav>
 
-        <div className="p-3 border-t border-slate-800 space-y-2">
-          <div className={cn(
-            "flex items-center gap-3 px-3 py-2 bg-slate-900 border border-slate-800",
-            !isSidebarOpen && "justify-center"
-          )}>
-            <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
-              <Icon name="User" size={14} className="text-slate-400" />
-            </div>
-            {isSidebarOpen && (
-              <div className="overflow-hidden">
-                <p className="text-[10px] font-mono font-bold truncate">{user?.fullName}</p>
-                <p className="text-[8px] font-mono text-slate-500 truncate">{user?.role}</p>
-              </div>
-            )}
-          </div>
-          
-          <button
-            onClick={handleLogout}
+        <div className="mt-auto pt-8 border-t border-white/5 space-y-4">
+          <button 
             className={cn(
-              "w-full flex items-center gap-4 px-3 py-2 text-slate-400 hover:text-red-400 hover:bg-red-500/5 transition-colors font-mono text-[10px] tracking-widest",
-              !isSidebarOpen && "justify-center"
+              "w-full bg-gradient-to-r from-primary to-secondary text-white font-black rounded-2xl hover:brightness-110 transition-all text-xs tracking-widest font-headline shadow-xl shadow-primary/20 flex items-center justify-center gap-2",
+              isSidebarOpen ? "h-14 py-4 px-6" : "h-14 w-14"
             )}
+            onClick={() => navigate('/interview/setup')}
           >
-            <Icon name="LogOut" size={16} />
-            {isSidebarOpen && <span>TERMINATE_SESSION</span>}
+            <Icon name="ms:add" size={20} />
+            {isSidebarOpen && "NEW SESSION"}
+          </button>
+
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="w-full h-10 flex items-center justify-center text-on-surface-variant/40 hover:text-primary transition-all border border-white/5 rounded-xl mt-4"
+          >
+            <Icon name={isSidebarOpen ? "ms:keyboard_double_arrow_left" : "ms:keyboard_double_arrow_right"} size={18} />
           </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col relative z-10 overflow-hidden">
+      <div className={cn(
+        "flex-1 flex flex-col relative z-20 overflow-hidden transition-all duration-500",
+        isSidebarOpen ? "ml-72" : "ml-24"
+      )}>
         {/* Top Header */}
-        <header className="h-16 border-b border-slate-800 bg-slate-950/50 backdrop-blur-md flex items-center justify-between px-8">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 text-slate-400 hover:text-emerald-500 transition-colors"
-            >
-              <Icon name={isSidebarOpen ? "ChevronLeft" : "Menu"} size={20} />
-            </button>
-            
-            <div className="h-4 w-px bg-slate-800 mx-2" />
-            
-            <button 
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-2 px-3 py-1.5 border border-slate-800 bg-slate-900/50 text-slate-400 hover:text-emerald-500 hover:border-emerald-500/30 transition-all font-mono text-[10px] tracking-widest uppercase"
-            >
-              <Icon name="ArrowLeft" size={14} />
-              BACK
-            </button>
-
-            <div className="h-4 w-px bg-slate-800 mx-2" />
-            
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-mono text-emerald-500/80 uppercase tracking-widest">System_Live // Node_01</span>
+        <header className="fixed top-0 right-0 z-40 h-20 flex justify-between items-center px-12 bg-background/40 backdrop-blur-3xl border-b border-white/5 font-headline" style={{ left: isSidebarOpen ? '288px' : '96px' }}>
+          <div className="flex items-center gap-8 flex-1">
+            <div className="relative w-full max-w-md group">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/30 text-xl group-focus-within:text-primary transition-colors">search</span>
+              <input 
+                type="text" 
+                placeholder="Search resources or drives..." 
+                className="bg-white/5 border border-white/5 focus:border-primary/40 focus:ring-0 rounded-2xl pl-12 pr-6 py-3 text-xs text-on-surface w-full transition-all placeholder:text-on-surface-variant/30 font-medium"
+              />
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex flex-col items-end">
-              <span className="text-[10px] font-mono text-slate-500 uppercase">Organization</span>
-              <span className="text-xs font-mono font-bold">{user?.organizationName || 'GLOBAL_ACCESS'}</span>
+          <div className="flex items-center gap-10">
+            <nav className="hidden xl:flex gap-10 items-center text-on-surface-variant/60 uppercase tracking-[0.2em] text-[10px] font-bold">
+            </nav>
+            <div className="flex items-center gap-6 border-l border-white/5 pl-10">
+              <button className="material-symbols-outlined text-on-surface-variant/40 hover:text-primary transition-all text-2xl relative">
+                notifications
+                <span className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full border-2 border-background" />
+              </button>
+              <div className="relative group cursor-pointer p-1 rounded-full border border-white/10 hover:border-primary/40 transition-all">
+                <img 
+                  alt="Profile" 
+                  className="w-9 h-9 rounded-full object-cover" 
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.fullName || 'User'}`}
+                />
+                <div className="absolute right-0 top-full mt-3 w-56 bg-surface-container-high/90 backdrop-blur-3xl border border-white/5 rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all p-3 z-50">
+                  <div className="p-3 mb-2 border-b border-white/5">
+                    <p className="text-sm font-bold text-white truncate">{user?.fullName}</p>
+                    <p className="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">{user?.role?.replace('ROLE_', '')}</p>
+                  </div>
+                  <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant/60 hover:text-error hover:bg-error/5 rounded-xl transition-all text-[11px] font-bold uppercase tracking-widest">
+                    <Icon name="ms:logout" size={18} />
+                    Log Out
+                  </button>
+                </div>
+              </div>
             </div>
-            <button className="relative p-2 text-slate-400 hover:text-emerald-500 transition-colors">
-              <Icon name="Bell" size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border-2 border-slate-950" />
-            </button>
           </div>
         </header>
 
         {/* Scrollable View */}
-        <main className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+        <main className="flex-1 overflow-y-auto pt-24 px-10 pb-20 custom-scrollbar relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.4, ease: [0.33, 1, 0.68, 1] }}
             >
               {children}
             </motion.div>

@@ -1,0 +1,11 @@
+email,fullName,prn,branch,currentCgpa,passingYear,skills
+rahul.sharma@uni.edu,Rahul Sharma,20231001,Computer Science,9.2,2026,"Java, Spring Boot, React, AWS"
+priya.patel@uni.edu,Priya Patel,20231002,Information Technology,8.5,2026,"Python, Django, PostgreSQL, Docker"
+amit.kumar@uni.edu,Amit Kumar,20231003,Computer Science,7.8,2026,"C++, Data Structures, Algorithms"
+sneha.gupta@uni.edu,Sneha Gupta,20231004,Electronics,8.9,2026,"Embedded Systems, Verilog, MATLAB"
+vikram.singh@uni.edu,Vikram Singh,20231005,Mechanical,7.2,2026,"AutoCAD, SolidWorks, Thermodynamics"
+neha.reddy@uni.edu,Neha Reddy,20231006,Computer Science,9.5,2026,"Machine Learning, PyTorch, Scikit-learn"
+arjun.mehta@uni.edu,Arjun Mehta,20231007,Information Technology,8.1,2026,"JavaScript, Vue.js, Node.js, Firebase"
+tanvi.shah@uni.edu,Tanvi Shah,20231008,Electronics,8.4,2026,"Microcontrollers, PCB Design, Python"
+manoj.verma@uni.edu,Manoj Verma,20231009,Mechanical,6.9,2026,"Manufacturing, Robotics, Ansys"
+ishani.joshi@uni.edu,Ishani Joshi,20231010,Computer Science,8.7,2026,"Go, Kubernetes, Terraform, Cloud Native"
