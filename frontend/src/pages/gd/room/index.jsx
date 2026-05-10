@@ -6,6 +6,8 @@ import { useCamera } from '../../../hooks/useCamera';
 import io from 'socket.io-client';
 import useAuth from '../../../hooks/useAuth';
 
+import { toast } from 'sonner';
+
 import SessionControls from '../../../components/ui/SessionControls';
 import ParticipantsGrid from './components/ParticipantsGrid';
 import DiscussionTopic from './components/DiscussionTopic';
@@ -39,7 +41,7 @@ const GDRoom = () => {
   const [isInterruptionWindow, setIsInterruptionWindow] = useState(false);
 
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
-  const { stream, isActive: isCameraActive, error: cameraError, startCamera, stopCamera } = useCamera();
+  const { stream, isActive: isCameraActive, error: cameraError, startCamera, stopCamera, captureFrame } = useCamera();
 
   const startInterruption = useCallback(() => {
     setInterruptionTimer(5);
@@ -108,6 +110,12 @@ const GDRoom = () => {
     socket.on('speaker_change', handleSpeakerChange);
     socket.on('start_turn_window', handleStartTurnWindow);
     socket.on('discussion_ended', handleDiscussionEnded);
+    socket.on('proctoring_alert', (data) => {
+      toast.warning(data.message, {
+        description: data.type === 'multi_face' ? 'Please ensure you are alone.' : 'Please stay visible to the camera.',
+        duration: 4000,
+      });
+    });
     socket.on('error', (error) => console.error('Socket Error:', error.message));
 
     const handleUserMessageProcessed = ({ transcript }) => {
@@ -128,6 +136,27 @@ const GDRoom = () => {
       socket.disconnect();
     };
   }, [sessionId, navigate, user?.id]);
+
+  // Video Frame Sampling
+  useEffect(() => {
+    let interval;
+    if (isSessionActive && socketRef.current && isCameraActive) {
+      interval = setInterval(async () => {
+        try {
+          const frame = await captureFrame(0.4);
+          if (frame && socketRef.current) {
+            socketRef.current.emit('video_frame', {
+              session_id: sessionId,
+              image_blob: frame
+            });
+          }
+        } catch (err) {
+          console.error("Frame capture failed:", err);
+        }
+      }, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [isSessionActive, isCameraActive, captureFrame, sessionId]);
 
   useEffect(() => {
     let interval;

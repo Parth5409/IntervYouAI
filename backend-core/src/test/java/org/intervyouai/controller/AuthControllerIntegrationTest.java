@@ -48,23 +48,23 @@ public class AuthControllerIntegrationTest {
         signupRequest.setPassword(password);
         signupRequest.setRole(UserRole.STUDENT);
 
-        mockMvc.perform(post("/api/v1/auth/signup")
+        mockMvc.perform(post("/api/core/v1/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("User registered successfully!"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.message", is("User registered successfully!")));
 
         // 2. Login
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(email);
         loginRequest.setPassword(password);
 
-        mockMvc.perform(post("/api/v1/auth/login")
+        mockMvc.perform(post("/api/core/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email", is(email)))
-                .andExpect(jsonPath("$.accessToken").exists())
+                .andExpect(jsonPath("$.access_token").exists())
                 .andExpect(jsonPath("$.role", is("ROLE_STUDENT")));
     }
 
@@ -76,16 +76,16 @@ public class AuthControllerIntegrationTest {
         signupRequest.setPassword("password123");
 
         // First registration
-        mockMvc.perform(post("/api/v1/auth/signup")
+        mockMvc.perform(post("/api/core/v1/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         // Duplicate registration
-        mockMvc.perform(post("/api/v1/auth/signup")
+        mockMvc.perform(post("/api/core/v1/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("Error: Email is already in use!")));
+                .andExpect(jsonPath("$.message", is("Email is already in use: " + email)));
     }
 }

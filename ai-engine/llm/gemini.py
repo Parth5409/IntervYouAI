@@ -105,7 +105,7 @@ class GeminiLLM:
             logger.error(f"Error generating interview question: {e}")
             return "Thank you. Can you tell me more about your background and experience?"
 
-    async def generate_feedback(self, session_type: str, chat_history: List[BaseMessage], session_context: Dict[str, Any], rag_context: Dict[str, Any]) -> Dict[str, Any]:
+    async def generate_feedback(self, session_type: str, chat_history: List[BaseMessage], session_context: Dict[str, Any], rag_context: Dict[str, Any], visual_summary: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Generates comprehensive interview feedback from the chat history and context."""
         try:
             system_msg = self._get_system_message(session_type, "feedback", session_context)
@@ -117,6 +117,16 @@ class GeminiLLM:
             
             candidate_name = session_context.get('candidate_name', 'the candidate')
             company_name = session_context.get('company_name', 'the company')
+
+            visual_context = ""
+            if visual_summary:
+                visual_context = f"""
+                **Visual & Behavioral Metrics:**
+                - Average Eye Contact: {int(visual_summary.get('eye_contact', 0) * 100)}%
+                - Average Engagement Score: {int(visual_summary.get('engagement', 0) * 100)}%
+                - Posture Stability: {int(visual_summary.get('posture', 0) * 100)}%
+                - Proctoring Violations: {visual_summary.get('proctoring_violations', 0)} (e.g., looking away or leaving frame)
+                """
 
             prompt = f"""
             **Interview Context:**
@@ -134,8 +144,11 @@ class GeminiLLM:
 
             **Full Transcript:**
             {transcript_text}
+
+            {visual_context}
             
             Please provide feedback for {candidate_name} in a valid JSON format. Evaluate their performance against the Job Description for {company_name}.
+            Incorporate the visual/behavioral metrics into your detailed feedback and recommendations.
             {{ 
                 "overall_score": <int, 0-100>,
                 "technical_score": <int, 0-100, or null if not applicable>,
@@ -186,7 +199,7 @@ class GeminiLLM:
             logger.error(f"Error generating feedback: {e}")
             return self._get_default_feedback(detail=str(e))
 
-    async def generate_gd_feedback(self, topic: str, chat_history: List[Dict[str, Any]], session_context: Dict[str, Any]) -> Dict[str, Any]:
+    async def generate_gd_feedback(self, topic: str, chat_history: List[Dict[str, Any]], session_context: Dict[str, Any], visual_summary: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Generates comprehensive GD feedback from the discussion transcript."""
         try:
             system_msg = self._get_system_message("GD", "feedback", session_context)
@@ -196,6 +209,15 @@ class GeminiLLM:
             candidate_name = session_context.get('candidate_name', 'the candidate')
             company_name = session_context.get('company_name', 'the company')
 
+            visual_context = ""
+            if visual_summary:
+                visual_context = f"""
+                **Visual & Behavioral Metrics during GD:**
+                - Average Eye Contact with Camera: {int(visual_summary.get('eye_contact', 0) * 100)}%
+                - Engagement with the Group: {int(visual_summary.get('engagement', 0) * 100)}%
+                - Proctoring Violations: {visual_summary.get('proctoring_violations', 0)}
+                """
+
             prompt = f"""
             **Group Discussion Context:**
             - Topic: {topic}
@@ -204,8 +226,12 @@ class GeminiLLM:
             
             **Full Transcript:**
             {transcript_text}
+
+            {visual_context}
             
-            Please provide feedback for the candidate named '{candidate_name}' in a valid JSON format. Evaluate their performance in the context of a recruitment process for {company_name}.
+            Please provide feedback for the candidate named '{candidate_name}' in a valid JSON format. 
+            Evaluate their performance in the context of a recruitment process for {company_name}.
+            Incorporate their visual engagement and eye contact data into your overall feedback.
             {{ 
                 "participation_score": <int, 0-100>,
                 "initiative_score": <int, 0-100>,

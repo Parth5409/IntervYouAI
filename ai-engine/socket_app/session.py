@@ -10,6 +10,7 @@ from tts import tts_service
 from orchestrator.gd_orchestrator import GDOrchestrator
 from orchestrator.interview import InterviewOrchestrator
 from stt.stt_service import stt_service
+from services.visual_processor import VisualProcessor
 from utils.database import db_session_context, get_session_by_id, User
 from utils.kafka_producer import kafka_producer
 from sqlalchemy.orm.attributes import flag_modified
@@ -24,6 +25,7 @@ sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins="*")
 # Initialize orchestrators
 gd_orchestrator = GDOrchestrator()
 interview_orchestrator = InterviewOrchestrator()
+visual_processor = VisualProcessor()
 
 
 # --- Generic Connection Events ---
@@ -118,6 +120,44 @@ async def audio_chunk(sid, data):
     except Exception as e:
         logger.error(f"Error handling user response for {session_id}: {e}")
         await sio.emit('error', {'message': 'Error processing your response.'}, to=sid)
+
+@sio.event
+async def video_frame(sid, data):
+    session_id = data.get('session_id')
+    image_data = data.get('image_blob')
+
+    if not session_id or not image_data:
+        return
+
+    try:
+        # If it's base64, decode it
+        if isinstance(image_data, str) and ',' in image_data:
+            image_data = base64.b64decode(image_data.split(',')[1])
+        elif isinstance(image_data, str):
+            image_data = base64.b64decode(image_data)
+
+        metrics = visual_processor.process_frame(image_data)
+        
+        if "error" in metrics:
+            logger.error(f"Visual processing error for {session_id}: {metrics['error']}")
+            return
+
+        # Handle Proctoring Alerts
+        if metrics.get("proctoring_violation"):
+            violation_type = "multi_face" if metrics.get("face_count", 0) > 1 else "no_face"
+            await sio.emit('proctoring_alert', {
+                'type': violation_type,
+                'message': "Multiple people detected" if violation_type == "multi_face" else "Please stay visible to the camera"
+            }, to=sid)
+
+        # Store metrics in orchestrator state
+        if session_id in interview_orchestrator.active_sessions:
+            interview_orchestrator.add_visual_metrics(session_id, metrics)
+        elif session_id in gd_orchestrator.active_sessions:
+            gd_orchestrator.add_visual_metrics(session_id, metrics)
+
+    except Exception as e:
+        logger.error(f"Error in video_frame handler for {session_id}: {e}")
 
 @sio.event
 async def end_interview(sid, data):
