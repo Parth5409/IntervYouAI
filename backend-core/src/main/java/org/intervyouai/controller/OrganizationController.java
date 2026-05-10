@@ -59,6 +59,13 @@ public class OrganizationController {
         return ResponseEntity.ok(GenericResponse.success(convertToResponse(updated)));
     }
 
+    @PostMapping
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<OrganizationResponse> createOrganization(@Valid @RequestBody org.intervyouai.dto.OrganizationRequest request) {
+        Organization created = organizationService.createOrganization(request);
+        return ResponseEntity.ok(convertToResponse(created));
+    }
+
     private OrganizationResponse convertToResponse(Organization org) {
         if (org == null) return null;
         return OrganizationResponse.builder()

@@ -131,7 +131,8 @@ public class PlacementDriveServiceTest {
 
         placementDriveService.deleteDrive(tpoId, driveId);
 
-        verify(placementDriveRepository, times(1)).delete(drive);
+        verify(placementDriveRepository, times(1)).save(drive);
+        assertEquals(PlacementDrive.DriveStatus.ARCHIVED, drive.getStatus());
     }
 
     @Test

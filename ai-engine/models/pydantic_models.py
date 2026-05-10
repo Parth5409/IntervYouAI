@@ -133,6 +133,9 @@ class InterviewFeedback(BaseModel):
     technical_score: Optional[int] = Field(None, ge=0, le=100)
     communication_score: int = Field(..., ge=0, le=100)
     confidence_score: int = Field(..., ge=0, le=100)
+    eye_contact_score: Optional[int] = Field(None, ge=0, le=100)
+    posture_score: Optional[int] = Field(None, ge=0, le=100)
+    engagement_score: Optional[int] = Field(None, ge=0, le=100)
     strengths: List[str]
     improvement_areas: List[str]
     detailed_feedback: str
@@ -152,6 +155,8 @@ class GDFeedback(BaseModel):
     clarity_score: int = Field(..., ge=0, le=100)
     collaboration_score: int = Field(..., ge=0, le=100)
     topic_understanding: int = Field(..., ge=0, le=100)
+    eye_contact_score: Optional[int] = Field(None, ge=0, le=100)
+    engagement_score: Optional[int] = Field(None, ge=0, le=100)
     strengths: List[str]
     improvement_suggestions: List[str]
     key_contributions: List[str]

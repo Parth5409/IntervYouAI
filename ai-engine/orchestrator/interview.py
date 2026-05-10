@@ -113,6 +113,7 @@ class InterviewOrchestrator:
                 "client_sid": client_sid,
                 "db_session": db_session,
                 "transcript": transcript,
+                "visual_history": [],
                 "question_count": 1, # The greeting is the first question
                 "state": InterviewState.ACTIVE
             }
@@ -123,6 +124,15 @@ class InterviewOrchestrator:
         except Exception as e:
             logger.error(f"Error starting session {db_session.id}: {e}")
             raise
+
+    def add_visual_metrics(self, session_id: str, metrics: Dict[str, Any]):
+        """Adds periodic visual metrics to the session history."""
+        session_state = self.active_sessions.get(session_id)
+        if session_state:
+            session_state["visual_history"].append({
+                **metrics,
+                "timestamp": datetime.now().isoformat()
+            })
 
     async def handle_user_response(self, session_id: str, user_message: str) -> tuple[str, bytes | None]:
         """ 
@@ -172,7 +182,11 @@ class InterviewOrchestrator:
             # Fetch context one last time for grounded feedback
             rag_context = await self._get_rag_context(db_session, "Overall interview performance")
             
-            feedback = await self._generate_session_feedback(db_session, chat_history, rag_context)
+            # Aggregate visual metrics
+            visual_history = session_state.get("visual_history", [])
+            visual_summary = self._get_visual_summary(visual_history)
+            
+            feedback = await self._generate_session_feedback(db_session, chat_history, rag_context, visual_summary)
             
             if db_session.session_type == "TECHNICAL" and db_session.context.get("company_vs_id"):
                 store_name = db_session.context.get("company_vs_id")
@@ -311,14 +325,15 @@ class InterviewOrchestrator:
         else:
             return "Thank you for the interview! I'll now prepare your feedback."
 
-    async def _generate_session_feedback(self, session: InterviewSession, chat_history: List[BaseMessage], rag_context: Dict[str, Any]) -> Dict[str, Any]:
+    async def _generate_session_feedback(self, session: InterviewSession, chat_history: List[BaseMessage], rag_context: Dict[str, Any], visual_summary: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Generate comprehensive feedback for completed session"""
         try:
             feedback_data = await self.gemini_llm.generate_feedback(
                 session_type=session.session_type,
                 chat_history=chat_history,
                 session_context=session.context,
-                rag_context=rag_context
+                rag_context=rag_context,
+                visual_summary=visual_summary
             )
             
             # Ensure session_id is a string for Pydantic validation
@@ -328,6 +343,12 @@ class InterviewOrchestrator:
             feedback_data['overall_score'] = feedback_data.get('overall_score') or 0
             feedback_data['communication_score'] = feedback_data.get('communication_score') or 0
             feedback_data['confidence_score'] = feedback_data.get('confidence_score') or 0
+            
+            # Inject visual scores if available
+            if visual_summary:
+                feedback_data['eye_contact_score'] = int(visual_summary.get('eye_contact', 0) * 100)
+                feedback_data['engagement_score'] = int(visual_summary.get('engagement', 0) * 100)
+                feedback_data['posture_score'] = int(visual_summary.get('posture', 0.8) * 100)
 
             return InterviewFeedback(**feedback_data).dict()
         except Exception as e:
@@ -342,3 +363,20 @@ class InterviewOrchestrator:
                 detailed_feedback="Good overall performance with room for improvement.",
                 recommendations=["Practice more examples", "Research common questions"],
             ).dict()
+
+    def _get_visual_summary(self, history: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Calculates averages and summaries from visual history."""
+        if not history:
+            return {}
+
+        eye_contacts = [h.get("eye_contact", 0) for h in history if "eye_contact" in h]
+        engagements = [h.get("engagement_score", 0) for h in history if "engagement_score" in h]
+        violations = sum(1 for h in history if h.get("proctoring_violation"))
+
+        return {
+            "eye_contact": sum(eye_contacts) / len(eye_contacts) if eye_contacts else 0,
+            "engagement": sum(engagements) / len(engagements) if engagements else 0,
+            "posture": 0.85, # Placeholder for average posture stability
+            "proctoring_violations": violations,
+            "total_frames": len(history)
+        }

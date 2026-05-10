@@ -8,6 +8,8 @@ import api, { engineApi, getAiEngineDirectURL } from '../../../utils/api';
 
 import { playAudioFromBase64 } from '../../../utils/audioPlayer';
 
+import { toast } from 'sonner';
+
 // Import Components
 import InterviewProgressNav from '../../../components/ui/InterviewProgressNav';
 import SessionControls from '../../../components/ui/SessionControls';
@@ -38,7 +40,7 @@ const InterviewRoom = () => {
 
   // Custom hooks
   const { isRecording, audioBlob, startRecording, stopRecording, resetAudio } = useAudioRecorder();
-  const { stream, isActive: isCameraActive, error: cameraError, startCamera, stopCamera } = useCamera();
+  const { stream, isActive: isCameraActive, error: cameraError, startCamera, stopCamera, captureFrame } = useCamera();
 
   // --- EFFECTS ---
 
@@ -126,12 +128,39 @@ const InterviewRoom = () => {
     socket.on('user_message_processed', handleUserMessageProcessed);
     socket.on('new_ai_message', handleNewAIMessage);
     socket.on('interview_ended', handleInterviewEnded);
+    socket.on('proctoring_alert', (data) => {
+      toast.warning(data.message, {
+        description: data.type === 'multi_face' ? 'Please ensure you are alone.' : 'Please stay visible to the camera.',
+        duration: 4000,
+      });
+    });
     socket.on('error', (error) => console.error('Socket Error:', error.message));
 
     return () => {
       socket.disconnect();
     };
   }, [sessionId, user?.id, navigate]);
+
+  // Video Frame Sampling
+  useEffect(() => {
+    let interval;
+    if (isSessionActive && socketRef.current && isCameraActive) {
+      interval = setInterval(async () => {
+        try {
+          const frame = await captureFrame(0.4);
+          if (frame && socketRef.current) {
+            socketRef.current.emit('video_frame', {
+              session_id: sessionId,
+              image_blob: frame
+            });
+          }
+        } catch (err) {
+          console.error("Frame capture failed:", err);
+        }
+      }, 3000); // Sample every 3 seconds
+    }
+    return () => clearInterval(interval);
+  }, [isSessionActive, isCameraActive, captureFrame, sessionId]);
 
   useEffect(() => {
     if (audioBlob && socketRef.current) {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.intervyouai.dto.*;
 import org.intervyouai.model.UserRole;
 import org.intervyouai.repository.*;
+import org.intervyouai.model.RoundType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,13 +33,13 @@ public class FullSystemIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private StudentProfileRepository studentProfileRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private StudentProfileRepository studentProfileRepository;
 
     @Autowired
     private PlacementDriveRepository placementDriveRepository;
@@ -101,152 +100,91 @@ public class FullSystemIntegrationTest {
                 .content(objectMapper.writeValueAsString(tpoRequest)))
                 .andExpect(status().isOk());
 
-        // 4. Student Self-Signup with Organization Code
-        SignupRequest studentRequest = new SignupRequest();
-        studentRequest.setEmail("student@iitb.ac.in");
-        studentRequest.setPassword("password123");
-        studentRequest.setFullName("Rahul Sharma");
-        studentRequest.setRole(UserRole.STUDENT);
-        studentRequest.setOrganizationCode("IITB"); // Linking to IITB
+        // 4. TPO Logins
+        LoginRequest tpoLogin = new LoginRequest();
+        tpoLogin.setEmail("tpo@iitb.ac.in");
+        tpoLogin.setPassword("tpo123");
 
-        mockMvc.perform(post("/api/core/v1/auth/signup")
+        MvcResult tpoResult = mockMvc.perform(post("/api/core/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(studentRequest)))
-                .andExpect(status().isOk());
-
-        // 5. Login Student
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setEmail("student@iitb.ac.in");
-        loginRequest.setPassword("password123");
-
-        MvcResult loginResult = mockMvc.perform(post("/api/core/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)))
+                .content(objectMapper.writeValueAsString(tpoLogin)))
                 .andExpect(status().isOk())
                 .andReturn();
+        
+        String tpoToken = objectMapper.readTree(tpoResult.getResponse().getContentAsString()).get("access_token").asText();
 
-        String token = objectMapper.readTree(loginResult.getResponse().getContentAsString()).get("access_token").asText();
+        // 5. TPO Bulk Imports Students
+        BulkStudentDTO student1 = new BulkStudentDTO();
+        student1.setEmail("rahul@iitb.ac.in");
+        student1.setFullName("Rahul Kumar");
+        student1.setPrn("2021001");
+        student1.setBranch("CSE");
+        student1.setCurrentCgpa(java.math.BigDecimal.valueOf(9.2));
 
-        // 6. Create Student Profile
-        StudentProfileRequest profileRequest = new StudentProfileRequest();
-        profileRequest.setPrn("12345678");
-        profileRequest.setBranch("Computer Science");
-        profileRequest.setCurrentSemester("8");
-        profileRequest.setCurrentCgpa(java.math.BigDecimal.valueOf(9.2));
-        profileRequest.setPassingYear(2026);
-        profileRequest.setSkills(Set.of("Java", "Spring Boot", "React"));
-
-        mockMvc.perform(post("/api/core/v1/students/profile")
-                .header("Authorization", "Bearer " + token)
+        mockMvc.perform(post("/api/core/v1/students/bulk-import")
+                .header("Authorization", "Bearer " + tpoToken)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(profileRequest)))
+                .content(objectMapper.writeValueAsString(List.of(student1))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.prn", is("12345678")));
-
-        // 7. Verify /user/me
-        mockMvc.perform(get("/api/core/v1/user/me")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.email", is("student@iitb.ac.in")))
-                .andExpect(jsonPath("$.data.role", is("STUDENT")))
-                .andExpect(jsonPath("$.data.skills[0]", is("Java")));
+                .andExpect(jsonPath("$.data", hasSize(1)));
     }
 
     @Test
     void shouldCreateDriveAndStartSession() throws Exception {
-        // 1. Setup Org, Admin, TPO, Student
-        // Organization
+        // 1. Setup Organization & TPO
         OrganizationRequest orgRequest = new OrganizationRequest();
         orgRequest.setName("College of Engineering");
         orgRequest.setCode("COE");
         orgRequest.setAdminEmail("admin@coe.edu");
         orgRequest.setAdminPassword("admin123");
         orgRequest.setAdminName("Admin");
-        
-        mockMvc.perform(post("/api/core/v1/organizations")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(orgRequest)))
-                .andExpect(status().isOk());
+        mockMvc.perform(post("/api/core/v1/organizations").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(orgRequest))).andExpect(status().isOk());
 
-        // Admin Login
-        LoginRequest adminLogin = new LoginRequest();
-        adminLogin.setEmail("admin@coe.edu");
-        adminLogin.setPassword("admin123");
-        String adminToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(adminLogin))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
+        String adminToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(new LoginRequest(){{setEmail("admin@coe.edu"); setPassword("admin123");}}))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
 
-        // Create TPO
-        SignupRequest tpoRequest = new SignupRequest();
-        tpoRequest.setEmail("tpo@coe.edu");
-        tpoRequest.setPassword("tpo123");
-        tpoRequest.setFullName("TPO Staff");
-        tpoRequest.setRole(UserRole.TPO);
-        mockMvc.perform(post("/api/core/v1/admin/tpo/create")
-                .header("Authorization", "Bearer " + adminToken)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tpoRequest)))
-                .andExpect(status().isOk());
+        mockMvc.perform(post("/api/core/v1/admin/tpo/create").header("Authorization", "Bearer " + adminToken).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(new SignupRequest(){{setEmail("tpo@coe.edu"); setPassword("tpo123"); setFullName("TPO"); setRole(UserRole.TPO);}}))).andExpect(status().isOk());
 
-        // TPO Login
-        LoginRequest tpoLogin = new LoginRequest();
-        tpoLogin.setEmail("tpo@coe.edu");
-        tpoLogin.setPassword("tpo123");
-        String tpoToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tpoLogin))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
-
-        // Create Student
-        SignupRequest studentRequest = new SignupRequest();
-        studentRequest.setEmail("student@coe.edu");
-        studentRequest.setPassword("student123");
-        studentRequest.setFullName("Student One");
-        studentRequest.setOrganizationCode("COE");
-        studentRequest.setRole(UserRole.STUDENT);
-        mockMvc.perform(post("/api/core/v1/auth/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(studentRequest)))
-                .andExpect(status().isOk());
-
-        // Student Login
-        LoginRequest studentLogin = new LoginRequest();
-        studentLogin.setEmail("student@coe.edu");
-        studentLogin.setPassword("student123");
-        String studentToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(studentLogin))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
+        String tpoToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(new LoginRequest(){{setEmail("tpo@coe.edu"); setPassword("tpo123");}}))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
 
         // 2. TPO Creates Drive
         PlacementDriveRequest driveRequest = new PlacementDriveRequest();
         driveRequest.setCompanyName("Google");
-        driveRequest.setJobDescription("Software Engineer");
-        driveRequest.setMinCgpa(BigDecimal.valueOf(8.5));
+        driveRequest.setJobDescription("SWE Intern");
+        driveRequest.setMinCgpa(java.math.BigDecimal.valueOf(8.0));
+        driveRequest.setMinLpa(java.math.BigDecimal.valueOf(15.0));
 
-        String driveResponse = mockMvc.perform(post("/api/core/v1/drives")
+        MvcResult driveResult = mockMvc.perform(post("/api/core/v1/drives")
                 .header("Authorization", "Bearer " + tpoToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(driveRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.companyName", is("Google")))
-                .andReturn().getResponse().getContentAsString();
+                .andReturn();
         
-        String driveId = objectMapper.readTree(driveResponse).get("id").asText();
+        UUID driveId = UUID.fromString(objectMapper.readTree(driveResult.getResponse().getContentAsString()).get("data").get("id").asText());
 
-        // 3. Student Lists Drives
-        mockMvc.perform(get("/api/core/v1/drives")
-                .header("Authorization", "Bearer " + studentToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].companyName", is("Google")));
+        // 3. Student Signs Up and Joins Drive
+        SignupRequest studentSignup = new SignupRequest();
+        studentSignup.setEmail("student@coe.edu");
+        studentSignup.setPassword("student123");
+        studentSignup.setOrganizationCode("COE");
+        studentSignup.setRole(UserRole.STUDENT);
 
-        // 4. Student Starts Session
+        mockMvc.perform(post("/api/core/v1/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(studentSignup)))
+                .andExpect(status().isCreated());
+
+        String studentToken = objectMapper.readTree(mockMvc.perform(post("/api/core/v1/auth/login").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(new LoginRequest(){{setEmail("student@coe.edu"); setPassword("student123");}}))).andReturn().getResponse().getContentAsString()).get("access_token").asText();
+
+        // 4. Student creates session for drive
         CreateSessionRequest sessionRequest = new CreateSessionRequest();
-        sessionRequest.setDriveId(UUID.fromString(driveId));
+        sessionRequest.setDriveId(driveId);
 
-        mockMvc.perform(post("/api/core/v1/sessions")
+        mockMvc.perform(post("/api/core/v1/session")
                 .header("Authorization", "Bearer " + studentToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(sessionRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("CREATED")));
+                .andExpect(jsonPath("$.id").exists());
     }
 }

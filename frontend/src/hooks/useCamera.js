@@ -61,6 +61,41 @@ export const useCamera = () => {
     }
   }, [isActive, startCamera, stopCamera]);
 
+  const captureFrame = useCallback((quality = 0.5) => {
+    if (!streamRef.current || !isActive) return null;
+
+    const videoTrack = streamRef.current.getVideoTracks()[0];
+    if (!videoTrack || videoTrack.readyState !== 'live') return null;
+
+    // We use a temporary canvas to capture the frame
+    const canvas = document.createElement('canvas');
+    // Set a lower resolution for analysis to save bandwidth
+    canvas.width = 320;
+    canvas.height = 240;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // We need a dummy video element to draw from the stream if we don't have a ref
+    const tempVideo = document.createElement('video');
+    tempVideo.srcObject = streamRef.current;
+    tempVideo.muted = true;
+    
+    return new Promise((resolve) => {
+      tempVideo.onloadedmetadata = () => {
+        tempVideo.play();
+        // Draw the current frame
+        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        
+        // Cleanup temp video
+        tempVideo.pause();
+        tempVideo.srcObject = null;
+        
+        resolve(dataUrl);
+      };
+    });
+  }, [isActive]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -77,6 +112,7 @@ export const useCamera = () => {
     permissionStatus, 
     startCamera, 
     stopCamera, 
-    toggleVideo 
+    toggleVideo,
+    captureFrame
   };
 };

@@ -1,6 +1,6 @@
-fastapi==0.110.0
-uvicorn[standard]==0.27.1
-gunicorn==25.0.2
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.1
+gunicorn>=25.0.2
 python-socketio==5.11.0
 python-engineio==4.9.0
 aiokafka==0.10.0
@@ -43,6 +43,8 @@ starlette>=0.47.2
 numpy==2.4.2
 scikit-learn==1.8.0
 cloudinary==1.44.1
+mediapipe==0.10.14
+opencv-python-headless==4.9.0.80
 
 # STT Dependencies
 faster_whisper==1.2.1

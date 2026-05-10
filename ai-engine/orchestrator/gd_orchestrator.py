@@ -132,6 +132,7 @@ class GDOrchestrator:
             "candidate_name": candidate_name,
             "participants": all_participants,
             "transcript": [],
+            "visual_history": [],
             "turn_order": turn_order,
             "current_turn_index": 0,
             "state": GDState.ACTIVE
@@ -139,6 +140,15 @@ class GDOrchestrator:
         self.active_sessions[session_id] = new_session_state
         logger.info(f"Created new GD session {session_id} for client {client_sid} with topic: {selected_topic}")
         return new_session_state
+
+    def add_visual_metrics(self, session_id: str, metrics: Dict[str, Any]):
+        """Adds periodic visual metrics to the session history."""
+        session_state = self.get_session(session_id)
+        if session_state:
+            session_state["visual_history"].append({
+                **metrics,
+                "timestamp": datetime.now().isoformat()
+            })
 
     def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         """Retrieves an active session."""
@@ -224,7 +234,13 @@ class GDOrchestrator:
 
     async def end_session(self, session: InterviewSession) -> Dict[str, Any]:
         """Ends the GD session and generates feedback."""
-        return await self._generate_session_feedback(session)
+        session_id = str(session.id)
+        session_state = self.get_session(session_id)
+        visual_summary = {}
+        if session_state:
+            visual_summary = self._get_visual_summary(session_state.get("visual_history", []))
+            
+        return await self._generate_session_feedback(session, visual_summary)
 
     async def _generate_bot_response(self, context: Dict[str, Any], bot_id: str) -> Optional[tuple[Dict[str, Any], bytes | None]]:
         """Generate response from a specific bot, including audio."""
@@ -262,9 +278,10 @@ class GDOrchestrator:
 
         return message, response_audio
 
-    async def _generate_session_feedback(self, session: InterviewSession) -> Dict[str, Any]:
+    async def _generate_session_feedback(self, session: InterviewSession, visual_summary: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Generate comprehensive feedback for the GD session."""
-        session_state = self.get_session(str(session.id))
+        session_id = str(session.id)
+        session_state = self.get_session(session_id)
         if not session_state:
             logger.warning(f"No active session state found for {session.id} during feedback generation")
             return self.gemini_llm._get_default_gd_feedback()
@@ -273,16 +290,38 @@ class GDOrchestrator:
             feedback_data = await self.gemini_llm.generate_gd_feedback(
                 topic=session_state['topic'],
                 chat_history=session_state['transcript'],
-                session_context=session.context
+                session_context=session.context,
+                visual_summary=visual_summary
             )
             
             # Ensure session_id is a string for Pydantic
             feedback_data['session_id'] = str(session.id)
             
+            # Inject visual scores
+            if visual_summary:
+                feedback_data['eye_contact_score'] = int(visual_summary.get('eye_contact', 0) * 100)
+                feedback_data['engagement_score'] = int(visual_summary.get('engagement', 0) * 100)
+
             return GDFeedback(**feedback_data).dict()
         except Exception as e:
             logger.error(f"Error generating GD feedback for {session.id}: {e}")
             default_fb = self.gemini_llm._get_default_gd_feedback()
             default_fb['session_id'] = str(session.id)
             return default_fb
+
+    def _get_visual_summary(self, history: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Calculates averages and summaries from visual history."""
+        if not history:
+            return {}
+
+        eye_contacts = [h.get("eye_contact", 0) for h in history if "eye_contact" in h]
+        engagements = [h.get("engagement_score", 0) for h in history if "engagement_score" in h]
+        violations = sum(1 for h in history if h.get("proctoring_violation"))
+
+        return {
+            "eye_contact": sum(eye_contacts) / len(eye_contacts) if eye_contacts else 0,
+            "engagement": sum(engagements) / len(engagements) if engagements else 0,
+            "proctoring_violations": violations,
+            "total_frames": len(history)
+        }
 
